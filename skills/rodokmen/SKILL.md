@@ -110,6 +110,12 @@ Základní smyčka pro každou osobu:
    - **Rozsah hledání:** událost hledej nejdřív v rozmezí ±5 let kolem známého nebo odhadnutého data.
    - **Rodina po cestě:** narazíš-li na možné sourozence nebo jiné členy rodiny, zaznamenej je také (zápis
      podle 6 kroků níže, osoby do `SIDE`; nejisté ztotožnění jako `prob`).
+   - **Kmotři a další osoby v zápisu jsou stopy:** při čtení zápisu nehledej jen hledanou osobu a sourozence.
+     Projdi i sloupec kmotrů a svědků, porodní báby a okraje a zaznamenej každého (jméno, příjmení, bydliště,
+     povolání, vztah, snímek), i když ho zatím nejde ztotožnit. Opakuje-li se kmotr nebo příjmení shodné
+     s hledaným rodem či vsí (např. stejní Millerové z Vtelna u několika křtů), je to silná stopa na příbuzenství.
+     Nejisté ztotožnění označ `prob`/„(?)“ a nedomýšlej. (Skutečná chyba: kmotři-příbuzní u křtu z roku 1802
+     byli přehlédnutí, protože se četl jen hledaný zápis; všiml si jich až uživatel.)
    - **Křty a sourozenci:** najdeš-li **staršího** sourozence, hledej dalších 5 let do minulosti od jeho křtu;
      najdeš-li **mladšího**, hledej dalších 5 let do budoucnosti od jeho křtu. Rozšiřování opakuj při každém dalším
      nálezu v daném směru, až se v jednom směru celých 5 let nic nenajde. Každý směr se řídí zvlášť. První nalezený
@@ -137,11 +143,13 @@ Základní smyčka pro každou osobu:
    3. výřez: `python3 -I tools/vyrez.py pracovni/<stránka>.jpg <klíč> x0,y0,x1,y1` (velkoryse – celý zápis s hlavičkou sloupců a okrajovými poznámkami),
    4. rámeček čteného místa: `python3 -I tools/ramecek.py <klíč> x0,y0,x1,y1` a **prohlédni si** `pracovni/ramecek_<klíč>.jpg`,
    5. přepis originálu a český překlad do `data/prepisy.json` (nejistá místa „(?)“, nečitelná „[…]“),
-   6. osobu/osoby do `data/osoby.py` (`f` fakta, `r` klíč zápisu, `st="doc"`), sourozence a kmotry-příbuzné do `SIDE`.
+   6. osobu/osoby do `data/osoby.py` (`f` fakta, `r` klíč zápisu, `st="doc"`), sourozence a kmotry (i neztotožněné, jako stopy) do `SIDE`.
 6. **Zapiš hledání do deníku** `data/research_log.md` – i neúspěšné, s rozsahem (které roky / snímky jsi prošel).
    Narazíš-li po cestě na **zjevně související výskyt** (vzácné příjmení rodu, stejný dům, jméno z rodinného
    vyprávění), zapiš ho do výsledku v deníku se snímkem – je to jen stopa, ne doklad. Když se hledání zasekne,
    projdi deník právě kvůli takovým stopám.
+   Totéž platí pro kmotry a svědky z přečteného zápisu: opakující se jméno zapiš do výsledku v deníku
+   a do `todo.md` jako stopu k ověření.
 7. Spusť `python3 -I tools/kontrola.py` a oprav chyby.
 
 Pravidla, která chrání kvalitu (naučená na skutečném projektu):
