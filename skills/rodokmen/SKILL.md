@@ -114,6 +114,12 @@ Základní smyčka pro každou osobu:
      najdeš-li **mladšího**, hledej dalších 5 let do budoucnosti od jeho křtu. Rozšiřování opakuj při každém dalším
      nálezu v daném směru, až se v jednom směru celých 5 let nic nenajde. Každý směr se řídí zvlášť. První nalezený
      sourozenec se počítá do obou směrů (okno ±5 let kolem původního data); směrové pravidlo platí až od dalších.
+   - **Více předků v jedné knize:** předpokládáš-li, že se v jednom svazku (farnost, typ zápisu) skrývá víc
+     hledaných předků, jejichž události spadají do rozmezí zhruba ±5 let (např. křty dvou prarodičů z téže vsi,
+     sňatky několika sourozenců předků), hledej je **v jednom průchodu svazkem**, ne každého zvlášť. Okno ±5 let
+     vezmi kolem všech odhadnutých dat a rozšiřuj ho stejně jako u sourozenců: nález v daném směru posune okno
+     o dalších 5 let, dokud se celých 5 let nic nenajde. Při procházení zapisuj každý nález z okna (hledané
+     předky i možné příbuzné do `SIDE`), ať se k téže knize nevracíš.
    - **Rejstřík:** objeví-li se v rejstříku další možné shody (jméno, rodiče, dům), pokračuj i na ně, i když
      v daném směru už uplynulo 5 let bez nálezu.
 2. **Ověř přístupnost**: matriky jsou v archivu až po uplynutí lhůty od *posledního* zápisu ve svazku
