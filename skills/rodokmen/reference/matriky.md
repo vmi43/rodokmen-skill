@@ -112,6 +112,8 @@ Mladší knihy jsou na matričním úřadě obce s rozšířenou působností / 
 - Pomocníci (subagenti) a OCR/AI čtou historické písmo chybně – vždy ověř sám (viz `playbook.md` §1 bod 10).
 
 ## Technické pasti (macOS, zsh) – napiš je i pomocníkům do zadání
+- Síť: každý síťový příkaz jen přes `python3 -I tools/omezovac.py <nástroj> …` (nebo `… curl …`); po 429/503 skončit,
+  nic neopakovat ani neobcházet a říct to (SKILL.md, oddíl Síť; celé pravidlo opsat do zadání).
 - Shell je zsh: `for a in "x y z"; do set -- $a` slova nerozdělí (v zsh `${=a}`); `ls F*` bez shody = chyba
   „no matches found“; `echo ====` je chyba (`=` na začátku slova). Složitější smyčky pouštěj přes `bash -c '…'`.
 - ImageMagick: seznam souborů předávej jako jednotlivé argumenty, ne jednou proměnnou s mezerami.

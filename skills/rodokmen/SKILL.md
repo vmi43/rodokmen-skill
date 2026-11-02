@@ -60,7 +60,9 @@ Najdeš v ní `tools/` (nástroje), `template/` (šablona projektu a webu) a `re
    `python3 -I SKILL_DIR/tools/novy_projekt.py <složka>`
    Chce-li uživatel nejdřív vidět, jak web vypadá, založ vedle ukázku: `… novy_projekt.py ~/Rodokmen-ukazka --ukazka`,
    pak `cd web && npm install && npm run nahled` a pošli mu odkaz http://localhost:4321.
-3. V projektu `git init` a první uložení (git = historie změn, kdyby se něco pokazilo). Doporuč pokračovat v Claude Code
+3. Zapni hlídání rychlosti stahování: `python3 -I tools/omezovac.py nainstaluj-hook .` (přidá do `.claude/settings.json`
+   hook, který zamítne síťové příkazy mimo omezovač; viz oddíl Síť). Je-li zápis do nastavení zakázaný, nech to udělat uživatele.
+4. V projektu `git init` a první uložení (git = historie změn, kdyby se něco pokazilo). Doporuč pokračovat v Claude Code
    **z této složky** (soubor `CLAUDE.md` v ní zajistí, že příště navážeš).
 4. Vyplň v `data/STAV.md` sekci „Pro koho“ a v `data/web.json` název webu („Rodokmen Novákových“),
    jakmile znáš příjmení výchozí osoby (šablona je prázdná).
@@ -217,7 +219,22 @@ Nedělej to pořád. Postup:
 **Nic sám neposílej** (žádný e-mail, formulář ani issue). Rozhoduje uživatel. Až řekne, že poslal, zapiš do
 `poznamky_pro_skill.md` „odesláno <datum>“ a další poznámky piš pod tuto čáru.
 
+## Síť – každý požadavek přes omezovač
+Aby nástroje nezatěžovaly weby archivů a projekt nedostal blokaci IP adresy, jde **každý síťový příkaz** přes
+`tools/omezovac.py` (limit zvlášť pro každý web, sdílený přes soubory v `pracovni/.omezovac/`, takže platí i pro
+souběžné procesy a pomocníky):
+- nástroj: `python3 -I tools/omezovac.py <nástroj.py|nástroj.sh> <argumenty>`; jeden požadavek curl:
+  `python3 -I tools/omezovac.py curl <argumenty>`; kdo je zablokovaný: `python3 -I tools/omezovac.py stav`.
+  Soubory v `tools/` neupravuj, jen je tak spouštěj.
+- Limity: vyhledávání, API a HTML 1 požadavek za 2 s; dlaždice a obrázky skenů 5 za s.
+- **Odpověď 429 nebo 503 = web je na 20 minut zablokovaný**, nástroj skončí s kódem 75. Nic neopakuj, neobcházej
+  (jiný nástroj, prohlížeč, jiný web téhož archivu) a řekni to uživateli.
+- WebFetch a prohlížeč na weby archivů jen po jednom požadavku (prohlížeč hook nehlídá).
+- Hook zamítne síťový příkaz mimo omezovač; zapne se jednou na projekt (`python3 -I tools/omezovac.py nainstaluj-hook .`,
+  Fáze 0). **Toto pravidlo se opisuje celé do zadání každého pomocníka.**
+
 ## Co nikdy
+- Neobcházej omezovač rychlosti (viz Síť): žádný přímý `curl`, `urllib` ani `requests` mimo něj.
 - Nestahuj hromadně z placených služeb (MyHeritage, Ancestry, Geni…) a neobcházej jejich ochranu –
   automatické procházení stovek záznamů vede k **zablokování účtu**. Čti jen to, co uživatel otevře, nebo co potřebuješ jednotlivě.
 - Nezadávej za uživatele hesla, platební údaje, neřeš CAPTCHA, nekupuj předplatné.
@@ -240,7 +257,7 @@ Nedělej to pořád. Postup:
 | `tools/` | nástroje (kopie ze skillu; aktualizace celého projektu: znovu spustit `novy_projekt.py` na stejnou složku, viz `reference/web.md`) |
 | `web/` | web (Astro); data do něj jdou jen přes `npm run data` |
 
-## Nástroje (`tools/`, spouštět z kořene projektu `python3 -I tools/<nástroj>`)
+## Nástroje (`tools/`, spouštět z kořene projektu přes omezovač: `python3 -I tools/omezovac.py <nástroj> <argumenty>`; níže u síťových nástrojů předřaď `omezovac.py`)
 | Nástroj | Co dělá |
 |---|---|
 | `aron_search.py "Obec"` | najde svazky matrik na ARON (SOA Zámrsk); `"Obec,Fara"` zúží stejnojmenné obce |
