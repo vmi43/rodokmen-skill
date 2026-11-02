@@ -2,7 +2,7 @@
 """Vějíř předků (360°) z data/osoby.py jako SVG.
 Použití: fan_chart.py <out_dir>                         (plakát: SVG + HTML s nadpisem a legendou, PNG přes Chrome, je-li k dispozici)
          fan_chart.py <out_file.svg> --web <hrefs.json>  (holé klikací SVG pro web – volá ho export_web.py)"""
-import html, json, math, os, re, subprocess, sys
+import html, itertools, json, math, os, re, subprocess, sys
 for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8 (cp1250 neumí třeba „→“)
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
@@ -20,7 +20,7 @@ CHROME = next((c for c in ("/Applications/Google Chrome.app/Contents/MacOS/Googl
 
 ns = {}
 exec(open(os.path.join(ROOT, "data", "osoby.py"), encoding="utf-8").read(), ns)
-P, LINES = ns["P"], ns.get("LINES", {})
+P, LINES, SAME = ns["P"], ns.get("LINES", {}), ns.get("SAME", {})
 WEBCFG = json.load(open(os.path.join(ROOT, "data", "web.json"), encoding="utf-8")) if os.path.exists(os.path.join(ROOT, "data", "web.json")) else {}
 
 W, H = (4520, 4520) if WEB else (4600, 5650)
@@ -80,14 +80,16 @@ def gen(k):
     return k.bit_length() - 1
 
 
-def angles(k):
-    g = gen(k); n = 2 ** g; i = k - n
-    span = 360 / n
-    return 180 + i * span, 180 + (i + 1) * span
+def canon(k):
+    """Slot → kanonický slot: předek (a celá jeho větev výš) vícekrát v rodokmenu se bere z prvního výskytu (SAME)."""
+    for j in range(gen(k) + 1):
+        if (k >> j) in SAME:
+            return canon((SAME[k >> j] << j) | (k & ((1 << j) - 1)))
+    return k
 
 
 def fill(k):
-    g = gen(k); p = P.get(k)
+    g = gen(k); p = P.get(canon(k))
     if p is None or p.get("st") == "unk":
         return EMPTY
     if g == 0:
@@ -102,24 +104,90 @@ def fit(text, avail, fmax, fmin):
     return max(fmin, min(fmax, avail / (0.56 * max(len(text), 1))))
 
 
+def parents_of(k, flags):
+    return (2 * k + 1, 2 * k) if flags.get(k) else (2 * k, 2 * k + 1)
+
+
+def pos(k, flags):
+    """Pořadí slotu v jeho prstenci (zleva doprava) při daném otočení rodičů."""
+    g, idx = gen(k), 0
+    for lev in range(1, g + 1):
+        node = k >> (g - lev)
+        idx = idx * 2 + ((node & 1) ^ (1 if flags.get(node >> 1) else 0))
+    return idx
+
+
+def sibling_pairs():
+    """Dvojice slotů (pa, pb) téhož prstence, jejichž oba rodiče jsou táž dvojice osob (SAME) – sourozenci."""
+    out = set()
+    for b, a in SAME.items():
+        pa, pb = a // 2, b // 2
+        if pa != pb and gen(pa) == gen(pb) and canon(pa) in P and canon(pb) in P \
+                and canon(2 * pa) == canon(2 * pb) and canon(2 * pa + 1) == canon(2 * pb + 1):
+            out.add((min(pa, pb), max(pa, pb)))
+    return sorted(out)
+
+
+def solve_flags():
+    """Které páry rodičů otočit (muž ↔ žena), aby sourozenci stáli vedle sebe; co nejméně otočení."""
+    flags, locked = {}, set()
+    for pa, pb in sibling_pairs():
+        var, x, y = set(), pa, pb
+        while x != y:
+            x >>= 1; y >>= 1
+            var |= {x, y}
+        var.discard(1)
+        free = sorted(var - locked)
+        for r in range(len(free) + 1):
+            hit = next((c for c in itertools.combinations(free, r)
+                        if abs(pos(pa, {**flags, **dict.fromkeys(c, True)}) - pos(pb, {**flags, **dict.fromkeys(c, True)})) == 1), None)
+            if hit is not None:
+                flags.update(dict.fromkeys(hit, True))
+                locked |= var
+                break
+        else:
+            print(f"VAROVÁNÍ: sourozence {pa} a {pb} nelze v vějíři dát k sobě, zůstanou duplicitně", file=sys.stderr)
+    return flags
+
+
+def build_cells(flags):
+    """Buňky po prstencích; úhel jako podíl 0–1. Sourozenci vedle sebe sdílejí rodiče: ti dostanou dvojnásobnou šířku."""
+    rings = {0: [dict(k=1, f0=0.0, f1=1.0)], 1: [dict(k=2, f0=0.0, f1=0.5), dict(k=3, f0=0.5, f1=1.0)]}
+    for g in range(1, len(RINGS) - 1):
+        cells, out, i = rings[g], [], 0
+        while i < len(cells):
+            c = cells[i]; i += 1
+            if canon(c["k"]) not in P:
+                continue
+            k, nxt = c["k"], cells[i] if i < len(cells) else None
+            f1 = c["f1"]
+            if (nxt and abs(c["f1"] - nxt["f0"]) < 1e-9 and canon(nxt["k"]) in P and canon(2 * k) in P and canon(2 * k + 1) in P
+                    and (canon(2 * k), canon(2 * k + 1)) == (canon(2 * nxt["k"]), canon(2 * nxt["k"] + 1))):
+                f1 = nxt["f1"]; i += 1
+            half = (f1 - c["f0"]) / 2
+            for j, pk in enumerate(parents_of(k, flags)):
+                out.append(dict(k=pk, f0=c["f0"] + j * half, f1=c["f0"] + (j + 1) * half))
+        rings[g + 1] = out
+    return [c for g in sorted(rings) for c in rings[g]]
+
+
 paths, defs, texts, links = [], [], [], []
-slots = sorted({k for k in P if gen(k) < len(RINGS)} |   # vějíř má 11 prstenců (generace 0–10); starší předky vynech
-               {c for k in P for c in (2 * k, 2 * k + 1) if gen(c) <= 10 and k in P})
-for k in slots:
+for cell in build_cells(solve_flags()):
+    k = cell["k"]
     g = gen(k)
     r0, r1 = RINGS[g]
-    a0, a1 = (0, 360) if g == 0 else angles(k)
+    a0, a1 = (0, 360) if g == 0 else (180 + cell["f0"] * 360, 180 + cell["f1"] * 360)
     if g == 0:
         paths.append(f'<circle cx="{CX}" cy="{CY}" r="{r1}" fill="{fill(k)}" stroke="#fff" stroke-width="3"/>')
     else:
         paths.append(f'<path d="{sector(r0, r1, a0, a1)}" fill="{fill(k)}" stroke="#FBF8F2" stroke-width="{3 if g < 6 else 1.6}"/>')
-    p = P.get(k)
+    p = P.get(canon(k))
     if not p:
         continue
     name, yrs, st = p["n"], years(p.get("y")), p.get("st")
-    if k in HREFS:
+    if canon(k) in HREFS:
         shape = (f'<circle cx="{CX}" cy="{CY}" r="{r1}"/>' if g == 0 else f'<path d="{sector(r0, r1, a0, a1)}"/>')
-        links.append(f'<a href="{HREFS[k]}"><title>{html.escape(name)} {html.escape(yrs)}</title>{shape}</a>')
+        links.append(f'<a href="{HREFS[canon(k)]}"><title>{html.escape(name)} {html.escape(yrs)}</title>{shape}</a>')
     unknown = st == "unk"
     style = 'font-style="italic" fill="#8A8278"' if unknown else ('font-style="italic" fill="#2B2620"' if st in ("prob", "mh") else 'fill="#1F1A15"')
     if g == 0:

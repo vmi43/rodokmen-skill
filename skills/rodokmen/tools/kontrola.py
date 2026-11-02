@@ -100,6 +100,12 @@ def main():
     if re.search(r"Novák|Petrovi", json.dumps(cfg, ensure_ascii=False)) and "Novák" not in P.get(1, {}).get("n", ""):
         warn.append("web.json: jsou v něm ještě ukázkové texty (Novákovi) – nastav název, příběh a kontakt")
 
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import mista
+    for name, ks in mista.chybejici(P, jload("mista.json", {})).items():
+        warn.append(f"mapa: místo „{name}“ (osoby {ks}) není v data/mista.json – pusť `python3 -I tools/mista.py nova` "
+                    f"(je-li to jméno osoby, ignoruj)")
+
     # Citlivé věci, které jdou na web: ISSUES („Co hledáme“), poznámky a fakta osob, boční příbuzní, texty.
     citlive = re.compile(r"sebevra|vzal[a]? si život|oběsil|zastřelil[a]? se|utopil[a]? se|alkohol|vězen|kriminál|"
                          r"rozvod|rozvedl|psychiatr|léčebn|duševn|rakovin|nemanželsk|cizoložst|dluh|exekuc|interrupc|potrat", re.I)
