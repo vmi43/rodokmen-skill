@@ -107,6 +107,15 @@ Základní smyčka pro každou osobu:
    hledaný naslepo, přitom datum a místo úmrtí byly známé.)
    Není-li nejmladší událost online (na venkově bývají svazky po ~1905 nenaskenované), začni nejmladším svazkem, který
    online je: křty sourozenců, sňatek rodičů, rejstříky – a chybějící zápis dej do `archivni_dotazy.md`.
+   - **Rozsah hledání:** událost hledej nejdřív v rozmezí ±5 let kolem známého nebo odhadnutého data.
+   - **Rodina po cestě:** narazíš-li na možné sourozence nebo jiné členy rodiny, zaznamenej je také (zápis
+     podle 6 kroků níže, osoby do `SIDE`; nejisté ztotožnění jako `prob`).
+   - **Křty a sourozenci:** najdeš-li **staršího** sourozence, hledej dalších 5 let do minulosti od jeho křtu;
+     najdeš-li **mladšího**, hledej dalších 5 let do budoucnosti od jeho křtu. Rozšiřování opakuj při každém dalším
+     nálezu v daném směru, až se v jednom směru celých 5 let nic nenajde. Každý směr se řídí zvlášť. První nalezený
+     sourozenec se počítá do obou směrů (okno ±5 let kolem původního data); směrové pravidlo platí až od dalších.
+   - **Rejstřík:** objeví-li se v rejstříku další možné shody (jméno, rodiče, dům), pokračuj i na ně, i když
+     v daném směru už uplynulo 5 let bez nálezu.
 2. **Ověř přístupnost**: matriky jsou v archivu až po uplynutí lhůty od *posledního* zápisu ve svazku
    (narození 100 let, sňatky 75, úmrtí 30). Mladší údaje jsou na matričním úřadě (žádost s doložením příbuzenství) –
    zapiš do `data/archivni_dotazy.md` a jdi dál.
