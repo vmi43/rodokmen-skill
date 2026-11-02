@@ -178,7 +178,10 @@ def login_files(cfg):
         nginx_map = "  default 1;"
         if os.path.exists(edge):
             os.remove(edge)
-    nginx = open(os.path.join(WEB, "nginx.sablona.conf"), encoding="utf-8").read().replace("{{ODPOVED}}", nginx_map)
+    nginx = open(os.path.join(WEB, "nginx.sablona.conf"), encoding="utf-8").read()
+    if not answer:   # otevřený web: šablonové "default 0;" by kolidovalo s "default 1;"
+        nginx = nginx.replace("default 0;\n", "")
+    nginx = nginx.replace("{{ODPOVED}}", nginx_map)
     write(os.path.join(WEB, "nginx.conf"), nginx)
     return bool(answer)
 
@@ -242,7 +245,7 @@ def main():
         )
         if aliases_of.get(k):
             for a in aliases_of[k]:
-                people[slugs[k]]["records"] = list(dict.fromkeys(people[slugs[k]]["records"] + [r for r in P[a].get("r", []) if r in recs]))
+                people[slugs[k]]["records"] = list(dict.fromkeys(people[slugs[k]]["records"] + [r for r in P.get(a, {}).get("r", []) if r in recs]))
             people[slugs[k]]["facts"] = [f for f in people[slugs[k]]["facts"] if not f.startswith("TÁŽ OSOBA")]
 
     families = {}

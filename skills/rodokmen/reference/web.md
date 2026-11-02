@@ -72,8 +72,11 @@ zkus v `launch.json` `"runtimeExecutable": "node"` a `"runtimeArgs": ["web/node_
 (Astro 7 má spouštěč `astro.mjs`, ne `astro.js`). Server běží jen na tomto počítači – nepřidávej `--host`.
 
 ## Vlastní server (pokročilé)
-- Docker: `web/Dockerfile` (build Astro → nginx s `nginx.conf` z `nginx.sablona.conf`). Před buildem image vždy `npm run data`.
-- CapRover: `npm run deploy-caprover` (vyžaduje nainstalovaný a přihlášený `caprover` CLI).
+- **Kontejnery jen Podman, ne Docker.** `web/Containerfile` (OCI; build Astro → nginx s `nginx.conf` z `nginx.sablona.conf`)
+  na ověřených Red Hat UBI image s pevnou verzí, bez root (UID 1001), port 8080. Postup lokálního spuštění je v `web/PODMAN.md`
+  (`podman build -f Containerfile`, `podman run`). Před buildem image vždy `npm run data`. Nikdy nezaváděj `Dockerfile`,
+  image `latest`, běh pod root ani `--privileged`.
+- CapRover (Container HTTP Port 8080; `captain-definition` ukazuje na `Containerfile`): `npm run deploy-caprover` (vyžaduje nainstalovaný a přihlášený `caprover` CLI).
 
 ## Úpravy vzhledu
 Styly `web/src/styles/global.css` (barvy v `:root`), rozložení `web/src/layouts/Base.astro`, stránky `web/src/pages/`.
