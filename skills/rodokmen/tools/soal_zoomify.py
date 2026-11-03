@@ -15,7 +15,6 @@ přístup na 30 minut. Prohlížečem jen najdi knihu a cestu k obrázkům, sní
 neomezuje).
 """
 import glob, math, os, re, shutil, subprocess, sys, tempfile, time, urllib.parse, urllib.request
-import concurrent.futures as cf
 for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8 (cp1250 neumí třeba „→“)
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
@@ -76,8 +75,10 @@ def main():
             f = os.path.join(d, f"{y:03d}_{xx:03d}.jpg")
             with open(f, "wb") as fh:
                 fh.write(get(f"{base}/TileGroup{g}/{L}-{xx}-{y}.jpg"))
-        with cf.ThreadPoolExecutor(4) as ex:   # 4 souběžně: několikrát rychlejší, server archivu nezatěžuje víc než 4 prohlížeče
-            list(ex.map(tile, [(y, xx) for y in range(ny) for xx in range(nx)]))
+        # po jedné: souběžné požadavky přes proxy sandboxu Claude Code končí na IncompleteRead; omezovač je stejně řadí za sebe
+        for y in range(ny):
+            for xx in range(nx):
+                tile((y, xx))
         # řádky dlaždic +append, pak řádky pod sebe -append (montage na ImageMagicku 7.1.2 padá bez písma);
         # krátká jména (cwd=d) a po řádcích: celá stránka v jednom příkazu by na Windows přesáhla limit příkazové řádky
         rows = []
