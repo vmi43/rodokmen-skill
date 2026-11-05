@@ -128,8 +128,8 @@ Základní smyčka pro každou osobu:
    - **Kmotři a další osoby v zápisu jsou stopy:** při čtení zápisu nehledej jen hledanou osobu a sourozence.
      Projdi i sloupec kmotrů a svědků, porodní báby a okraje a zaznamenej každého (jméno, příjmení, bydliště,
      povolání, vztah, snímek), i když ho zatím nejde ztotožnit. Opakuje-li se kmotr nebo příjmení shodné
-     s hledaným rodem či vsí (např. stejní Millerové z Vtelna u několika křtů), je to silná stopa na příbuzenství.
-     Nejisté ztotožnění označ `prob`/„(?)“ a nedomýšlej. (Skutečná chyba: kmotři-příbuzní u křtu z roku 1802
+     s hledaným rodem či vsí (např. stejní Novákové z Lhoty u několika křtů), je to silná stopa na příbuzenství.
+     Nejisté ztotožnění označ `prob`/„(?)“ a nedomýšlej. (Skutečná chyba: kmotři-příbuzní u křtu
      byli přehlédnutí, protože se četl jen hledaný zápis; všiml si jich až uživatel.)
    - **Křty a sourozenci:** najdeš-li **staršího** sourozence, hledej dalších 5 let do minulosti od jeho křtu;
      najdeš-li **mladšího**, hledej dalších 5 let do budoucnosti od jeho křtu. Rozšiřování opakuj při každém dalším
