@@ -56,7 +56,8 @@ P = {
 
 ## `svazky.json`
 `{"1a0b2337": {"archiv": "SOA Zámrsk – Sbírka matrik…", "portal": "ARON", "svazek": "N Holice 1880–1900, sign. …",
-"popis": "obce", "url": "odkaz na svazek"}}` – u ARON zapisuje `aron_img.py <apu> svazek`.
+"popis": "obce", "url": "odkaz na svazek", "upload": "auto"}}` – u ARON zapisuje `aron_img.py <apu> svazek`.
+`upload`: `"auto"` = stáhl nástroj, `"manual"` = stáhl uživatel ručně (složka `pracovni/<klíč>_<název>_manual/`, viz `portaly.md`, „Ručně stažené knihy“).
 
 ## `prepisy.json`
 `{"<klic>": {"orig": "[Datum] 14. února 1890\n[Dům] 112\n[Otec] …", "cs": "Český překlad celou větou…"}}`

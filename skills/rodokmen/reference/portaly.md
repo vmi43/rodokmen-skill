@@ -284,6 +284,22 @@ A když osoba „chybí“ v očekávaných matrikách (stěhovala se se službo
 - Výstřižky jsou skvělé na web: ulož do `dokumenty/noviny/`, přes `vyrez.py` a do `dokumenty.json`.
 - Pořadí: nejdřív matriky; noviny, když chybí stopa kvůli stěhování, nebo když jde o úředníka/vojáka a chceme příběh.
 
+## Ručně stažené knihy (složka s `obsah.txt`) – kterýkoli archiv
+Když archiv skripty nepouští nebo je blokuje (SOA Praha, MZA Brno, SOA Třeboň, občas i ARON), stáhne uživatel knihu
+hromadně sám (tlačítko „stáhnout“ na portálu) a dá ji do `pracovni/<původní název>/` spolu se souborem **`obsah.txt`**
+(popis knihy; na konci odkaz s číslem knihy, u eBadatelny `matrikaId`). Na stránku svazku v archivu **nechoď** –
+vše potřebné je v `obsah.txt`.
+1. Přečti `obsah.txt`. Klíč svazku je číslo z odkazu: eBadatelna `ebad_<matrikaId>`, ARON `<apu>`, Porta fontium `pf_<kniha>`.
+2. Složku přejmenuj na `pracovni/<klíč>_<název>_manual/`. Název = část názvu svazku před první čárkou (u svazku, který už
+   je v `svazky.json`, pole `svazek`; u nového první řádek `obsah.txt`), bez diacritiky, malými písmeny, mezery a `-`
+   jako `_` (např. `ebad_15849_hruby_jesenik_26_manual`). Klíč ve `svazky.json` zůstává bez přípony.
+3. Snímky přejmenuj na `s<n>.jpg` (n bez úvodních nul, podle pořadí).
+4. Z obsahu napiš `obsah.md` do složky (rozsah let, co kniha obsahuje, rejstříky a na kterých snímcích).
+5. Svazek zapiš přes `zapis.py svazky` s polem **`"upload": "manual"`** (strojově stažené mají `"auto"`).
+6. Je-li svazek už stažený strojově, **ponech verzi s vyšším rozlišením**, horší smaž (porovnej rozměry snímků) a do
+   `research_log.md` napiš, co se smazalo.
+Složky bez záznamu ve `svazky.json` nemají `obsah.md`; vypiš je do `todo.md`, ať se doplní, až bude `obsah.txt`.
+
 ## Ostatní portály – obecný postup
 Nástroje pro ně hotové nejsou. Postupuj takto a výsledek zapiš do `STAV.md`, ať to příště víš:
 1. Otevři portál v prohlížeči (Claude in Chrome / Playwright, pokud jsou k dispozici; jinak požádej uživatele).

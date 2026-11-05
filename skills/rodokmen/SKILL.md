@@ -148,7 +148,7 @@ Základní smyčka pro každou osobu:
    zapiš do `data/archivni_dotazy.md` a jdi dál.
 3. **Najdi svazek**: podle obce → farnost → archiv. ARON: `python3 -I tools/aron_search.py "Obec"`, SOA Plzeň:
    `tools/portafontium.py`, Praha: `tools/ahmp_search.sh`;
-   SOA Praha (střední Čechy), MZA Brno a SOA Třeboň jen v prohlížeči, ostatní a Rakousko viz `reference/portaly.md`. Sňatek hledej nejdřív
+   SOA Praha (střední Čechy), MZA Brno a SOA Třeboň jen v prohlížeči (nebo knihu stáhne uživatel ručně – složka s `obsah.txt`, viz `portaly.md`), ostatní a Rakousko viz `reference/portaly.md`. Sňatek hledej nejdřív
    ve farnosti nevěsty.
    Je-li ke svazku index (rejstřík), začni jím. Starší matriky (před ~1784) bývají ve faře sousedního města.
 4. **Stáhni snímek** do `pracovni/<svazek>/` a nech ho tam – před dalším stažením se podívej, jestli ho už nemáš
