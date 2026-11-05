@@ -71,9 +71,19 @@ Zapisuje `ramecek.py`. Rámeček má obepnout celý čtený zápis (ne jen jmén
 `{"Holice": {"re": "Holic", "dotaz": "Holice, Česko", "lat": 50.066, "lon": 15.986}}` – `re` je regulární výraz hledaný
 ve faktech osob (kmen slova, aby sedělo skloňování: „Holic“ najde Holice i v Holicích). Spravuje `mista.py`.
 Pozor na kolize (Hradec Králové × Nový Hradec Králové – použij `(?<!Nový )Hradec`; krátká jména jako `\bBuku?\b`).
-Hypotéza: `"hypoteza": true, "rod": 8`. Když OpenStreetMap obec nenajde („Žár“, malé osady), zkus třetí parametr – dotaz: `mista.py pridej "Žár" "Žár" "Žár, Zdíkov, okres Prachatice"`
-nebo dotaz s větší obcí či okresem. U **víceznačných názvů** (Podolí, Dub, Lhota) vezme OpenStreetMap kteroukoli ves
-(„Podolí, Česko“ = Podolí u Brna) – v posledním sloupci výpisu zkontroluj okres a dej dotaz se sousední obcí
+**Souřadnice jdou z Mapy.com** (REST API, geokódování), ne z OpenStreetMap – a to nejen u obcí, ale i u **každé adresy
+s číslem popisným** ve faktech osob („Biskupice čp. 14“). Bod domu je v `mista.json` v klíči `"adresy"`:
+`{"Biskupice": {…, "adresy": {"14": {"lat": 49.879, "lon": 15.516, "mapy": "Biskupice 14, …"}}}}`; web ho ukáže jako malou tečku
+v barvě rodu (vidět po přiblížení), u obce zůstává větší tečka za rod. `mista.py` bere jen shodu čísla a dům dál než 8 km
+od středu obce zahodí (jiná obec stejného jména). Dům, který Mapy.com nezná (zaniklý), vypíše `ADRESA NENALEZENA` – doplň
+bod ručně a přidej `"rucne": true` (nástroj ho nepřepíše). Starý projekt s body z OpenStreetMap převeď `mista.py znovu`.
+**API klíč** (zdarma, 250 000 kreditů měsíčně, hledání = 4 kredity) si uživatel založí na
+https://developer.mapy.com/portal-muj-ucet/ (účet → projekt → klíč) a dá ho do proměnné `MAPY_API_KEY` nebo souboru
+`pracovni/.mapy_klic`; do chatu ani do gitu nepatří. Podmínky Mapy.com (ukládání výsledků, uvedení zdroje) viz
+https://developer.mapy.com/cs/smluvni-ujednani/ – uživateli to jednou řekni.
+Hypotéza: `"hypoteza": true, "rod": 8`. Když Mapy.com obec nenajde („Žár“, malé osady), zkus třetí parametr – dotaz: `mista.py pridej "Žár" "Žár" "Žár, Zdíkov, okres Prachatice"`
+nebo dotaz s větší obcí či okresem. U **víceznačných názvů** (Podolí, Dub, Lhota) vezme vyhledávání kteroukoli ves
+(„Podolí“ = Podolí u Brna) – v posledním sloupci výpisu zkontroluj okres a dej dotaz se sousední obcí
 (`mista.py pridej "Podolí" "Podol" "Podolí, Odlochovice"`). Místopis nejlíp zná rodina – když si nejsi jistý, zeptej se.
 `mista.py` hledá jen sídla a pod seznamem upozorní, když našel něco jiného než obec (bar, ulici) nebo když je nový bod
 víc než 50 km od všech ostatních míst projektu (nejspíš jiná obec stejného jména). Kontrola mapy (`kontrola.py`) u

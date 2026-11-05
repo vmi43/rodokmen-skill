@@ -122,6 +122,27 @@ Základní smyčka pro každou osobu:
    hledaný naslepo, přitom datum a místo úmrtí byly známé.)
    Není-li nejmladší událost online (na venkově bývají svazky po ~1905 nenaskenované), začni nejmladším svazkem, který
    online je: křty sourozenců, sňatek rodičů, rejstříky – a chybějící zápis dej do `archivni_dotazy.md`.
+   - **Rozsah hledání:** událost hledej nejdřív v rozmezí ±5 let kolem známého nebo odhadnutého data.
+   - **Rodina po cestě:** narazíš-li na možné sourozence nebo jiné členy rodiny, zaznamenej je také (zápis
+     podle 6 kroků níže, osoby do `SIDE`; nejisté ztotožnění jako `prob`).
+   - **Kmotři a další osoby v zápisu jsou stopy:** při čtení zápisu nehledej jen hledanou osobu a sourozence.
+     Projdi i sloupec kmotrů a svědků, porodní báby a okraje a zaznamenej každého (jméno, příjmení, bydliště,
+     povolání, vztah, snímek), i když ho zatím nejde ztotožnit. Opakuje-li se kmotr nebo příjmení shodné
+     s hledaným rodem či vsí (např. stejní Millerové z Vtelna u několika křtů), je to silná stopa na příbuzenství.
+     Nejisté ztotožnění označ `prob`/„(?)“ a nedomýšlej. (Skutečná chyba: kmotři-příbuzní u křtu z roku 1802
+     byli přehlédnutí, protože se četl jen hledaný zápis; všiml si jich až uživatel.)
+   - **Křty a sourozenci:** najdeš-li **staršího** sourozence, hledej dalších 5 let do minulosti od jeho křtu;
+     najdeš-li **mladšího**, hledej dalších 5 let do budoucnosti od jeho křtu. Rozšiřování opakuj při každém dalším
+     nálezu v daném směru, až se v jednom směru celých 5 let nic nenajde. Každý směr se řídí zvlášť. První nalezený
+     sourozenec se počítá do obou směrů (okno ±5 let kolem původního data); směrové pravidlo platí až od dalších.
+   - **Více předků v jedné knize:** předpokládáš-li, že se v jednom svazku (farnost, typ zápisu) skrývá víc
+     hledaných předků, jejichž události spadají do rozmezí zhruba ±5 let (např. křty dvou prarodičů z téže vsi,
+     sňatky několika sourozenců předků), hledej je **v jednom průchodu svazkem**, ne každého zvlášť. Okno ±5 let
+     vezmi kolem všech odhadnutých dat a rozšiřuj ho stejně jako u sourozenců: nález v daném směru posune okno
+     o dalších 5 let, dokud se celých 5 let nic nenajde. Při procházení zapisuj každý nález z okna (hledané
+     předky i možné příbuzné do `SIDE`), ať se k téže knize nevracíš.
+   - **Rejstřík:** objeví-li se v rejstříku další možné shody (jméno, rodiče, dům), pokračuj i na ně, i když
+     v daném směru už uplynulo 5 let bez nálezu.
 2. **Ověř přístupnost**: matriky jsou v archivu až po uplynutí lhůty od *posledního* zápisu ve svazku
    (narození 100 let, sňatky 75, úmrtí 30). Mladší údaje jsou na matričním úřadě (žádost s doložením příbuzenství) –
    zapiš do `data/archivni_dotazy.md` a jdi dál.
@@ -138,12 +159,14 @@ Základní smyčka pro každou osobu:
    3. výřez: `python3 -I tools/vyrez.py pracovni/<stránka>.jpg <klíč> x0,y0,x1,y1` (velkoryse – celý zápis s hlavičkou sloupců a okrajovými poznámkami),
    4. rámeček čteného místa: `python3 -I tools/ramecek.py <klíč> x0,y0,x1,y1` a **prohlédni si** `pracovni/ramecek_<klíč>.jpg`,
    5. přepis originálu a český překlad do `data/prepisy.json` (nejistá místa „(?)“, nečitelná „[…]“),
-   6. osobu/osoby do `data/osoby.py` (`f` fakta, `r` klíč zápisu, `st="doc"`), sourozence a kmotry-příbuzné do `SIDE`.
+   6. osobu/osoby do `data/osoby.py` (`f` fakta, `r` klíč zápisu, `st="doc"`), sourozence a kmotry (i neztotožněné, jako stopy) do `SIDE`.
    Nová obec předků → `tools/mista.py pridej "Obec"` (mapa), nový pradědeček nebo prababička (8–15) → rod do `LINES`.
 6. **Zapiš hledání do deníku** `data/research_log.md` – i neúspěšné, s rozsahem (které roky / snímky jsi prošel).
    Narazíš-li po cestě na **zjevně související výskyt** (vzácné příjmení rodu, stejný dům, jméno z rodinného
    vyprávění), zapiš ho do výsledku v deníku se snímkem – je to jen stopa, ne doklad. Když se hledání zasekne,
    projdi deník právě kvůli takovým stopám.
+   Totéž platí pro kmotry a svědky z přečteného zápisu: opakující se jméno zapiš do výsledku v deníku
+   a do `todo.md` jako stopu k ověření.
 7. Spusť `python3 -I tools/kontrola.py` a oprav chyby.
 
 Pravidla, která chrání kvalitu (naučená na skutečném projektu):
@@ -239,7 +262,7 @@ Podrobně `reference/web.md`. Ve zkratce:
 
 ## Fáze 5 – Zveřejnění (volitelné, jen se souhlasem)
 Výchozí cesta je **Netlify** (zdarma): `npm run nasadit`. Přihlášení k Netlify a první propojení webu jsou interaktivní –
-dej je uživateli jako `! npx netlify-cli login` atd. (postup v `reference/web.md`). Pokročilá varianta: vlastní server (Docker/CapRover).
+dej je uživateli jako `! npx netlify-cli login` atd. (postup v `reference/web.md`). Pokročilá varianta: vlastní server (kontejner v Podmanu/CapRover, `Containerfile` na UBI bez root – ne Docker).
 Nic nezveřejňuj bez výslovného souhlasu uživatele.
 
 ## Poznámky pro správce skillu
@@ -262,6 +285,7 @@ Nedělej to pořád. Postup:
 `poznamky_pro_skill.md` „odesláno <datum>“ a další poznámky piš pod tuto čáru.
 
 ## Co nikdy
+- Neobcházej brzdu `tools/slusne.py` ani blokaci archivu.
 - Nestahuj hromadně z placených služeb (MyHeritage, Ancestry, Geni…) a neobcházej jejich ochranu –
   automatické procházení stovek záznamů vede k **zablokování účtu**. Čti jen to, co uživatel otevře, nebo co potřebuješ jednotlivě.
 - Nezadávej za uživatele hesla, platební údaje, neřeš CAPTCHA, nekupuj předplatné.
@@ -305,7 +329,7 @@ Nedělej to pořád. Postup:
 | `napady.py` | náměty na zajímavosti z dat |
 | `vyrez.py <stránka.jpg> <klíč> x0,y0,x1,y1` | výřez do `zdroje/` a `vyrezy/` |
 | `ramecek.py <klíč> x0,y0,x1,y1` | rámeček čteného místa + kontrolní obrázek |
-| `mista.py pridej "Obec"` / `mista.py` | místa pro mapu (souřadnice z OpenStreetMap) |
+| `mista.py pridej "Obec"` / `nova` / `znovu` / `mista.py` | místa pro mapu; souřadnice obcí **i přesný bod každé adresy s čp.** z Mapy.com (potřebuje API klíč, viz `reference/data.md` → `mista.json`) |
 | `zapis.py <soubor> <klíč> <vstup.json> [--sloucit]` | přidá / změní položku v `zaznamy`, `svazky`, `prepisy`… beze změny formátu |
 | `slusne.py <skript.py> / curl … / bash x.sh / stav` | brzda proti zablokování archivem – vlastní skripty a curl spouštěj přes ni |
 | `kontrola.py` | kontrola dat; hlásí i citlivé údaje na webu a kdy psát příběh |

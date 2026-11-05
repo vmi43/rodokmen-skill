@@ -178,7 +178,10 @@ def login_files(cfg):
         nginx_map = "  default 1;"
         if os.path.exists(edge):
             os.remove(edge)
-    nginx = open(os.path.join(WEB, "nginx.sablona.conf"), encoding="utf-8").read().replace("{{ODPOVED}}", nginx_map)
+    nginx = open(os.path.join(WEB, "nginx.sablona.conf"), encoding="utf-8").read()
+    if not answer:   # otevřený web: šablonové "default 0;" by kolidovalo s "default 1;"
+        nginx = nginx.replace("default 0;\n", "")
+    nginx = nginx.replace("{{ODPOVED}}", nginx_map)
     write(os.path.join(WEB, "nginx.conf"), nginx)
     return bool(answer)
 
@@ -242,7 +245,7 @@ def main():
         )
         if aliases_of.get(k):
             for a in aliases_of[k]:
-                people[slugs[k]]["records"] = list(dict.fromkeys(people[slugs[k]]["records"] + [r for r in P[a].get("r", []) if r in recs]))
+                people[slugs[k]]["records"] = list(dict.fromkeys(people[slugs[k]]["records"] + [r for r in P.get(a, {}).get("r", []) if r in recs]))
             people[slugs[k]]["facts"] = [f for f in people[slugs[k]]["facts"] if not f.startswith("TÁŽ OSOBA")]
 
     families = {}
@@ -316,8 +319,14 @@ def main():
         if not byline:
             continue
         yrs = [int(y) for p in hits for y in re.findall(r"\b1[4-9]\d\d\b", p["y"] or "")]
+        addresses = []   # přesné body domů (mista.py, "adresy"): osoby, které mají u místa daný čp.
+        for cp, a in sorted((e.get("adresy") or {}).items(), key=lambda x: int(x[0])):
+            arx = re.compile(rf"(?:{e.get('re') or re.escape(name)})\w*\s+čp\.\s*{re.escape(cp)}(?!\d)")
+            who = [p for p in sorted(hits, key=lambda p: p["k"]) if arx.search(" ".join(p["facts"]))]
+            if "lat" in a and who:
+                addresses.append(dict(cp=cp, lat=a["lat"], lon=a["lon"], line=who[0]["line"] or 0, people=[p["slug"] for p in who]))
         places.append(dict(name=name, lat=e["lat"], lon=e["lon"], lines=[dict(k=k, people=v) for k, v in sorted(byline.items())],
-                           years=[min(yrs), max(yrs)] if yrs else None, hypothesis=bool(e.get("hypoteza"))))
+                           years=[min(yrs), max(yrs)] if yrs else None, hypothesis=bool(e.get("hypoteza")), addresses=addresses))
 
     known = [p for p in people.values() if p["k"] > 1]
     stats = dict(ancestors=len(known), documented=sum(p["st"] == "doc" for p in known), records=len(records),

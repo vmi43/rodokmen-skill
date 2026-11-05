@@ -141,6 +141,8 @@ vsi a sňatek byl v oddílu městyse; ves měla oddíl až na snímcích 380–4
 - Pomocníci (subagenti) a OCR/AI čtou historické písmo chybně – vždy ověř sám (viz `playbook.md` §1 bod 10).
 
 ## Technické pasti (macOS, zsh) – napiš je i pomocníkům do zadání
+- Síť: jen přes brzdu `tools/slusne.py`; po hlášce „zastavený“ (kód 3) skončit, nic neopakovat ani neobcházet a říct to
+  (SKILL.md, „Šetrně k archivům“; pravidla opsat do zadání).
 - Shell je zsh: `for a in "x y z"; do set -- $a` slova nerozdělí (v zsh `${=a}`); `ls F*` bez shody = chyba
   „no matches found“; `echo ====` je chyba (`=` na začátku slova). Složitější smyčky pouštěj přes `bash -c '…'`.
 - ImageMagick: seznam souborů předávej jako jednotlivé argumenty, ne jednou proměnnou s mezerami.

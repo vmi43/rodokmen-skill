@@ -85,6 +85,19 @@ const payload = JSON.stringify({ places: site.places, lines, names, compact });
         bounds.push(pos);
       });
     }
+    // přesné body domů (čp.): malá tečka v barvě rodu, vidět po přiblížení
+    for (const pl of places) {
+      for (const ad of pl.addresses ?? []) {
+        const line = lines[ad.line] ?? lines[0];
+        const who = ad.people
+          .map((s: string) => `<a href="${esc(names[s][2])}">${esc(names[s][0])}</a>${names[s][1] ? ` <span class="y">${esc(names[s][1])}</span>` : ''}`)
+          .join('<br>');
+        const m = L.circleMarker([ad.lat, ad.lon], { radius: compact ? 3 : 4, color: '#3b2e22', weight: 1, fillColor: line.color, fillOpacity: 1 });
+        m.bindPopup(`<strong>${esc(pl.name)} čp. ${esc(ad.cp)}</strong><br>${who}`, { maxHeight: 260 });
+        m.bindTooltip(`${esc(pl.name)} čp. ${esc(ad.cp)}`);
+        (groups[ad.line] ??= L.layerGroup().addTo(map)).addLayer(m);
+      }
+    }
     if (bounds.length) map.fitBounds(L.latLngBounds(bounds), { padding: [20, 20], maxZoom: 11 });
     else map.setView([49.8, 15.5], 7);
     el.parentElement?.querySelectorAll<HTMLInputElement>('.fmap-legend input').forEach((cb) =>

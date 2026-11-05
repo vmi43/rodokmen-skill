@@ -44,7 +44,7 @@ def get(url, binary=False, tries=4):
             with urllib.request.urlopen(url, timeout=90) as r:
                 data = r.read()
             return data if binary else data.decode("utf-8")
-        except OSError:
+        except (OSError, http.client.HTTPException):   # IncompleteRead je HTTPException, ne OSError
             if attempt == tries - 1:
                 raise
             time.sleep(2 * (attempt + 1))
@@ -104,10 +104,9 @@ def fetch_image(dzi_url, level_offset=1, out="page.jpg", crop=None):
                 f.write(get(url, binary=True, tries=6))
             return job
 
-        # 4 vlákna: brzda pustí 10 obrázků za s i tak a víc souběžných dotazů na macOS shazuje překlad adres
-        # (URLError [Errno 8] nodename nor servname) u plného rozlišení
-        with cf.ThreadPoolExecutor(4) as ex:
-            list(ex.map(dl, jobs))
+        # po jedné: souběžné požadavky přes proxy sandboxu Claude Code končí na IncompleteRead; omezovač je stejně řadí za sebe
+        for job in jobs:
+            dl(job)
         # a tile with c > 0 (r > 0) carries `ov` extra pixels on its left (top) edge;
         # crop every tile to its own ts x ts cell, then append rows and columns
         # po řádcích: jeden příkaz na celou stránku by na Windows přesáhl limit délky příkazové řádky (32 767 znaků)
