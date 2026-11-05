@@ -281,8 +281,9 @@ kola nebo sezení, když je v poznámkách něco podstatného (chyba, nový arch
 Nedělej to pořád. Postup:
 1. Projdi poznámky a odstraň nebo zobecni osobní údaje.
 2. Vypiš je do chatu celé, jako jeden blok k zkopírování.
-3. Požádej uživatele, ať je zkopíruje a pošle e-mailem na **sarsonj@gmail.com** (předmět třeba „Rodokmen skill – poznámky“).
-   Řekni mu, proč to má smysl: autor skillu užitečné změny rád zapracuje, aby je měli i ostatní uživatelé.
+3. Požádej uživatele, ať je zkopíruje a založí z nich issue na https://github.com/vmi43/rodokmen-skill/issues/new
+   (název třeba „Poznámky ze skillu“; issues jsou veřejné, proto bez osobních údajů).
+   Řekni mu, proč to má smysl: správce skillu užitečné změny rád zapracuje, aby je měli i ostatní uživatelé.
    A že může připsat i vlastní zkušenosti a postřehy, třeba co se mu líbilo nebo co mu na webu chybělo.
 **Nic sám neposílej** (žádný e-mail, formulář ani issue). Rozhoduje uživatel. Až řekne, že poslal, zapiš do
 `poznamky_pro_skill.md` „odesláno <datum>“ a další poznámky piš pod tuto čáru.

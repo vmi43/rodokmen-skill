@@ -9,7 +9,12 @@ znalost rodiny a rozhodujete.
 
 Vznikl při skutečném hledání předků jedné rodiny.
 
-**Autor a správce:** Jindřich Šaršon ([sarsonj@gmail.com](mailto:sarsonj@gmail.com), [GitHub](https://github.com/sarsonj))
+> **Fork.** Toto je fork projektu [sarsonj/rodokmen-skill](https://github.com/sarsonj/rodokmen-skill) od Jindřicha Šaršona
+> (licence MIT, viz [LICENSE](LICENSE)). Správcem tohoto forku je Vaclav Miller ([vmi43](https://github.com/vmi43)).
+> Chyby a poznámky k této verzi sem: [issues forku](https://github.com/vmi43/rodokmen-skill/issues). Níže je původní
+> text autora; jeho kontakty a odkazy na issues se týkají původního projektu.
+
+**Autor a správce původního projektu:** Jindřich Šaršon ([sarsonj@gmail.com](mailto:sarsonj@gmail.com), [GitHub](https://github.com/sarsonj))
 
 **Aktuální verze: 0.8.2 (vydána 5. 11. 2026).** Skill se průběžně vyvíjí – opravuji chyby a doplňuji postupy pro další archivy
 podle toho, na co narazíte vy. Jak aktualizovat, najdete v části [Instalace](#instalace), přehled změn
@@ -34,11 +39,11 @@ po verzích v [CHANGELOG.md](CHANGELOG.md).
 > podklad.
 >
 > **Jste genealog nebo zkušený badatel?** Budu rád za kritiku. Když uvidíte chybu v postupu, ve čtení nebo v tom,
-> co skill radí, [založte issue](https://github.com/sarsonj/rodokmen-skill/issues) nebo mi napište. Vaše zkušenost
+> co skill radí, [založte issue](https://github.com/vmi43/rodokmen-skill/issues) nebo mi napište. Vaše zkušenost
 > je přesně to, co AI chybí.
 
 **Přečetla AI něco špatně, něco nefunguje nebo jste narazili na jiný problém?**
-[Založte prosím issue na GitHubu →](https://github.com/sarsonj/rodokmen-skill/issues/new)
+[Založte prosím issue na GitHubu →](https://github.com/vmi43/rodokmen-skill/issues/new)
 (víc v části [Zpětná vazba](#zpětná-vazba-a-vaše-zkušenosti)).
 
 ## Jak vypadá web
@@ -78,17 +83,17 @@ S jiným nebo slabším modelem počítejte s víc chybami ve čtení starého p
 ### Varianta A – jako plugin (doporučeno)
 V Claude Code napište:
 ```
-/plugin marketplace add sarsonj/rodokmen-skill
-/plugin install rodokmen@rodokmen-skill
+/plugin marketplace add vmi43/rodokmen-skill
+/plugin install rodokmen@rodokmen
 ```
 Pak Claude Code restartujte (do běžící relace se nový plugin nenačte).
 **Aktualizace.** Claude Code u pluginů od jiných autorů než Anthropic nové verze sám nehlídá. Máte dvě možnosti:
-- **Automaticky (doporučuji):** jednou v `/plugin` na kartě **Marketplaces** vyberte `rodokmen-skill` a zapněte
+- **Automaticky (doporučuji):** jednou v `/plugin` na kartě **Marketplaces** vyberte `rodokmen` a zapněte
   automatické aktualizace (Enable auto-update). Nová verze se pak stáhne při spuštění Claude Code.
 - **Ručně:** v terminálu (nebo v Claude Code s `!` na začátku)
   ```
-  claude plugin marketplace update rodokmen-skill
-  claude plugin update rodokmen@rodokmen-skill
+  claude plugin marketplace update rodokmen
+  claude plugin update rodokmen@rodokmen
   ```
   O nových verzích se dozvíte přes **Watch → Custom → Releases** na GitHubu.
 
@@ -171,11 +176,11 @@ Windows a staršího ImageMagicku, postupy pro MZA Brno a ZA Opava, bezpečná �
 a průběžně zapracovávám – ne každou hned a ne každou doslova, aby skill zůstal jednoduchý pro všechny.
 
 **Chyby a problémy** – AI špatně přečetla zápis, spojila nesprávné lidi, nějaký krok nefunguje nebo spadl nástroj –
-prosím [založte jako issue na GitHubu](https://github.com/sarsonj/rodokmen-skill/issues/new) (stačí bezplatný účet).
+prosím [založte jako issue na GitHubu](https://github.com/vmi43/rodokmen-skill/issues/new) (stačí bezplatný účet).
 Popište, co se stalo, a pokud jde o čtení zápisu, přidejte odkaz na snímek v archivu. Issues jsou veřejné, proto
 do nich nepište údaje o žijících lidech.
 
-Budu rád i za další zkušenosti. Napište mi na **sarsonj@gmail.com**, co fungovalo, co ne, jaký archiv jste použili, co vám na webu chybělo.
+Budu rád i za další zkušenosti. Napište do [issues](https://github.com/vmi43/rodokmen-skill/issues/new), co fungovalo, co ne, jaký archiv jste použili, co vám na webu chybělo.
 Užitečné změny rád zapracuji do skillu, aby je měli k dispozici i ostatní. Další verze tak bude lepší pro každého,
 kdo hledá své předky.
 
