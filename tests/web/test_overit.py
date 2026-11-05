@@ -1,14 +1,14 @@
 """Test kontroly po nasazení (template/web/scripts/overit.mjs): pozná rodinnou bránu, ochranu týmu Netlify a web bez brány.
 
 Z kořene repozitáře:
-  python3 -I tests/web/test_overit.py skills/rodokmen
+  python3 -I tests/web/test_overit.py shared
 Lokální server napodobí odpovědi webu (rodinná brána 401, přihlášení k Netlify, veřejná stránka 200); overit.mjs
 dostane jeho adresu přes --url, takže na Netlify nechodí. Potřebuje Node.js.
 """
 import os, shutil, subprocess, sys, tempfile, threading
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
-SKILL = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else "skills/rodokmen")
+SKILL = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else "shared")
 SABLONA = os.path.join(SKILL, "template", "web")
 BRANA = open(os.path.join(SABLONA, "prihlaseni.sablona.html"), encoding="utf-8").read()
 vysledky = []

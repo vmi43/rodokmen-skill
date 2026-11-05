@@ -91,7 +91,7 @@ a po úpravě zkontroluj web na mobilu i počítači.
 `python3 -I tools/fan_chart.py vystupy/` → SVG a HTML (a PNG, je-li nainstalovaný Google Chrome, na Windows i Microsoft Edge) k tisku.
 
 ## Aktualizace staršího projektu
-Znovu spusť `python3 -I SKILL_DIR/tools/novy_projekt.py <složka projektu>`. Data (`data/`, výřezy) zůstanou. Projekt má
+Znovu spusť `python3 -I SHARED_DIR/tools/novy_projekt.py <složka projektu>`. Data (`data/`, výřezy) zůstanou. Projekt má
 v `.skill_sablona/` kopii šablony `web/` a `tools/`, ze které vznikl (commitovat s projektem), a skript podle ní rozhodne
 o každém souboru a vypíše seznam:
 - **Přepsáno**: soubor projekt neupravoval, nahradila ho nová verze.
@@ -100,7 +100,7 @@ o každém souboru a vypíše seznam:
 - **Ke kontrole**: úprava i šablona změnily stejná místa, chybí `git`, soubor přidal projekt i nová šablona, nebo ho
   projekt smazal a šablona změnila. Soubor zůstal, jak byl; nová verze je v `pracovni/zaloha_<datum>/nova_sablona/`
   (u konfliktu sloučení, kdy je `git`, vedle i návrh se značkami `<<<<<<<` jako `.konflikt`). Převezmi změny šablony
-  ručně a pak spusť `python3 -I SKILL_DIR/tools/novy_projekt.py <složka projektu> --vyreseno web/src/…` (volbu lze
+  ručně a pak spusť `python3 -I SHARED_DIR/tools/novy_projekt.py <složka projektu> --vyreseno web/src/…` (volbu lze
   opakovat). Jako základ uloží přesně ten návrh, který je v záloze (zapamatovaný v `.skill_sablona/cekajici.json`),
   takže pozdější změny šablony přijdou při další aktualizaci; soubor v projektu nezmění. Bez záznamu uloží aktuální
   verzi šablony a řekne to. Do té doby se soubor hlásí při každé aktualizaci. Do ke kontrole patří i složka na místě

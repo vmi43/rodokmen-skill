@@ -101,9 +101,13 @@ Po aktualizaci Claude Code restartujte. Rozpracovaný projekt pak Claude při da
 na novou verzi (vaše data i vlastní úpravy webu a nástrojů zůstanou, změny šablony se do nich sloučí).
 
 ### Varianta B – ručně
-Stáhněte repozitář (zelené tlačítko **Code → Download ZIP** na GitHubu, nebo `git clone`) a zkopírujte složku
-`skills/rodokmen` do `~/.claude/skills/` (na Windows `C:\Users\<jméno>\.claude\skills\`). Výsledek:
-`~/.claude/skills/rodokmen/SKILL.md`.
+Skill potřebuje celý repozitář (sdílené nástroje, návody a šablona leží vedle skillů), takže kopie jedné
+podsložky do `~/.claude/skills/` nestačí. Stáhněte repozitář (zelené tlačítko **Code → Download ZIP** na GitHubu,
+nebo `git clone`) a spouštějte Claude Code jako plugin z této složky:
+
+```bash
+claude --plugin-dir /cesta/k/repozitari
+```
 
 Pak Claude Code restartujte.
 
@@ -138,6 +142,8 @@ O mladší údaje se žádá na matričním úřadě. Claude vám řekne, kdy to
 ```
 skills/rodokmen/
   SKILL.md           průvodce pro Clauda (fáze, pravidla)
+shared/              společné soubory skillů
+  VERZE              číslo verze (podle něj Claude pozná, že má aktualizovat projekt)
   reference/         podrobné návody: čtení matrik, portály archivů, formát dat, web, soukromí,
                      metodická příručka (playbook, anglicky)
   tools/             nástroje v Pythonu (ARON, výřezy, rámečky, mapa, kontrola dat, export do webu, vějíř)
@@ -215,5 +221,5 @@ tady v repozitáři.
 
 ## Licence
 Skill je pod licencí [MIT](LICENSE): smíte ho volně používat, upravovat a šířit dál, jen zachovejte uvedení autora (Jindřich Šaršon).
-Výjimkou je metodická příručka `skills/rodokmen/reference/playbook.md`. Je to převzatá rešeršní zpráva bez uvedeného
+Výjimkou je metodická příručka `shared/reference/playbook.md`. Je to převzatá rešeršní zpráva bez uvedeného
 autora, licence MIT se na ni nevztahuje (podrobnosti na začátku souboru).

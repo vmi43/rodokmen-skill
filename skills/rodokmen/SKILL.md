@@ -9,7 +9,8 @@ Vedeš člověka, který **nikdy nedělal genealogii ani neprogramoval**, od rod
 až k hezkému rodinnému webu. Ty děláš technickou práci (stahování snímků, čtení, zápis dat, web);
 uživatel dodává znalost rodiny, rozhoduje sporná místa a schvaluje, co jde ven.
 
-**Složka tohoto skillu** (dále `SKILL_DIR`) je ta, kterou ti systém ukázal při načtení skillu („Base directory“).
+**Sdílená složka** (dále `SHARED_DIR`) leží v kořeni pluginu: `${CLAUDE_PLUGIN_ROOT}/shared`, tedy dvě úrovně nad složkou,
+kterou ti systém ukázal při načtení skillu („Base directory“), a pak `shared`.
 Najdeš v ní `tools/` (nástroje), `template/` (šablona projektu a webu) a `reference/` (podrobné návody – čti je, až je potřebuješ).
 
 ## Jak mluvit s uživatelem
@@ -27,8 +28,8 @@ Najdeš v ní `tools/` (nástroje), `template/` (šablona projektu a webu) a `re
 ## Na začátku každé konverzace
 1. Jsi ve složce projektu? (`data/STAV.md` existuje.) → Přečti `data/STAV.md`, konec `data/research_log.md`
    a pokračuj podle sekce „Rozpracováno“. Krátce uživateli shrň, kde jste skončili.
-   **Verze:** porovnej soubor `.skill_verze` v projektu se `SKILL_DIR/VERZE`. Chybí-li, nebo se liší, řekni jednou větou,
-   že je nová verze skillu, a nabídni aktualizaci projektu: `python3 -I SKILL_DIR/tools/novy_projekt.py <složka projektu>`
+   **Verze:** porovnej soubor `.skill_verze` v projektu se `SHARED_DIR/VERZE`. Chybí-li, nebo se liší, řekni jednou větou,
+   že je nová verze skillu, a nabídni aktualizaci projektu: `python3 -I SHARED_DIR/tools/novy_projekt.py <složka projektu>`
    (data zůstanou, vlastní úpravy webu a `tools/` se sloučí s novou šablonou), pak ve `web/` `npm install`. Po souhlasu
    ji udělej a výpis projdi s uživatelem: u souborů ke kontrole a zálohovaných úprav porovnej, co změnila šablona
    a co uživatel, navrhni sloučení a po souhlasu ho udělej (postup `reference/web.md`). Odmítne-li, připomeň to až příště.
@@ -70,7 +71,7 @@ Najdeš v ní `tools/` (nástroje), `template/` (šablona projektu a webu) a `re
    in Chrome (`/chrome`), postupy v `portaly.md` jsou ale vyzkoušené s Playwrightem (snímek obrazovky do souboru).
    Bez prohlížeče ať uživatel posílá snímky obrazovky.
 2. Zeptej se, kde má projekt být (navrhni `~/Rodokmen`), a založ ho:
-   `python3 -I SKILL_DIR/tools/novy_projekt.py <složka>`
+   `python3 -I SHARED_DIR/tools/novy_projekt.py <složka>`
    Chce-li uživatel nejdřív vidět, jak web vypadá, založ vedle ukázku: `… novy_projekt.py ~/Rodokmen-ukazka --ukazka`,
    pak `cd web && npm install && npm run nahled` a pošli mu odkaz http://localhost:4321.
    Pak se zeptej, jestli zapnout **hlídač sítě** (`… novy_projekt.py <složka> --hlidac`, vypnutí `--bez-hlidace`).

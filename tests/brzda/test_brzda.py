@@ -1,7 +1,7 @@
 """Regresní test brzdy tools/slusne.py s lokálními servery na 127.0.0.2 a 127.0.0.3 (localhost brzda nebrzdí).
 
 Z kořene repozitáře, přes obal (test sám spouští curl), testovaná brzda je argument:
-  python3 -I skills/rodokmen/tools/slusne.py tests/brzda/test_brzda.py skills/rodokmen/tools/slusne.py
+  python3 -I shared/tools/slusne.py tests/brzda/test_brzda.py shared/tools/slusne.py
   (Windows: python -I -X utf8 …; pusť z Git Bashe i z PowerShellu – bash z PowerShellu je Git\\bin\\bash.exe,
   který si přestaví PATH)
   ROZSIRENI=0 … – jen základní testy (bez heredocu, prodlužování stopky, podprocesů a opakovaného souběhu vláken)

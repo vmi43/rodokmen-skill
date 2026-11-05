@@ -1,7 +1,7 @@
 """Test ukládání snímků z prohlížeče do mezipaměti (tools/cache.py uloz / najdi) – eBadatelna a FamilySearch.
 
 Z kořene repozitáře:
-  python3 -I tests/brzda/test_prohlizec.py skills/rodokmen/tools
+  python3 -I tests/brzda/test_prohlizec.py shared/tools
 Mezipaměť je v dočasné složce (RODOKMEN_SNIMKY). Nic nestahuje, ImageMagick nepotřebuje.
 """
 import base64, json, os, shutil, subprocess, sys, tempfile

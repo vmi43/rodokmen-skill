@@ -1,7 +1,7 @@
 """Test příkazu portafontium.py obec (knihy podle obce) – offline na uložených stránkách výsledků portálu.
 
 Z kořene repozitáře:
-  python3 -I tests/portafontium/test_obec.py skills/rodokmen/tools
+  python3 -I tests/portafontium/test_obec.py shared/tools
 Na archiv nechodí: get() se nahradí uloženými výřezy stránek (hledani_*.html, stav 5. 11. 2026).
 """
 import contextlib, io, os, sys

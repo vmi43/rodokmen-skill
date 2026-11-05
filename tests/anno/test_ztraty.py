@@ -1,7 +1,7 @@
 """Test filtru titulu v tools/anno.py (ANNO_TITLE, --ztraty) – offline, API ANNO se podvrhne.
 
 Z kořene repozitáře:
-  python3 -I tests/anno/test_ztraty.py skills/rodokmen/tools
+  python3 -I tests/anno/test_ztraty.py shared/tools
 ANNO filtruje titul parametrem selectedFilters=title:<zkratka> (parametr title= nezná a vrací 0, ověřeno 5. 11. 2026);
 víc filtrů naráz se sčítá jako „a zároveň“, proto se tituly hledají po jednom.
 """
