@@ -5,8 +5,8 @@ seznam leteckých měřických snímků.
 Archiv ČÚZK je webová aplikace nad službami ArcGIS. Token pro ně vydává veřejná služba ČÚZK (stejně jako v aplikaci),
 nástroj si ho obstará sám a uloží na hodinu do pracovni/.cuzk_token.
 
-Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/tools/cuzk_archiv.py), commit bda6028; úprava: bez
-závislosti na platnost.py (vyrez_sjtsk je tady) a na slusne.instaluj() (slusne.py se u nás zapíná importem).
+Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/tools/cuzk_archiv.py), commit bda6028, detekce prázdného
+obrázku (`prazdny`) z e1cd204; úprava: bez závislosti na platnost.py (vyrez_sjtsk je tady) a na slusne.instaluj() (slusne.py se u nás zapíná importem).
 
 Použití (z kořene projektu):
   cuzk_archiv.py listy "Horní Lhota 12" | "Ulice čp, Obec" | "Obec" | lat,lon
@@ -30,8 +30,8 @@ Použití (z kořene projektu):
       georeferencovaná (spojená) vrstva kolem místa: pk = pozemkový katastr (~1900–1950, v S-JTSK, sedí na dnešní
       domy), originalni_mapy, cisarske_otisky, cenia50 = ortofoto CENIA z 50. let (většinou 1952–54, vypíše rok
       a citaci; CC BY, smí i do PDF), vm3 = III. vojenské mapování, speciální mapa 1 : 75 000 (CENIA, jen ke čtení –
-      do výstupu topografická sekce z `rady`). Malé obce spojené vrstvy ČÚZK často nepokrývají (bílý obrázek) –
-      pak listy + export. Výchozí poloměr 150 m, 1500 px. Vypíše i dnešní adresní body RÚIAN (čísla domů)
+      do výstupu topografická sekce z `rady`). Spojené vrstvy ČÚZK často nepokrývají malé obce ani města:
+      bílý obrázek nástroj pozná, neuloží ho, vypíše listy stabilního katastru a postup rastry → prehled → export. Výchozí poloměr 150 m, 1500 px. Vypíše i dnešní adresní body RÚIAN (čísla domů)
       v pixelech obrázku a s ImageMagickem je zakreslí do <vystup>_adresy.jpg: na které staré stavební parcele
       dnešní číslo stojí (ztotožnění domu, přečíslování). Vypíše „vyrez“ do mapy.json (prolínání na webu).
   cuzk_archiv.py rady "Horní Lhota 12" | lat,lon
@@ -218,6 +218,26 @@ def prehled(sluzba, vzor, out, sirka=600):
     print(f"{out} – {len(soubory) // 3} listů; pod náhledem je id pro export")
 
 
+BILA = 245            # jas, od kterého je pixel „bílý“
+PRAZDNY_PODIL = .98   # podíl bílých pixelů, od kterého je obrázek prázdný (vrstva místo nepokrývá)
+
+
+def prazdny(img):
+    """Je obrázek (JPEG z exportu) skoro celý bílý? Bez knihovny Pillow nepozná – vrátí False."""
+    try:
+        import io
+        from PIL import Image
+    except ImportError:
+        return False
+    try:
+        sedy = Image.open(io.BytesIO(img)).convert("L")
+    except OSError:
+        return False   # není obrázek – save_jpeg vypíše, co server poslal
+    sedy.thumbnail((300, 300))
+    hist = sedy.histogram()
+    return sum(hist[BILA:]) / max(1, sum(hist)) >= PRAZDNY_PODIL
+
+
 def obalka(bbox):
     return ",".join(f"{v:.1f}" for v in bbox)
 
@@ -241,8 +261,16 @@ def mapa(vrstva, m, out, polomer=150, px=1500):
         img = archiv(f"archiv_spojene_{vrstva}/MapServer/export", {
             "bbox": obalka(bbox), "bboxSR": 5514, "imageSR": 5514,
             "size": f"{px},{px}", "format": "jpg", "dpi": 96, "f": "image"}, binary=True)
+        if prazdny(img):
+            print(f"POZOR: vrstva {vrstva} tu je prázdná (bílý obrázek), {out} neukládám. Spojené vrstvy místo "
+                  "nepokrývají – ve městech a malých obcích časté. Vezmi samotný list:")
+            listy(m)
+            print("Dál: cuzk_archiv.py rastry stable \"<om_SIGN_INV nebo cio_SIGN_INV z výpisu>\" → id listů, "
+                  "prehled stable \"…\" nahled.jpg → najdi dům, export stable <id> <vystup.jpg> x0,y0,x1,y1. "
+                  "Pozemkový katastr zkus vrstvou pk.")
+            return
         save_jpeg(img, out)
-        print(f"{out} – zkontroluj, jestli není bílý (vrstva tu nemusí být)")
+        print(out)
     print(f'Do data/mapy.json k mapě (celý obrázek, vyrez.py … 0,0,1,1): "vyrez": {json.dumps(vyrez_sjtsk(bbox))}'
           ' – stejný výřez = web prolíná')
     adresy(bbox, px, out)

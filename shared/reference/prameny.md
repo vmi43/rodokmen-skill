@@ -1,6 +1,6 @@
 # Prameny k dějinám domu a obce
 
-> Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/reference/prameny.md), commit bda6028; obsah beze změn. **Nástroje, které tu zatím nejsou:** `akon.py`, `brno_scitani.py`, `commons.py`, `ddb.py`, `dnnt.py`, `esbirky.py`, `europeana.py`, `geolab.py`, `industrial.py`, `ipr_praha.py`, `mis.py`, `narp.py`, `ortofota.py`, `pamatky.py`, `rejstrik.py`, `seidel.py`, `translokace.py`, `valecne_hroby.py`, `veduty.py`, `zanikleobce.py`. U nich postupuj ručně na webu portálu (adresy jsou v tabulce) a nález zapiš běžným způsobem; až se nástroj přidá, odkaz začne platit.
+> Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/reference/prameny.md), commit bda6028; odstavec o prázdných spojených vrstvách (bílý obrázek) a věta o `elipsa.py` z e1cd204, jinak beze změn. **Nástroje, které tu zatím nejsou:** `akon.py`, `brno_scitani.py`, `commons.py`, `ddb.py`, `dnnt.py`, `esbirky.py`, `europeana.py`, `geolab.py`, `industrial.py`, `ipr_praha.py`, `mis.py`, `narp.py`, `ortofota.py`, `pamatky.py`, `rejstrik.py`, `seidel.py`, `translokace.py`, `valecne_hroby.py`, `veduty.py`, `zanikleobce.py`. U nich postupuj ručně na webu portálu (adresy jsou v tabulce) a nález zapiš běžným způsobem; až se nástroj přidá, odkaz začne platit.
 
 Postup: **od dneška zpátky**. Každý pramen vám dá číslo domu, jméno držitele a odkaz na starší pramen.
 Matriky (jak je číst, lhůty, písmo) → `matriky.md`. Portály a nástroje na stahování snímků → `portaly.md`.
@@ -197,7 +197,10 @@ Archiv ČÚZK je na https://ags.cuzk.gov.cz/archiv/ (staré archivnimapy.cuzk.cz
   adresní body RÚIAN (`…_adresy.jpg`): na které staré stavební parcele dnešní čp. stojí. **Dům na staré mapě takhle
   vždy ztotožni, než napíšeš, kde stojí** – ne podle čísla parcely nalezeného na skice nebo otisku (stejné číslo může
   mít pozemková parcela jinde ve vsi). Čísla stavebních parcel se často drží od stabilního katastru dodnes. Spojené
-  vrstvy `originalni_mapy` a `cisarske_otisky` malé obce často nepokrývají (bílý obrázek) – pak `listy` + `export`.
+  vrstvy `originalni_mapy` a `cisarske_otisky` malé obce ani města (Olomouc) často nepokrývají: bílý obrázek nástroj
+  neuloží, vypíše listy a postup `rastry` → `prehled` → `export`.
+  Dům na mapě pro čtenáře označ elipsou: `elipsa.py <mapa.jpg> <klíč> cx,cy,a,b,úhel --popisek "čp. 183"` (pixely
+  mapy, elipsa přes celou parcelu), příkaz s čísly do `poznamka` v `mapy.json`.
 - **Ortofoto z 50. let** (CENIA, většinou 1952–54): `mapa cenia50 "Osada čp" výstup.jpg` – stejný výřez a čísla domů
   jako u PK, rok snímku a citaci vypíše. Pod CC BY, **smí do PDF i na web** s celou citací. Porovnání PK × ortofoto
   ukáže, co z dvora stálo po válce.

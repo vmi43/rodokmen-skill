@@ -372,6 +372,9 @@ A když osoba „chybí“ v očekávaných matrikách (stěhovala se se službo
   – jména **německy** („Johann Nowak“, „Wenzel Dworschak“). Výřez místa: `tools/anno_snap.py <docId> "<dotaz>" pracovni/x.jpg`.
   ALEX a annoshow jsou za Cloudflare – neobcházet.
 - Kramerius NK ČR (české noviny, ročenky, adresáře): `python3 -I tools/kramerius.py 'text_ocr:"Jan Novák" AND datum_begin:[1900 TO 1910]'`.
+  Jiná knihovna přes Českou digitální knihovnu: přidej `--knihovna vkol|mzk|cuni|vse`. OCR text veřejné stránky:
+  `kramerius.py text <pid> 'výraz'`. Než obrázek z Krameria půjde do výstupu: `kramerius.py autori <pid>` (licence
+  „public“ neznamená volné dílo, `reference/podminky.md`).
 - Vojenské schematismy: fulltext na archive.org (např. `militrschematis13kriegoog` = 1850).
 - **Vojáci 1. světové války – seznamy ztrát** (ANNO, plný text): `python3 -I tools/anno.py '"Příjmení Jméno"' 1914 1919 3 --snip --ztraty`
   (jen `vll` Verlustliste, `vlv` abecední rejstřík s číslem seznamu, `nvv` Nachrichten über Verwundete; jiné listy

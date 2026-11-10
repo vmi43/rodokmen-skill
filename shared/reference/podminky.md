@@ -1,6 +1,6 @@
 # Co se smí v archivech a mapových portálech
 
-> Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/reference/podminky.md), commit bda6028; zúženo na portály, které naše nástroje používají; Porta fontium a SOA Praha podle našeho nástroje a `slusne.py`. Ostatní portály a text bez zkrácení najdeš v upstreamu.
+> Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/reference/podminky.md), commit bda6028, řádky Krameria (ČDK, UK, VKOL) z e1cd204; zúženo na portály, které naše nástroje používají; Porta fontium a SOA Praha podle našeho nástroje a `slusne.py`. Ostatní portály a text bez zkrácení najdeš v upstreamu.
 
 > **Upozornění:** Vycházím jen z veřejných zdrojů: podmínky portálů, badatelské řády, ceníky a zákaz pro roboty (soubor robots.txt). Stav 3. 11. 2026. Není to právní rada a nic z toho jsem zatím neověřil přímo u archivů. Podmínky se mění. Platí vždy aktuální znění na webu archivu nebo jeho písemná odpověď. Když si nejste jistí, zeptejte se archivu.
 
@@ -36,6 +36,8 @@ Vždy uveďte archiv, fond, signaturu, číslo snímku a trvalý odkaz. Zjiště
 | FamilySearch | Ručně | ano | ano, pro klienta | souhlas | ano | Genealog smí bádat pro klienta a předat mu výsledek. Stahovat jen ručně, roboti zakázáni |
 | Matricula | Ručně | ano | ne | nevýdělečně, beze změn | ano | České matriky tam nejsou |
 | Kramerius NDK (knihy nedostupné na trhu) | Jen číst | ano | **ne**, ani číst | ne | ano | Jen pro osobní potřebu registrovaných čtenářů z ČR. Za peníze si knihu půjčte v knihovně, fakta s citací pak smíte |
+| Česká digitální knihovna (Krameria knihoven) | Nástroj | ano | souhlas | souhlas | ano | Hledá ve všech knihovnách najednou (`kramerius.py --knihovna`). Nástroj čte jen text veřejných děl; kniha neveřejná v NK bývá veřejná jinde. Sken patří knihovně uložení (MZK, UK, VKOL…), podmínky ČDK nenalezeny |
+| Kramerius UK a VKOL (i přes Českou digitální knihovnu), veřejná díla | Ručně | ano | ano | ano, volné dílo s citací | ano | Podmínky užití obou knihoven omezují jen díla po přihlášení. Licence „public“ ještě neznamená volné dílo: ověřte autory v katalogu (`kramerius.py autori <uuid>`: data narození a úmrtí), volné je až 70 let po smrti posledního autora. Pak do zdroje „Kramerius, volné dílo“ a citace: název, rok, autor, knihovna, trvalý odkaz (10. 11. 2026) |
 | ANNO (staré noviny, ÖNB) | Nástroj | ano | ano | ano | ano | Kromě skenů od Googlu |
 
 ## Mapy

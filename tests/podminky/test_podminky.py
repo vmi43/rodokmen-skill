@@ -58,6 +58,13 @@ class PodminkyTest(unittest.TestCase):
         self.assertEqual(podminky.pravidlo("https://ags.cuzk.gov.cz/archiv/")["vyrez"], "ano")
         self.assertEqual(podminky.pravidlo("https://ags.cuzk.gov.cz/archiv/", "Indikační skica")["vyrez"], "souhlas")
 
+    def test_nove_adresy_cuzk_a_cenia_jako_stare(self):   # krok (c): archivnimapy.cuzk.gov.cz a geoportal.gov.cz
+        nova = podminky.pravidlo("https://archivnimapy.cuzk.gov.cz/archiv/")
+        self.assertEqual((nova["vyrez"], nova["dotazy"]), ("ano", True))
+        self.assertEqual(podminky.pravidlo("https://archivnimapy.cuzk.gov.cz/", "Indikační skica")["vyrez"], "souhlas")
+        self.assertEqual(podminky.pravidlo("https://geoportal.gov.cz/x")["vyrez"], "ano")
+        self.assertEqual(podminky.pravidlo("https://geoportal.gov.cz/x", "III_vojenske_mapovani")["vyrez"], "souhlas")
+
     def test_posouzeni_obrazku(self):
         self.data("svazky.json", {})
         self.data("zaznamy.json", [

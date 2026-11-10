@@ -156,6 +156,26 @@
         }
       ]
     },
+    "archivnimapy.cuzk.gov.cz": {
+      "nazev": "Archiv ČÚZK (ÚAZK)",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "zveřejnění reprodukce archiválie ÚAZK bez souhlasu a poplatku, s citací",
+      "jinak": "",
+      "vyjimky": [
+        {
+          "obsahuje": "indikační",
+          "vyrez": "souhlas",
+          "proc": "indikační skici Čech patří Národnímu archivu, Moravy MZA – zveřejnit jen se souhlasem"
+        },
+        {
+          "obsahuje": "letecký měřický",
+          "vyrez": "souhlas",
+          "proc": "archivní letecké snímky ČÚZK jen pro vlastní potřebu"
+        }
+      ]
+    },
     "ags.cuzk.cz": {
       "nazev": "Archiv ČÚZK (ÚAZK)",
       "dotazy": true,
@@ -188,6 +208,74 @@
           "obsahuje": "vojenske_mapovani",
           "vyrez": "souhlas",
           "proc": "u vojenských mapování na geoportálu CENIA si podmínky odporují – stejnou mapu vezmi z Geolabu"
+        }
+      ]
+    },
+    "geoportal.gov.cz": {
+      "nazev": "CENIA",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "letecké snímky 50. let pod CC BY 4.0 s celým zdrojem",
+      "jinak": "",
+      "vyjimky": [
+        {
+          "obsahuje": "vojenske_mapovani",
+          "vyrez": "souhlas",
+          "proc": "u vojenských mapování na geoportálu CENIA si podmínky odporují – stejnou mapu vezmi z Geolabu"
+        }
+      ]
+    },
+    "api.ceskadigitalniknihovna.cz": {
+      "nazev": "Česká digitální knihovna (Krameria knihoven)",
+      "dotazy": true,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "hledání a OCR text veřejných děl; podmínky CDK nenalezeny, za peníze jako MZK (souhlas)",
+      "jinak": ""
+    },
+    "www.ceskadigitalniknihovna.cz": {
+      "nazev": "Česká digitální knihovna (web)",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "skeny patří knihovně uložení (MZK, UK, VKOL…), podmínky CDK nenalezeny – za peníze jako MZK (souhlas); UK a VKOL viz výjimka (10. 11. 2026)",
+      "jinak": "Uživatel otevře odkaz a obrázek uloží tlačítkem Export, ty ho přečteš. Nástroje hledají přes API (kramerius.py --knihovna).",
+      "vyjimky": [
+        {
+          "obsahuje": "kramerius, volné dílo",
+          "vyrez": "ano",
+          "proc": "veřejné dílo UK nebo VKOL s ověřenými autory (70 let po smrti posledního, data v MODS): podmínky knihoven omezují jen díla po přihlášení; do zdroje napiš „Kramerius, volné dílo“ až po ověření autorů (10. 11. 2026)"
+        }
+      ]
+    },
+    "kramerius.cuni.cz": {
+      "nazev": "Kramerius Univerzity Karlovy",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "podmínky užití omezují jen díla po přihlášení; licence „public“ ještě neznamená volné dílo – ověř autory (10. 11. 2026)",
+      "jinak": "Uživatel volné dílo uloží v prohlížeči, ty ho přečteš. Hledej přes Českou digitální knihovnu (kramerius.py … --knihovna vkol / cuni), autory ověř kramerius.py autori <uuid>.",
+      "vyjimky": [
+        {
+          "obsahuje": "kramerius, volné dílo",
+          "vyrez": "ano",
+          "proc": "veřejné dílo s ověřenými autory (70 let po smrti posledního)"
+        }
+      ]
+    },
+    "kramerius.vkol.cz": {
+      "nazev": "Kramerius Vědecké knihovny v Olomouci",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "podmínky užití omezují jen díla po přihlášení; licence „public“ ještě neznamená volné dílo – ověř autory (Olomouc 1946: „public“, autor † 1974) (10. 11. 2026)",
+      "jinak": "Uživatel volné dílo uloží v prohlížeči, ty ho přečteš. Hledej přes Českou digitální knihovnu (kramerius.py … --knihovna vkol / cuni), autory ověř kramerius.py autori <uuid>.",
+      "vyjimky": [
+        {
+          "obsahuje": "kramerius, volné dílo",
+          "vyrez": "ano",
+          "proc": "veřejné dílo s ověřenými autory (70 let po smrti posledního)"
         }
       ]
     }
