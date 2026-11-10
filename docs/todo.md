@@ -2,13 +2,11 @@
 
 ## Přerušený běh
 
-### Skill `rodokmen:dum` (dějiny domu podle dejiny-domu-skill) – přerušeno 2026-11-05
+### Skill `rodokmen:dum` (dějiny domu podle dejiny-domu-skill) – přerušeno 2026-11-05, aktualizováno 2026-11-10
 
-Rozdělaná práce, která se dokončuje jako první: vlastní skill `rodokmen:dum` v tomto pluginu, odvozený z cizího skillu `vzoha/dejiny-domu-skill`, ne jeho klon. Leží na větvi `claude/rodokmen-misto-skill-4da757` v tomto worktree. Před pokračováním musí uživatel ručně pustit testy, které sandbox nepustil (viz Zbývající položky 1).
+Rozdělaná práce, která se dokončuje jako první: vlastní skill `rodokmen:dum` v tomto pluginu, odvozený z cizího skillu `vzoha/dejiny-domu-skill`, ne jeho klon. Leží na větvi `claude/rodokmen-misto-skill-4da757` v tomto worktree. Díl 1 je hotový a commitnutý; zbývá díl 2 (nástroje a návody, viz Zbývající položky 3).
 
-**Co přerušilo a co se udělalo.** Session se ukončuje kvůli délce kontextu. Hotovo a **commitnuto** (`78f9f7a`): `tools/`, `reference/`, `template/` a `VERZE` přesunuty ze `skills/rodokmen/` do `shared/` v kořeni; v `skills/rodokmen/` zůstal jen `SKILL.md` (nově odkazuje na `SHARED_DIR` = `${CLAUDE_PLUGIN_ROOT}/shared`); cesty upraveny v testech, README, LICENSE a CLAUDE.md; README Varianta B přepsána na „celý repozitář jako plugin“ (`claude --plugin-dir`). Kód skillu `dum` zatím nevznikl. Necommitnuté soubory:
-- `docs/decisions.md` (nový) – zapsaná rozhodnutí: Porta fontium, název `dum`, rozsah první verze, sledování upstreamu, `shared/` v kořeni, licence, společná `shared/VERZE`.
-- `docs/todo.md` (tento soubor, nový).
+**Co se udělalo (vše commitnuto, nic nepushnuto).** `78f9f7a`: `tools/`, `reference/`, `template/` a `VERZE` přesunuty ze `skills/rodokmen/` do `shared/` v kořeni; v `skills/rodokmen/` zůstal jen `SKILL.md` (odkazuje na `SHARED_DIR` = `${CLAUDE_PLUGIN_ROOT}/shared`); README Varianta B přepsána na „celý repozitář jako plugin“. `b1e7c47` a `4f4861f`: `docs/decisions.md` a `docs/todo.md`. `94b1f67`: skill `skills/dum/SKILL.md`, `shared/template/dum/data/domy.py` (pole `os` pro vazbu na osobu) a rozhodnutí o umístění šablony. Úklidem `/end` 2026-11-10 se změnil jen tento soubor.
 
 Ověřeno po přesunu (python3 -I, rc=0): testy aktualizace (20 z 20), kontrola (65), anno (8), vyrez (8), portafontium (13), prohlížeč (11). **Neověřeno** (sandbox blokuje lokální port): `tests/web/test_overit.py`, `tests/brzda/*`.
 
@@ -27,12 +25,12 @@ Rešerše: stažen a přečten celý upstream `dejiny-domu-skill` (0.5.0, větev
 
 **Zbývající položky**
 1. **Ruční ověření přesunu do `shared/`** (krok (a); hotové kromě testů brzdy, viz výše). Zbývá `test_brzda.py` a `test_mezipamet.py` podle `tests/brzda/README.md` (potřebují alias loopbacku). `--plugin-dir` a ruční aktualizace projektu jsou ověřené 2026-11-10, README (Varianta B) tvrzení `--plugin-dir` tím potvrzuje.
-2. **Commit `docs/decisions.md` a `docs/todo.md`** (vyjmenované cesty) po schválení uživatele; commitovat a pushovat jen na výslovný pokyn.
-3. **Krok (b): skill `skills/dum/SKILL.md` a nové soubory do `shared/`.** Jádro: `data/domy.py`, web domu a obce, `cuzk_archiv.py`, `podminky.py` + `podminky.json`, `prameny.md`, `texty.md`, rozšíření `mista.py`, plus `zdravi.py` a skript pro porovnání s upstreamem; `mista.py` a `ramecek.py` se rozšiřují v původních souborech, ne ve druhých verzích.
+2. ~~Commit `docs/decisions.md` a `docs/todo.md`~~ – hotovo (`b1e7c47`). Push větve zatím nebyl, jen na výslovný pokyn.
+3. **Krok (b), díl 2: nástroje a návody.** Díl 1 (`SKILL.md`, `domy.py`) je hotový (`94b1f67`). Zbývá: web domu a obce, `cuzk_archiv.py`, `podminky.py` + `podminky.json`, `prameny.md`, `texty.md`, rozšíření `mista.py`, plus `zdravi.py` a skript pro porovnání s upstreamem; `mista.py` a `ramecek.py` se rozšiřují v původních souborech, ne ve druhých verzích.
 4. **Krok (c): `novy_projekt.py` rozšířit** (např. `--dum`); stránky domu zapínat, jen když je v projektu `domy.py`.
 5. **Krok (d): `podminky.json`** – u `www.portafontium.eu` stejná hodnota, jakou dělá nástroj (dotazy a obrázky povolené jen pro osobní použití), `vyrez: souhlas` a poznámka, že obrázek na veřejný web chce souhlas archivu.
 6. **Krok (e): u kontejneru zachovat `Containerfile` na UBI.**
-7. **Krok (f): vazba osoba ↔ dům v datech** (upstream jen přes `note`).
+7. **Krok (f): vazba osoba ↔ dům v datech** – pole `os` je v `domy.py` hotové (`94b1f67`); zbývá kontrola v `kontrola.py`, že číslo v `osoby.py` existuje. `kontrola.py`, `export_web.py` a `napady.py` `domy.py` zatím vůbec nečtou.
 8. **Krok (g): v hlavičce každého převzatého souboru odkaz na původ a commit.**
 9. **Krok (h): vydání** – verze ve třech místech (`plugin.json`, `shared/VERZE`, README na dvou místech), sekce v `CHANGELOG.md`, tag a vydání na GitHubu (postup v `CLAUDE.md` repa).
 10. **Parkované:** `reference/texty.md` a `zdravi.py` by se hodily i do skillu `rodokmen`; po zavedení `shared/` jde jen o to, zda je zmínit v `SKILL.md` `rodokmen`. Rozhodnout po `dum`.
@@ -46,7 +44,7 @@ Rešerše: stažen a přečten celý upstream `dejiny-domu-skill` (0.5.0, větev
 
 **Rozhodnuté v běhu** (vše zapsáno v `docs/decisions.md`): Porta fontium – náš postup s brzdou 10 s, `User-Agent` a certifikát jako vědomá výjimka; název `rodokmen:dum`, skill pro obec je dlouhodobý výhled; rozsah první verze (jádro plus `zdravi.py`, později `mza.py`, `trebon.py`, `dnnt.py`, `ipr_praha.py`); sledování upstreamu skriptem s porovnáním do dočasné složky, původ a commit v hlavičkách; `shared/` v kořeni; licence (kód a návody s uvedením původu, playbook se nepřebírá); jedna společná `shared/VERZE`.
 
-**Jak pokračovat:** Zjisti, zda existuje alias loopbacku (`ifconfig lo0 | grep 127.0.0.2`; k 2026-11-10 neexistoval, `sudo ifconfig lo0 alias 127.0.0.2 up` čekal na PIN karty), a je-li, pusť mimo sandbox `python3 -I shared/tools/slusne.py tests/brzda/test_brzda.py shared/tools/slusne.py` a `test_mezipamet.py` (příkazy v `tests/brzda/README.md`; `test_overit` a `test_hlidac` už prošly, viz Ověřeno 2026-11-06); (`--plugin-dir` a ruční aktualizace projektu už ověřeny 2026-11-10); potom se uživatele zeptej, zda commitnout `docs/decisions.md` a `docs/todo.md`, a pokračuj krokem (b) z položky 3. Blok a tuto sekci smaž, až je skill hotový a zapsaný v `CHANGELOG.md`.
+**Jak pokračovat:** Pokračuj dílem 2 z položky 3, v tomto pořadí: (1) `podminky.py` + `podminky.json` (krok d: Porta fontium podle `decisions.md`) a `cuzk_archiv.py`; (2) rozšíření `mista.py` o `ruian`, `okoli`, `parcely` (v původním souboru); (3) `zdravi.py`, `reference/prameny.md`, `reference/texty.md`; (4) `kontrola.py`, `export_web.py` a `napady.py` naučit číst `domy.py` včetně kontroly pole `os` (krok f). Do hlavičky každého převzatého souboru dej odkaz na upstream a commit (krok g; upstream `vzoha/dejiny-domu-skill`, ke stažení `curl -g` s `allowed_domains` `api.github.com` a `raw.githubusercontent.com`, poslední známý commit `bda6028`). Po každém kroku uprav v `skills/dum/SKILL.md` věty o nástrojích, které se „teprve přidávají“ (Fáze 1, Fáze 6, *Mapa souborů a nástroje*). Pak kroky (c) a (h). Nezávisle na tom a bez spěchu: testy brzdy `test_brzda.py` a `test_mezipamet.py` mimo sandbox (potřebují alias `sudo ifconfig lo0 alias 127.0.0.2 up`, kontrola `ifconfig lo0 | grep 127.0.0.2`; příkazy v `tests/brzda/README.md`). Zkoušku nového kroku dělej v druhé session s `claude --plugin-dir .` ve worktree, ne v té, která ho psala. Blok a tuto sekci smaž, až je skill hotový a zapsaný v `CHANGELOG.md`.
 
 ## Parkované v session
 
