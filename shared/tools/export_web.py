@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Export dat rodokmenu (data/*) do webu ve složce web/.
 
-Čte data/osoby.py, data/zaznamy.json, data/svazky.json, data/prepisy.json, data/zvyrazneni.json,
+Čte data/osoby.py (bez něj jen dějiny domu), data/domy.py (jen je-li; dějiny domu a obce, viz domy_web.py),
+data/mapy.json, data/zaznamy.json, data/svazky.json, data/prepisy.json, data/zvyrazneni.json,
 data/mista.json, data/web.json, data/dokumenty.json a markdownové poznámky. Zapisuje
 web/src/data/site.json, web/src/generated/*, web/public/{img,zdroje}, web/public/prihlaseni.html,
 web/nginx.conf a web/netlify/edge-functions/brana.js.
@@ -14,6 +15,8 @@ for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8 (
         _s.reconfigure(encoding="utf-8", errors="replace")
 
 TOOLS = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, TOOLS)
+import domy_web  # noqa: E402
 ROOT = os.path.dirname(TOOLS)
 DATA = os.path.join(ROOT, "data")
 WEB = os.path.join(ROOT, "web")
@@ -22,9 +25,11 @@ ZDROJE = os.path.join(ROOT, "zdroje")      # tytéž výřezy v plném rozlišen
 
 LINE_COLORS = {8: "#EFB45F", 9: "#F09A78", 10: "#E58AA6", 11: "#B99AE0",
                12: "#86B8E8", 13: "#6FCBB9", 14: "#9CD17A", 15: "#D3D46A"}
-STATUS = {"doc": "doloženo matrikou", "prob": "pravděpodobné", "fam": "údaj od rodiny",
+STATUS = {"doc": "doloženo matrikou", "lit": "z literatury", "prob": "pravděpodobné", "fam": "údaj od rodiny",
           "mh": "jen z cizího rodokmenu", "unk": "neznámé"}
-KINDS = {"N": "křest / narození", "O": "sňatek", "Z": "úmrtí", "I": "rejstřík", "S": "sčítání lidu", "J": "jiný pramen"}
+KINDS = {"N": "křest / narození", "O": "sňatek", "Z": "úmrtí", "I": "rejstřík", "S": "sčítání lidu",
+         "G": "gruntovní / pozemková kniha", "K": "katastr", "M": "mapa", "C": "kronika", "L": "literatura",
+         "J": "jiný pramen"}
 
 
 def jload(name, default):
@@ -37,13 +42,23 @@ def jload(name, default):
 
 def load_people():
     ns = {}
-    exec(open(os.path.join(DATA, "osoby.py"), encoding="utf-8").read(), ns)
+    if os.path.exists(os.path.join(DATA, "osoby.py")):
+        exec(open(os.path.join(DATA, "osoby.py"), encoding="utf-8").read(), ns)
     for name, default in (("P", {}), ("SIDE", []), ("LINES", {}), ("ISSUES", []), ("HYPOTEZY", []), ("SAME", {})):
         ns.setdefault(name, default)
     return ns
 
 
-def record_rows():
+def neverejne_obrazky(cfg):
+    """Otevřený web: obrázky, které archiv bez souhlasu nedovoluje zveřejnit (podminky.py). Na webu jen přepis a odkaz."""
+    if not (cfg.get("prihlaseni") or {}).get("otevreny") or not os.path.isdir(VYREZY):
+        return set()
+    import podminky
+    return {fn[:-4] for fn in os.listdir(VYREZY)
+            if fn.endswith(".jpg") and podminky.posoud_obrazek(ROOT, fn[:-4])[0] == "souhlas"}
+
+
+def record_rows(skryte=()):
     svazky = jload("svazky.json", {})
     rows = []
     for z in jload("zaznamy.json", []):
@@ -54,8 +69,8 @@ def record_rows():
             summary=z.get("shrnuti", ""), scan=z.get("snimek", ""),
             archive=sv.get("archiv", ""), volume=sv.get("svazek", ""), vdesc=sv.get("popis", ""),
             portal=sv.get("portal", "archivu"), url=z.get("odkaz") or sv.get("url", ""),
-            img=os.path.exists(os.path.join(VYREZY, key + ".jpg")),
-            full=os.path.exists(os.path.join(ZDROJE, key + ".jpg")),
+            img=key not in skryte and os.path.exists(os.path.join(VYREZY, key + ".jpg")),
+            full=key not in skryte and os.path.exists(os.path.join(ZDROJE, key + ".jpg")),
         ))
     return rows
 
@@ -189,7 +204,11 @@ def login_files(cfg):
 def main():
     ns = load_people()
     P, LINES, SIDE, ISSUES = ns["P"], ns["LINES"], ns["SIDE"], ns["ISSUES"]
-    if 1 not in P:
+    have_people = os.path.exists(os.path.join(DATA, "osoby.py"))
+    have_houses = os.path.exists(os.path.join(DATA, "domy.py"))
+    if not have_people and not have_houses:
+        sys.exit("V projektu chybí data/osoby.py i data/domy.py – není co exportovat.")
+    if have_people and 1 not in P:
         sys.exit("V data/osoby.py chybí výchozí osoba (číslo 1).")
     SAME = ns["SAME"]                       # alias Kekulé → kanonické Kekulé (předek v rodokmenu vícekrát)
     cfg = jload("web.json", {})
@@ -197,8 +216,19 @@ def main():
     if "--nasazeni" in sys.argv and not norm_answer(login.get("odpoved", "")) and not login.get("otevreny"):
         sys.exit("CHYBA: v data/web.json není odpověď na přihlašovací otázku – web by byl otevřený komukoli.\n"
                  "Nastavte prihlaseni.odpoved, nebo (jen když to opravdu chcete) prihlaseni.otevreny: true.")
-    docs_cfg = jload("dokumenty.json", [])
-    recs = {r["key"]: r for r in record_rows()}
+    skryte = neverejne_obrazky(cfg)
+    if skryte:
+        print(f"Otevřený web: {len(skryte)} obrázků archiv bez souhlasu nedovoluje zveřejnit, na webu bude jen přepis "
+              "a odkaz (seznam: python3 -I tools/kontrola.py, reference/podminky.md)")
+    docs_cfg = [d for d in jload("dokumenty.json", []) if not d.get("skryt") and d.get("img") not in skryte]   # "skryt": true = na web nedávat
+    maps_cfg = [m for m in jload("mapy.json", []) if m.get("img") not in skryte]
+    recs = {r["key"]: r for r in record_rows(skryte)}
+    hns = domy_web.load_houses(DATA) if have_houses else None
+    if hns:
+        chyby = domy_web.chyby_jmen_obrazku("data/mapy.json", [m.get("img", "") for m in maps_cfg]) + \
+            domy_web.chyby_dat(hns["OBEC"], hns["D"], maps_cfg, jload("zaznamy.json", []), jload("svazky.json", {}), jload("mista.json", {}))
+        if chyby:
+            sys.exit("CHYBA: data by rozbila web:\n  " + "\n  ".join(chyby) + "\nOprav je (python3 -I tools/kontrola.py) a export pusť znovu.")
 
     slugs, used = {}, set()
     for k in sorted(P):
@@ -275,6 +305,8 @@ def main():
             if x:
                 people[x]["ownFamily"] = fid
 
+    house_part = domy_web.sestav(hns, recs, docs_cfg, maps_cfg, jload("mista.json", {}), cfg, VYREZY, ZDROJE,
+                                 {k: slugs[k] for k in slugs}) if hns else None
     refs = {}
     for s, p in people.items():
         for r in p["records"] + [r for e in p["side"] for r in e["records"]]:
@@ -289,6 +321,9 @@ def main():
         r["orig"], r["cs"] = tr.get("orig", ""), tr.get("cs", "")
         r["kindName"] = KINDS.get(r["kind"], r["kind"])
         r["people"] = list(dict.fromkeys(refs.get(key, [])))
+        if house_part:
+            r["houses"] = list(dict.fromkeys(house_part["recordHouses"].get(key, [])))
+            r["village"] = key in house_part["villageRecords"]
         records.append(r)
 
     lines = {}
@@ -330,7 +365,7 @@ def main():
 
     known = [p for p in people.values() if p["k"] > 1]
     stats = dict(ancestors=len(known), documented=sum(p["st"] == "doc" for p in known), records=len(records),
-                 generations=max(p["gen"] for p in people.values()) + 1)
+                 generations=max((p["gen"] for p in people.values()), default=-1) + 1)
     hypotheses = [dict(line=h.get("rod"), title=h.get("nadpis", "Hypotéza"), text=h.get("text", ""),
                        items=[dict(name=a, text=b) for a, b in h.get("polozky", [])],
                        records=[r for r in h.get("zaznamy", []) if r in recs]) for h in ns["HYPOTEZY"]]
@@ -338,11 +373,16 @@ def main():
     has_story = os.path.exists(os.path.join(DATA, "pribeh.md"))
     public_cfg = {k: v for k, v in cfg.items() if k != "prihlaseni"}
     public_cfg["maPribeh"] = has_story
-    site = dict(config=public_cfg, places=places, root=slugs[1], aliases={a: slugs[a] for a in SAME}, people=people,
+    site = dict(config=public_cfg, places=places, root=slugs.get(1), aliases={a: slugs[a] for a in SAME}, people=people,
                 families=families, records=records, lines=lines,
                 issues=[dict(title=i, text="") if isinstance(i, str) else dict(title=i[0], text=i[1]) for i in ISSUES], stats=stats, hypotheses=hypotheses,
                 docs=[dict(img=d["img"], caption=d["popis"], people=[slugs[k] for k in d.get("osoby", []) if k in slugs])
                       for d in docs_cfg if os.path.exists(os.path.join(VYREZY, d["img"] + ".jpg"))])
+    if house_part:   # dějiny domu a obce: klíče village, houses, maps… (stránky domu se zapínají podle nich, viz lib/data.js)
+        for k in ("recordHouses", "villageRecords"):
+            house_part.pop(k)
+        site.update(house_part)
+        site["stats"].update(house_part["houseStats"])
 
     write(os.path.join(WEB, "src", "data", "site.json"), json.dumps(site, ensure_ascii=False, indent=1))
     gen_dir = os.path.join(WEB, "src", "generated")
@@ -353,10 +393,13 @@ def main():
     story = os.path.join(DATA, "pribeh.md")
     write(os.path.join(gen_dir, "pribeh.md"), strip_comments(open(story, encoding="utf-8").read()) if has_story else "---\ntitle: Příběh\nlead: ''\n---\n")
 
-    hrefs = os.path.join(gen_dir, "fan_hrefs.json")
-    json.dump({k: f"/osoba/{s}/" for k, s in slugs.items()}, open(hrefs, "w", encoding="utf-8", newline="\n"))
-    subprocess.run([sys.executable, "-I", "-X", "utf8", os.path.join(TOOLS, "fan_chart.py"),
-                    os.path.join(gen_dir, "fan.svg"), "--web", hrefs], check=True, capture_output=True)
+    if not have_people:   # bez rodokmenu: prázdný vějíř, aby stránky, které ho načítají, šly sestavit (v nabídce nejsou)
+        write(os.path.join(gen_dir, "fan.svg"), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"></svg>\n')
+    if have_people:
+        hrefs = os.path.join(gen_dir, "fan_hrefs.json")
+        json.dump({k: f"/osoba/{s}/" for k, s in slugs.items()}, open(hrefs, "w", encoding="utf-8", newline="\n"))
+        subprocess.run([sys.executable, "-I", "-X", "utf8", os.path.join(TOOLS, "fan_chart.py"),
+                        os.path.join(gen_dir, "fan.svg"), "--web", hrefs], check=True, capture_output=True)
 
     gated = login_files(cfg)
 
@@ -366,9 +409,13 @@ def main():
     for sub, src_dir in (("img", VYREZY), ("zdroje", ZDROJE)):
         dst_dir = os.path.join(WEB, "public", sub)
         os.makedirs(dst_dir, exist_ok=True)
-        for key in list(recs) + [d["img"] for d in docs_cfg] + ([cfg["uvod"]["foto"]] if cfg.get("uvod", {}).get("foto") else []):
+        for key in list(recs) + [d["img"] for d in docs_cfg] + [m["img"] for m in maps_cfg] + ([cfg["uvod"]["foto"]] if cfg.get("uvod", {}).get("foto") else []):
             src = os.path.join(src_dir, key + ".jpg")
             dst = os.path.join(dst_dir, key + ".jpg")
+            if key in skryte:   # bez souhlasu archivu se na veřejný web nedostane; zůstat tam po dřívějším exportu nesmí
+                if os.path.exists(dst):
+                    os.remove(dst)
+                continue
             if not os.path.exists(src):
                 continue
             boxes = hl.get(key, {}).get("boxes", [])
@@ -381,16 +428,17 @@ def main():
                 continue
             shutil.copy2(src, dst)
             copied += 1
-    print(f"{len(people)} osob, {len(families)} rodin, {len(records)} zápisů, {len(lines)} rodů, {len(places)} míst; "
+    houses_info = f"{len(house_part['houses'])} domů, {len(house_part['maps'])} map, " if house_part else ""
+    print(f"{len(people)} osob, {len(families)} rodin, {houses_info}{len(records)} zápisů, {len(lines)} rodů, {len(places)} míst; "
           f"zkopírováno {copied} obrázků; přihlášení {'zapnuté' if gated else 'VYPNUTÉ (web je otevřený)'}")
 
     # odkazy v textech, které nikam nevedou (adresa osoby se změní třeba doplněním roku narození: jan-novak → jan-novak-1798)
-    targets = dict(osoba=people, zdroj=recs, rod=lines, rodina=families)
+    targets = dict(osoba=people, zdroj=recs, rod=lines, rodina=families, dum=(house_part or {}).get("houses", {}))
     texts = {f: open(os.path.join(gen_dir, f), encoding="utf-8").read() for f in ("pribeh.md", "zajimavosti.md")}
     texts["web.json"] = json.dumps(cfg, ensure_ascii=False)
     texts["osoby.py (hypotézy)"] = json.dumps(hypotheses, ensure_ascii=False)
     broken = [(f, m.group(0)) for f, t in texts.items()
-              for m in re.finditer(r"/(osoba|zdroj|rod|rodina)/([^/\s)\"'#?<>\]]+)", t) if m.group(2) not in targets[m.group(1)]]
+              for m in re.finditer(r"/(osoba|zdroj|rod|rodina|dum)/([^/\s)\"'#?<>\]]+)", t) if m.group(2) not in targets[m.group(1)]]
     for f, link in dict.fromkeys(broken):
         print(f"POZOR: nefunkční odkaz {link}/ v {f} – oprav ho (adresy stránek jsou ve web/src/data/site.json)")
 

@@ -103,3 +103,11 @@
 **`zdravi.py` jen pro nástroje, které tu jsou** (ARON, Porta fontium, AHMP, policejní přihlášky, ČÚZK, RÚIAN, Kramerius, ANNO a dostupnost tří obrázkových serverů). Třeboň, SOA Praha a MZA v něm nejsou, protože je `slusne.py` stejně zastaví. Ověřeno živě jen `--jen cuzk,ruian` (4 kontroly OK); zbytek jsem nepouštěl, aby se nezatěžovaly portály (pravidlo o rozsahu testů).
 
 **Návody.** `reference/prameny.md` a `texty.md` jsou přebrané beze změny obsahu s hlavičkou původu; `prameny.md` v hlavičce vypisuje nástroje, které odkazuje a tu nejsou. `reference/podminky.md` je zúžená na portály z tabulky.
+
+## Web domu: volitelná vrstva v naší šabloně (2026-11-10)
+
+**Rozhodnuto uživatelem.** Stránky domu a obce (`obec`, `domy`, `dum/[slug]`) jsou volitelná vrstva v `shared/template/web`, zapnutá přítomností `data/domy.py`. Zavrženo: samostatná šablona `web-dum` (dva weby ke správě a aktualizaci) a doslovné převzetí upstreamového webu (přepsalo by náš `Base`, `index` a styl).
+
+**Jak je to provedeno.** Export domů je samostatný modul `shared/tools/domy_web.py` (+ `platnost.py` s validací odkazů a poloh, původ bda6028), rodokmenový export zůstává v `export_web.py`. `site.json` dostane klíče `village`, `houses`, `maps`, `mapGroups`, `housePlaces`, `houseStats`; místa z `mista.json` jdou do `housePlaces`, aby se nepletla s místy rodokmenu (`places`). Projekt bez `osoby.py` se vyexportuje i sestaví (prázdný `fan.svg`, nabídka bez rodokmenových stránek); běžný projekt dostane `domy.py` kopií šablony. Domy mají vlastní styl `styles/domy.css` načítaný jen z jejich stránek. Obrázky, které portál bez souhlasu nedovoluje zveřejnit, se na otevřený web nekopírují (`podminky.posoud_obrazek`).
+
+**Vynecháno zatím:** `Doplnky` (uživatelské doplňky z upstreamu), příběhová tlačítka a `pribehy/[slug]` pro dům, `HouseMap`, `mapy`, `Gallery`.

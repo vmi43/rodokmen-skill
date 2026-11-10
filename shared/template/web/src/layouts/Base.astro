@@ -1,12 +1,14 @@
 ---
 import '../styles/global.css';
-import { config } from '../lib/data.js';
+import { config, hasPeople, hasHouses } from '../lib/data.js';
 const siteName = config.nazev || 'Rodokmen';
 const { title, description = config.popis || siteName, wide = false, wider = false, full = false } = Astro.props;
 const path = Astro.url.pathname;
 const groups = [
-  [['/', 'Úvod'], ...(config.maPribeh ? [['/pribehy/', config.pribeh?.menu || 'Příběh rodu']] : []), ['/zajimavosti/', 'Zajímavosti']],
-  [['/rody/', 'Rody'], ['/mapa/', 'Mapa'], ['/vejir/', 'Vějíř'], ['/predci/', 'Předci'], ['/zapisy/', 'Zápisy'], ['/hledame/', 'Co hledáme']],
+  [['/', 'Úvod'], ...(config.maPribeh ? [['/pribehy/', config.pribeh?.menu || (hasPeople ? 'Příběh rodu' : 'Příběh')]] : []), ['/zajimavosti/', 'Zajímavosti']],
+  ...(hasHouses ? [[['/obec/', 'Obec'], ['/domy/', 'Domy']]] : []),
+  ...(hasPeople ? [[['/rody/', 'Rody'], ['/mapa/', 'Mapa'], ['/vejir/', 'Vějíř'], ['/predci/', 'Předci'], ['/zapisy/', 'Zápisy'], ['/hledame/', 'Co hledáme']]]
+    : [[['/zapisy/', 'Zápisy'], ['/hledame/', 'Co hledáme']]]),
   [['/hledat/', 'Hledat']],
 ];
 const current = (url) => ((url === '/' ? path === '/' : path.startsWith(url)) ? 'page' : undefined);

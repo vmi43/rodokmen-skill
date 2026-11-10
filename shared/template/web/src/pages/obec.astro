@@ -1,0 +1,20 @@
+---
+// Obec: popis a časová osa. Původ: pages/obec.astro z dejiny-domu-skill (bda6028).
+import Base from '../layouts/Base.astro';
+import Timeline from '../components/Timeline.astro';
+import { village } from '../lib/data.js';
+import '../styles/domy.css';
+---
+<Base title={`Obec ${village.name}`}>
+  <h1>{village.name || 'Obec'}</h1>
+  {village.otherNames && <p class="muted">Dříve též: {village.otherNames}</p>}
+  {village.desc && <p class="lead">{village.desc}</p>}
+  <div class="table-box"><table><tbody>
+    {village.municipality && <tr><th>Dnes</th><td>{village.municipality}</td></tr>}
+    {village.parish && <tr><th>Farnost</th><td>{village.parish}</td></tr>}
+    {village.estate && <tr><th>Panství (do 1848)</th><td>{village.estate}</td></tr>}
+  </tbody></table></div>
+  <h2>Časová osa</h2>
+  {village.events.length ? <Timeline events={village.events} /> : <p class="muted">Zatím nic.</p>}
+  <p class="small muted">U každé události je, odkud ji víme: „doloženo pramenem“ = čteno přímo v archivním dokumentu, „z literatury“ = převzato z knihy nebo článku.</p>
+</Base>

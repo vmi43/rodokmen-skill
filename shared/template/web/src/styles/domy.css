@@ -1,0 +1,49 @@
+/* Dějiny domu a obce (stránky domy, dum/[slug], obec). Načítá se jen z nich, rodokmenové stránky o něm nevědí.
+   Původ: pravidla pro časovou osu, karty domů a kartičky pramenů vycházejí z src/styles/global.css a modern.css
+   projektu dejiny-domu-skill (https://github.com/vzoha/dejiny-domu-skill, commit bda6028bae08307727a4449931497c9f163ea691),
+   přepsané na proměnné naší šablony. */
+
+/* časová osa (obec, dům) */
+.timeline { list-style: none; margin: 0.5rem 0 1rem; padding: 0; border-left: 3px solid var(--line); }
+.timeline li { position: relative; display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 0.8rem; padding: 0.4rem 0 0.6rem 1rem; }
+.timeline li::before { content: ''; position: absolute; left: -0.5rem; top: 0.75rem; width: 0.7rem; height: 0.7rem; border-radius: 50%; background: #d9cfc1; border: 1px solid #3b2e22; }
+.timeline li.doc::before { background: #6fa86f; }
+.timeline li.lit::before, .timeline li.fam::before { background: #86b8e8; }
+.timeline li.prob::before, .timeline li.unk::before { background: #eeeae3; }
+.timeline .tl-year { font: 1.05rem var(--serif); color: #3b2e22; font-variant-numeric: tabular-nums; }
+.timeline .tl-body p { margin: 0 0 0.2rem; }
+.timeline .tl-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.45rem; line-height: 1.4; }
+.tl-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1.2rem; margin: 0 0 1.5rem; }
+.tl-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.tl-legend .lg { width: 0.65rem; height: 0.65rem; border-radius: 50%; background: #d9cfc1; }
+.tl-legend .lg.doc { background: #6fa86f; }
+.tl-legend .lg.lit, .tl-legend .lg.fam { background: #86b8e8; }
+
+/* odkazy na zápisy: kartičky (druh + datum) */
+.src-cards { display: contents; }
+.src-card { display: inline-flex; align-items: center; padding: 0.12rem 0.55rem; border: 1px solid #d9cdbb; border-radius: 6px; color: var(--accent);
+  text-decoration: none; font-size: 0.8rem; line-height: 1.5; white-space: nowrap; }
+.src-card:hover { border-color: var(--accent); background: var(--accent-soft); }
+.src-line { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; line-height: 1.5; }
+.src-line .chip { white-space: nowrap; }
+td .chip { white-space: nowrap; }
+
+/* přehled domů: karty */
+.house-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 1.2rem; margin-top: 1.5rem; }
+.house-card { padding: 1.2rem 1.4rem 1rem; }
+.house-top { display: flex; gap: 1.1rem; align-items: flex-start; margin-bottom: 1rem; }
+.house-cp { flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 4.2rem; height: 4.2rem; border-radius: 12px;
+  background: var(--accent-soft); color: #3b2e22; font: 600 1.6rem/1 var(--serif); }
+.house-cp small { font: 600 0.65rem var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.15rem; }
+.house-top h2 { margin: 0.1rem 0 0.2rem; padding: 0; border: 0; font-size: 1.4rem; }
+.house-top p { margin: 0; }
+.house-label { margin: 0 0 0.4rem; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.owner-list { list-style: none; margin: 0 0 0.6rem; padding: 0; border-top: 1px solid var(--line); }
+.owner-list li { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.8rem; padding: 0.35rem 0; border-bottom: 1px solid var(--line); font-size: 0.93rem; }
+.owner-list .yrs { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 0.88rem; }
+.house-story p { max-width: 42rem; }
+
+@media (max-width: 640px) {
+  .timeline li { grid-template-columns: 1fr; gap: 0.1rem; }
+  .owner-list li { grid-template-columns: 4.8rem 1fr; }
+}

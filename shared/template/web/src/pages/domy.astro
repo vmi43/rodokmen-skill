@@ -1,0 +1,34 @@
+---
+// Přehled domů. Původ: pages/domy.astro z dejiny-domu-skill (bda6028).
+import Base from '../layouts/Base.astro';
+import { houseList, href, village } from '../lib/data.js';
+import '../styles/domy.css';
+// rok převzetí; když chybí (v datech „?“), aspoň „do <rok>“
+const takeoverYear = (o) => (/\d/.test(o.since) ? o.since : /\d/.test(o.until) ? `do ${o.until}` : '?');
+---
+<Base title="Domy">
+  <h1>Domy{village.name && ` v obci ${village.name}`}</h1>
+  <p class="lead">Domy podle čísla popisného. Čísla se zaváděla v letech 1770–1771 a během 19. století se často měnila – u domu je uvedeno, pod jakými čísly ho v pramenech najdete.</p>
+  <div class="house-grid">
+    {houseList.map((h) => (
+      <a class="card card-link house-card" href={href.house(h.slug)}>
+        <div class="house-top">
+          <span class="house-cp"><small>čp.</small>{h.cp}</span>
+          <div>
+            <h2>{h.name || h.kind || 'dům'}</h2>
+            {(h.part || (h.name && h.kind)) && <p class="small muted">{[h.part, h.name && h.kind].filter(Boolean).join(' · ')}</p>}
+          </div>
+        </div>
+        {h.owners.length > 0 && (
+          <>
+            <p class="house-label">Držitelé</p>
+            <ol class="owner-list">
+              {h.owners.map((o) => <li><span class="yrs">{takeoverYear(o)}</span>{o.name}</li>)}
+            </ol>
+          </>
+        )}
+        <span class="more-link">Dějiny domu →</span>
+      </a>
+    ))}
+  </div>
+</Base>

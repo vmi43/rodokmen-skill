@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { stats, lines, href, config, linesTitle } from '../lib/data.js';
+import { stats, lines, href, config, linesTitle, hasPeople, hasHouses, houseList, village, mainHouse, houseTitle } from '../lib/data.js';
 import fan from '../generated/fan.svg?raw';
 import MobileTree from '../components/MobileTree.astro';
 import FamilyMap from '../components/FamilyMap.astro';
@@ -11,7 +11,7 @@ const uvod = config.uvod ?? {};
 const cards = config.zajimavosti_na_uvodu ?? [];
 ---
 <Base title="" wide>
-  <h1>{config.nazev || 'Rodokmen'}</h1>
+  <h1>{config.nazev || (hasPeople ? 'Rodokmen' : village.name || 'Dějiny domu')}</h1>
 
   {!!(uvod.nadpis || uvod.odstavce?.length) && (
     <section class="teaser">
@@ -36,12 +36,28 @@ const cards = config.zajimavosti_na_uvodu ?? [];
     </section>
   )}
 
-  <div class="stats">
+  {hasHouses && (
+    <>
+      <div class="stats">
+        <div><strong>{stats.houses}</strong>domů</div>
+        <div><strong>{stats.owners}</strong>držitelů</div>
+        <div><strong>{stats.people}</strong>obyvatel</div>
+        <div><strong>{stats.records}</strong>zápisů z pramenů</div>
+      </div>
+      {village.desc && <p class="lead">{village.desc}</p>}
+      <p><a class="btn" href="/domy/">Domy podle čísla popisného →</a> <a href="/obec/" style="margin-left:1rem">Obec{village.name && ` ${village.name}`}</a></p>
+      {mainHouse && (
+        <a class="card card-link" href={href.house(mainHouse.slug)}><h3>{houseTitle(mainHouse)}</h3>{mainHouse.desc && <p class="small muted">{mainHouse.desc}</p>}</a>
+      )}
+    </>
+  )}
+
+  {hasPeople && <div class="stats">
     <div><strong>{stats.ancestors}</strong>známých předků</div>
     <div><strong>{stats.documented}</strong>doloženo matrikou</div>
     <div><strong>{stats.generations}</strong>generací</div>
     <div><strong>{stats.records}</strong>matričních zápisů</div>
-  </div>
+  </div>}
 
   {cards.length > 0 && (
     <>
@@ -55,7 +71,7 @@ const cards = config.zajimavosti_na_uvodu ?? [];
     </>
   )}
 
-  {site.places.length > 0 && (
+  {hasPeople && site.places.length > 0 && (
     <>
       <h2>Kde žili naši předci</h2>
       <FamilyMap height="420px" compact />
@@ -77,10 +93,12 @@ const cards = config.zajimavosti_na_uvodu ?? [];
     </>
   )}
 
+  {hasPeople && <>
   <h2>Rodokmen</h2>
   <div class="only-mobile">
     <MobileTree k={1} />
   </div>
   <div class="fan-preview only-desktop"><a class="cover" href="/vejir/" aria-label="Otevřít vějíř předků přes celou obrazovku"></a><Fragment set:html={fan} /></div>
   <p><a class="btn" href="/vejir/">Otevřít vějíř předků přes celou obrazovku →</a> <a href="/predci/" style="margin-left:1rem">nebo seznam všech předků</a></p>
+  </>}
 </Base>
