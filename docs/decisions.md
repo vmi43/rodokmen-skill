@@ -47,6 +47,10 @@
 
 **Proč.** Bez toho se o opravách a změnách podmínek portálů v upstreamu nedozvíme, dokud je někdo nenajde ručně. Klon do repa zamítnut kvůli pravidlu neklonovat repozitáře.
 
+**Skript.** `scripts/upstream.py` (údržbářský, do projektů uživatelů se nekopíruje; test `tests/podminky/test_upstream.py`) udělá jeden dotaz GitHub compare API od commitu z hlaviček „Původ“ do `master`, vypíše změněné soubory rozdělené na převzaté a ostatní a rozdíly převzatých uloží do dočasné složky. Nic nestahuje do repozitáře. První běh 2026-11-10: `bda6028` → `e6aff7a`, 1 commit, mění se `podminky.json`, `cuzk_archiv.py`, `prameny.md`, `podminky.md` (zatím nepřevzato).
+
+**Rozsah přebírání (uživatel 2026-11-10).** Z upstreamu se přebírá postupně všechno, co nerozbije dřívější rozhodnutí; fronta je v `docs/todo.md`, *Přerušený běh*, položka 11. Zavrženo: přebrat jen nejmenší změnu a zbytek nechat jen v hlášení skriptu.
+
 **Postup stahování.** V sandboxu `gh` nejde, funguje `curl` s povolenými doménami `api.github.com` a `raw.githubusercontent.com` (soubory s `[...]` v názvu s `curl -g`).
 
 ## Sdílená složka `shared/` v kořeni repozitáře
