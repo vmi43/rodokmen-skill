@@ -110,7 +110,7 @@
 
 **Jak je to provedeno.** Export domů je samostatný modul `shared/tools/domy_web.py` (+ `platnost.py` s validací odkazů a poloh, původ bda6028), rodokmenový export zůstává v `export_web.py`. `site.json` dostane klíče `village`, `houses`, `maps`, `mapGroups`, `housePlaces`, `houseStats`; místa z `mista.json` jdou do `housePlaces`, aby se nepletla s místy rodokmenu (`places`). Projekt bez `osoby.py` se vyexportuje i sestaví (prázdný `fan.svg`, nabídka bez rodokmenových stránek); běžný projekt dostane `domy.py` kopií šablony. Domy mají vlastní styl `styles/domy.css` načítaný jen z jejich stránek. Obrázky, které portál bez souhlasu nedovoluje zveřejnit, se na otevřený web nekopírují (`podminky.posoud_obrazek`).
 
-**Vynecháno zatím:** `Doplnky` (uživatelské doplňky z upstreamu), příběhová tlačítka a `pribehy/[slug]` pro dům, `HouseMap`, `mapy`, `Gallery`.
+**Vynecháno zatím:** `Doplnky` (uživatelské doplňky z upstreamu), příběhová tlačítka a `pribehy/[slug]` pro dům. Mapa a staré mapy jsou doplněné níže (*Mapa domu a staré mapy*), `Gallery` vynechána.
 
 ## Založení projektu s domem: `--dum` a `--jen-dum` (2026-11-10)
 
@@ -121,3 +121,13 @@
 **Ověřeno.** `tests/web/test_novy_projekt_dum.py shared` 9/9; živě `npm install` a `npm run build` rc=0 s ukázkou a čtyřmi domy, z toho dva se stejným čp. v různých částech obce (stránky `dum/1`, `dum/2`, `dum/horni-3`, `dum/dolni-3`).
 
 **Známé zbytky.** Bez `domy.py` se stránky `/domy/` a `/obec/` vyrobí jako prázdné a nelinkované (Astro neumí vynechat statickou stránku); nabídka je skrytá. Případně řešit později přesunem do dynamické cesty.
+
+## Mapa domu a staré mapy (2026-11-10)
+
+**Převzato z upstreamu** (`dejiny-domu-skill`, commit bda6028; původ je v hlavičkách souborů): `components/HouseMap.astro` (Leaflet, OpenStreetMap, přepínač ortofota a katastru ČÚZK), `lib/places.js` (druhy bodů, vzdálenost od návsi), `pages/mapy.astro` (porovnání map vedle sebe nebo prolnutím, přehled všech map). Úpravy: v naší `data.js` se místa z `mista.json` jmenují `housePlaces`; styl porovnání map jsme napsali sami do `styles/domy.css` (upstream ho v souboru, který jsme četli, nemá).
+
+**Kde se mapa ukazuje.** Stránka `obec` (celá mapa, když je poloha obce, domu nebo místa), stránka domu s `lat`/`lon` (zaostřeno na dům), odkaz `Staré mapy` v nabídce a na stránce obce jen když jsou v `mapy.json` mapy.
+
+**Zavrženo.** `Gallery`: stránka domu už ukazuje fotky a dokumenty mřížkou `.docs`, druhá galerie by byla duplicita; vrátit, až bude potřeba skupinová galerie s dvojicemi „tehdy – dnes“.
+
+**Ověřeno.** `npm run build` rc=0 s ukázkou, čtyřmi domy a dvěma mapami ve skupině; vznikly `/mapy/`, `/obec/` a `/dum/*` s mapou, odkaz v nabídce a na obci je. **Neověřeno:** vzhled a chování mapy v prohlížeči (Leaflet běží až v prohlížeči), prolínání map. **Pozor:** `housePlaces` vychází z celého `mista.json`; v projektu s rodokmenem se na mapě domů ukážou i místa předků jako „Další místa“. Rozhodnout, až se to ukáže na skutečném projektu.
