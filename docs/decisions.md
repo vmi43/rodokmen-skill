@@ -82,6 +82,24 @@
 
 **Vazba osoba ↔ dům.** Držitel a obyvatel v `domy.py` mají nepovinné pole `os` = číslo téže osoby v `data/osoby.py`. Jen jedním směrem (dům → osoba), aby vazba byla na jednom místě. Upstream má vazbu jen textem v `note`; `note` zůstává pro osoby mimo přímou linii.
 
-**Zatím neplatí.** Kontrola, že `os` odkazuje na existující osobu, v `kontrola.py` není; doplní se s krokem (c).
+**Kontrola `os`.** Hotovo 2026-11-10 v `kontrola.py` (funkce `kontrola_domu`, test `tests/kontrola/test_domy.py`): `os` musí být celé číslo a osoba musí být v `osoby.py`; bez `osoby.py` (projekt jen s domem) je každé `os` chyba.
 
 **Skill `dum` neopisuje rodokmen.** Brzda, pomocníci, technické pasti a „co nikdy“ jsou jen v `skills/rodokmen/SKILL.md`; `skills/dum/SKILL.md` na ně odkazuje (pravidlo jednoho místa). Cena: `dum` vyžaduje načtení `rodokmen/SKILL.md`, ověřit při prvním skutečném použití.
+
+## Díl 2 skillu `dum`: co se z upstreamu převzalo a jak
+
+**Rozhodnuto 2026-11-10** (commit upstreamu, ze kterého se přebíralo: `bda6028`).
+
+**Tabulka podmínek je zúžená.** `shared/tools/podminky.json` má 20 portálů, které naše nástroje používají (upstream ~80, včetně portálů nástrojů, které tu nejsou). Ostatní portály se doplní spolu s nástrojem. Neznámý portál `podminky.py` hlásí jako „není v tabulce, ověř podmínky“, nepouští ho tiše.
+
+**`slusne.py` má přednost před `podminky.json`.** `pockej()` nejdřív použije dosavadní `ZAKAZ` (MZA, Třeboň, SOA Praha, actapublica.eu), pak teprve tabulku. Důvod: `ZAKAZ` je přísnější (u MZA smí jen hledání knih) a je ověřené ve starších verzích. Tabulka musí s `ZAKAZ` souhlasit: SOA Praha `dotazy: false` (upstream má `true` podle zákazu jen pro ClaudeBota, ale náš `slusne.py` od 2. 11. 2026 hlásí robots.txt `User-agent: rodokmen / Disallow: /` a 403; sporné, neověřeno znovu), Porta fontium `dotazy` i `obrazky: true` podle rozhodnutí výše.
+
+**Neověřený rozpor s upstreamem (SOA Praha).** Upstream k 8. 11. 2026 píše, že robots.txt zakazuje ClaudeBota, ale Claude-User ne, a nástroj pouští. Náš `slusne.py` ho blokuje podle zjištění z 2. 11. 2026. Nepřepisováno, dokud někdo neověří aktuální `robots.txt` na eBadatelně; zapsáno v `docs/todo.md`.
+
+**`cuzk_archiv.py` bez `platnost.py`.** Z upstreamového `platnost.py` (společné kontroly pro `kontrola.py` a `export_web.py`) se převzala jen funkce `vyrez_sjtsk`, a ta je přímo v `cuzk_archiv.py`. Ostatní helpery se přebírají, až je web domu bude potřebovat. Příkaz `mapa` vypisuje „do `data/mapy.json`“, ale šablona `mapy.json` nemá (přijde s webem domu).
+
+**`mista.py` rozšířen vedle Mapy.com, ne nahrazen.** Přibyly `ruian`, `okoli`, `parcely` (RÚIAN, bez klíče). Upstreamový `mista.py` je jiný nástroj (Nominatim, `hledej`, `pridej` do `mista.json` jinak) a přebírat se nebude; `hledej` proto u nás není a texty na něj neodkazují.
+
+**`zdravi.py` jen pro nástroje, které tu jsou** (ARON, Porta fontium, AHMP, policejní přihlášky, ČÚZK, RÚIAN, Kramerius, ANNO a dostupnost tří obrázkových serverů). Třeboň, SOA Praha a MZA v něm nejsou, protože je `slusne.py` stejně zastaví. Ověřeno živě jen `--jen cuzk,ruian` (4 kontroly OK); zbytek jsem nepouštěl, aby se nezatěžovaly portály (pravidlo o rozsahu testů).
+
+**Návody.** `reference/prameny.md` a `texty.md` jsou přebrané beze změny obsahu s hlavičkou původu; `prameny.md` v hlavičce vypisuje nástroje, které odkazuje a tu nejsou. `reference/podminky.md` je zúžená na portály z tabulky.
