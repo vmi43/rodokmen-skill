@@ -54,7 +54,7 @@ Vždy uveďte archiv, fond, signaturu, číslo snímku a trvalý odkaz. Zjiště
 - `tools/podminky.json` je stejná tabulka pro nástroje (zúžená na portály, které naše nástroje používají). `slusne.py` ji kontroluje před každým požadavkem: portál, který stahování nedovoluje, skončí hláškou „PODMÍNKY: …“ s návodem, jak dál. Hláškou „PODMÍNKY“ ani „OCHRANA“ neobcházej jiným nástrojem, curl ani prohlížečem řízeným skriptem.
 - Pravidla platí i pro část webu (`vyjimky` podle adresy).
 - `python3 -I tools/podminky.py <adresa>` vypíše pravidla pro portál; `python3 -I tools/podminky.py obrazky` vypíše výřezy, které potřebují souhlas archivu.
-- Souhlas archivu zapiš k zápisu nebo mapě do pole `souhlas` (kdo a kdy). Napojení na `vyrez.py`, `kontrola.py` a `export_web.py` zatím není (docs/todo.md).
+- Souhlas archivu zapiš k zápisu nebo mapě do pole `souhlas` (kdo a kdy). `vyrez.py` po uložení výřezu a `kontrola.py` upozorní na obrázek, který bez souhlasu nesmí na veřejný web; `export_web.py` ho do veřejného webu nezveřejní (jen otevřený web, ne za heslem).
 
 ## Koho se zeptat
 Třeboň digi@ceskearchivy.cz · Litoměřice badatelna@soalitomerice.cz · Opava digibadatelna.podpora@zao.archives.cz · MZA podatelna@mza.cz · Kramerius MZK digitalniknihovna@mzk.cz · CENIA geoportal@cenia.gov.cz · Geolab bruna@geolab.cz · IPR Praha hribal@ipr.praha.eu

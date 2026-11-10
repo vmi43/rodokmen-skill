@@ -333,7 +333,7 @@ Nedělej to pořád. Postup:
 | `overit.py <snímek> x0,y0,x1,y1 <prefix> [--kontrast]` | zápis na dvě čitelné poloviny – ověření čtení (souřadnice = zlomky 0–1) |
 | `napady.py` | náměty na zajímavosti z dat |
 | `vyrez.py <stránka.jpg> <klíč> x0,y0,x1,y1 [--kontrast]` | výřez do `zdroje/` a `vyrezy/` (`--kontrast` u vybledlého písma) |
-| `ramecek.py <klíč> x0,y0,x1,y1` | rámeček čteného místa + kontrolní obrázek |
+| `ramecek.py <klíč> x0,y0,x1,y1 [--vyrez a0,b0,a1,b1]` | rámeček čteného místa + kontrolní obrázek; s `--vyrez` souřadnice celé stránky (jako u `vyrez.py`) |
 | `mista.py pridej "Obec"` / `nova` / `znovu` / `mista.py` | místa pro mapu; souřadnice obcí **i přesný bod každé adresy s čp.** z Mapy.com (potřebuje API klíč, viz `reference/data.md` → `mista.json`) |
 | `zapis.py <soubor> <klíč> <vstup.json> [--sloucit]` | přidá / změní položku v `zaznamy`, `svazky`, `prepisy`… beze změny formátu |
 | `slusne.py <skript.py> / curl … / bash x.sh / stav` | brzda proti zablokování archivem – vlastní skripty a curl spouštěj přes ni |

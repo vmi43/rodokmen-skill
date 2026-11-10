@@ -71,6 +71,17 @@ class PodminkyTest(unittest.TestCase):
         self.assertEqual(podminky.posoud_obrazek(self.tmp, "foto")[0], "ok")   # vlastní fotka bez odkazu
         self.assertEqual(podminky.posoud_obrazek(self.tmp, "nic")[0], "pozor")
 
+    def test_hlaska_obrazku_pro_vyrez_a_kontrolu(self):
+        self.data("svazky.json", {})
+        self.data("zaznamy.json", [
+            {"klic": "a", "svazek": "s", "odkaz": "https://www.mza.cz/actapublica/matrika/detail/1"},
+            {"klic": "b", "svazek": "s", "odkaz": "https://aron.vychodoceskearchivy.cz/apu/1"},
+            {"klic": "bez", "svazek": "s"}])
+        self.assertIn("souhlas", podminky.hlaska_obrazku(self.tmp, "a"))   # bez souhlasu archivu
+        self.assertIsNone(podminky.hlaska_obrazku(self.tmp, "b"))           # smí
+        self.assertIsNone(podminky.hlaska_obrazku(self.tmp, "nic"))         # zdroj v datech ještě není: mlčí
+        self.assertIsNone(podminky.hlaska_obrazku(self.tmp, "bez"))         # chybějící odkaz hlásí kontrola jinde
+
 
 if __name__ == "__main__":
     try:

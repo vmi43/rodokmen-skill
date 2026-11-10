@@ -4,7 +4,7 @@
 Lidská verze s vysvětlením: reference/podminky.md. Jen veřejné zdroje, není to právní rada.
 
 Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/tools/podminky.py), commit bda6028; úprava: tabulka jen pro
-portály našich nástrojů, nástroje ji volají přes slusne.py (ostatní napojení přibývají).
+portály našich nástrojů, nástroje ji volají přes slusne.py, vyrez.py, kontrola.py a export_web.py.
 
 Použití (z kořene projektu):
   podminky.py <adresa | doména>   -> pravidla pro portál (stahování stránek, snímků, obrázky ve výstupu)
@@ -125,6 +125,15 @@ def posoud_obrazek(root, klic):
     return "souhlas", (f"{p['nazev']}: obrázek bez souhlasu nezveřejňovat – {p.get('proc', '')}. "
                        f"Na neveřejný web (za heslem) může. Se souhlasem archivu ho zapiš k položce: pole „souhlas“ "
                        f"(kdo a kdy, např. „SOA Třeboň, e-mail 5. 11. 2026“) přes zapis.py.")
+
+
+def hlaska_obrazku(root, klic):
+    """Zpráva pro vyrez.py a kontrola.py, když obrázek podle podmínek portálu nesmí na veřejný web (nebo je to nejisté);
+    jinak None. Obrázek, jehož zdroj v datech ještě není, mlčí – ten hlásí kontrola odkazu u zápisu."""
+    if zdroj_obrazku(root, klic)[2] is None:
+        return None
+    stav, zprava = posoud_obrazek(root, klic)
+    return None if stav == "ok" or zprava.startswith("zdroj obrázku v datech nenajdu") else zprava
 
 
 def main(a):

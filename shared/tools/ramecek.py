@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Rámeček zvýraznění – které místo výřezu čteme (data/zvyrazneni.json).
 
+Původ: volba --vyrez převzata z vzoha/dejiny-domu-skill (skills/dejiny-domu/tools/ramecek.py), commit bda6028.
+
 Použití:
-  ramecek.py <klic> x0,y0,x1,y1 [x0,y0,x1,y1 ...] [--pozn "poznámka"]
-      souřadnice jsou zlomky šířky a výšky obrázku vyrezy/<klic>.jpg (0..1)
+  ramecek.py <klic> x0,y0,x1,y1 [x0,y0,x1,y1 ...] [--pozn "poznámka"] [--vyrez a0,b0,a1,b1]
+      souřadnice jsou zlomky šířky a výšky obrázku VÝŘEZU vyrezy/<klic>.jpg (0..1) – ne celé stránky!
+      --vyrez a0,b0,a1,b1 = oblast, kterou jsi předal vyrez.py; pak zadávej rámeček v souřadnicích CELÉ STRÁNKY
+      (jako u vyrez.py) a nástroj je přepočte na výřez. Nejčastější chyba je zadat stránkové souřadnice bez --vyrez.
       Zapíše rámeček a vytvoří kontrolní obrázek pracovni/ramecek_<klic>.jpg – VŽDY si ho prohlédněte,
       jestli rámeček opravdu obepíná celý čtený zápis (jméno, data, rodiče, poznámky na okraji).
   ramecek.py <klic> --nahled      jen znovu vytvoří kontrolní obrázek
@@ -55,7 +59,20 @@ def main():
         i = args.index("--pozn")
         note = args[i + 1]
         args = args[:i] + args[i + 2:]
-    boxes = [[round(float(v), 3) for v in a.split(",")] for a in args]
+    crop = None
+    if "--vyrez" in args:
+        i = args.index("--vyrez")
+        crop = [float(v) for v in args[i + 1].split(",")]
+        args = args[:i] + args[i + 2:]
+        if len(crop) != 4 or not (0 <= crop[0] < crop[2] <= 1 and 0 <= crop[1] < crop[3] <= 1):
+            sys.exit(f"Špatná oblast výřezu {crop}: musí být a0,b0,a1,b1 v rozsahu 0..1")
+    boxes = [[float(v) for v in a.split(",")] for a in args]
+    if crop:   # souřadnice stránky → souřadnice výřezu
+        a0, b0, a1, b1 = crop
+        conv = lambda v, lo, hi: min(1.0, max(0.0, (v - lo) / (hi - lo)))
+        boxes = [[conv(b[0], a0, a1), conv(b[1], b0, b1), conv(b[2], a0, a1), conv(b[3], b0, b1)] if len(b) == 4 else b
+                 for b in boxes]
+    boxes = [[round(v, 3) for v in b] for b in boxes]
     for b in boxes:
         if len(b) != 4 or not (0 <= b[0] < b[2] <= 1 and 0 <= b[1] < b[3] <= 1):
             sys.exit(f"Špatný rámeček {b}: musí být x0,y0,x1,y1 v rozsahu 0..1 a x0<x1, y0<y1")

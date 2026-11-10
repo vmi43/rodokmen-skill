@@ -6,6 +6,10 @@ Vypíše CHYBY (rozbijí web nebo jsou věcně špatně) a UPOZORNĚNÍ (něco c
 Návratový kód 1, pokud jsou chyby.
 """
 import datetime, json, os, re, sys, unicodedata
+try:
+    import podminky   # podmínky portálů; bez něj se výřezy neposuzují
+except ImportError:
+    podminky = None
 for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8 (cp1250 neumí třeba „→“)
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
@@ -179,8 +183,12 @@ def main():
             warn.append(f"zápis {k}: chybí odkaz na snímek (pole 'odkaz')")
         if not os.path.exists(os.path.join(ROOT, "vyrezy", k + ".jpg")):
             warn.append(f"zápis {k}: chybí výřez vyrezy/{k}.jpg")
-        elif k not in hl:
-            warn.append(f"zápis {k}: chybí rámeček (tools/ramecek.py)")
+        else:
+            if k not in hl:
+                warn.append(f"zápis {k}: chybí rámeček (tools/ramecek.py)")
+            h = podminky.hlaska_obrazku(ROOT, k) if podminky else None
+            if h:
+                warn.append(f"zápis {k}: výřez na veřejný web – {h}")
         if k not in prep:
             warn.append(f"zápis {k}: chybí přepis a překlad v data/prepisy.json")
         if k not in cited:

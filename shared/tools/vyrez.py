@@ -56,6 +56,13 @@ def main():
     subprocess.run(cmd + ["+profile", "!icc,*", "+set", "comment", "-quality", "90", full], check=True)
     subprocess.run([MAGICK, full, "-resize", "1800x1800>", "-quality", "85", small], check=True)
     print("uloženo:", full, "a", small, "(zvýšený kontrast – poznamenej to v přepisu)" if kontrast else "")
+    try:   # podmínky portálu: výřez smí do veřejného webu jen když to portál dovoluje (reference/podminky.md)
+        import podminky
+        h = podminky.hlaska_obrazku(ROOT, key)
+    except ImportError:
+        h = None
+    if h:
+        print(f"POZOR: {h}")
 
 
 if __name__ == "__main__":
