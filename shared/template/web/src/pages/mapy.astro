@@ -1,0 +1,58 @@
+---
+// Původ: pages/mapy.astro z dejiny-domu-skill (https://github.com/vzoha/dejiny-domu-skill, commit bda6028bae08307727a4449931497c9f163ea691).
+// Naše úprava: styl porovnání map je v styles/domy.css.
+import Base from '../layouts/Base.astro';
+import '../styles/domy.css';
+import { maps, mapGroups } from '../lib/data.js';
+// Prolínat jen mapy s ověřeně stejným výřezem (export_web.py → mapGroups), ostatní skupiny vedle sebe.
+const groups = Object.entries(Object.groupBy ? Object.groupBy(maps.filter((m) => m.group), (m) => m.group)
+  : maps.filter((m) => m.group).reduce((a, m) => ((a[m.group] ??= []).push(m), a), {})).filter(([, l]) => l.length > 1)
+  .map(([g, list]) => [g, list, mapGroups[g]?.overlay === true] as const);
+---
+<Base title="Staré mapy" wide>
+  <h1>Staré mapy a letecké snímky</h1>
+  <p class="lead">Jak se ves a okolí měnily – od vojenských mapování 18. století přes stabilní katastr po letecké snímky. Kliknutím mapu zvětšíte.</p>
+
+  {groups.map(([g, list, overlay]) => (
+    <section class="cmp" data-cmp>
+      <h2>Porovnání: {g}</h2>
+      <p class="small muted">{overlay ? 'Vyberte dvě mapy a posuvníkem je prolínejte.'
+        : 'Vyberte dvě mapy a porovnejte je vedle sebe. Výřezy se nemusí přesně krýt, proto je neprolínáme.'}</p>
+      <p class="cmp-ctl">
+        <select data-a aria-label="první mapa">{list.map((m, i) => <option value={m.img} data-t={`${m.year} – ${m.title}`} selected={i === 0}>{m.year}</option>)}</select>
+        {overlay && <input type="range" min="0" max="100" value="50" data-r aria-label="prolnutí" />}
+        <select data-b aria-label="druhá mapa">{list.map((m, i) => <option value={m.img} data-t={`${m.year} – ${m.title}`} selected={i === list.length - 1}>{m.year}</option>)}</select>
+      </p>
+      <div class={overlay ? 'cmp-box' : 'cmp-box cmp-side'}>
+        <img data-ia src={`/img/${list[0].img}.jpg`} alt="" />
+        <img data-ib src={`/img/${list[list.length - 1].img}.jpg`} alt="" style={overlay ? 'opacity:0.5' : undefined} />
+      </div>
+      <p class="cmp-names small muted"><span data-na>{list[0].year} – {list[0].title}</span><span data-nb>{list[list.length - 1].year} – {list[list.length - 1].title}</span></p>
+    </section>
+  ))}
+
+  <h2>Všechny mapy</h2>
+  <div class="docs">
+    {maps.map((m) => (
+      <figure>
+        <a href={m.full ? `/zdroje/${m.img}.jpg` : `/img/${m.img}.jpg`} target="_blank" rel="noopener"><img src={`/img/${m.img}.jpg`} alt={m.title} loading="lazy" /></a>
+        <figcaption><strong>{m.year}</strong> – {m.title}{m.desc && <><br />{m.desc}</>}<br />
+          <span class="small">Zdroj: {m.url ? <a href={m.url} target="_blank" rel="noopener">{m.source}</a> : m.source}</span></figcaption>
+      </figure>
+    ))}
+  </div>
+  {maps.length === 0 && <p class="muted">Zatím žádné mapy.</p>}
+
+  <script>
+    for (const s of document.querySelectorAll<HTMLElement>('[data-cmp]')) {
+      const a = s.querySelector<HTMLSelectElement>('[data-a]')!, b = s.querySelector<HTMLSelectElement>('[data-b]')!;
+      const ia = s.querySelector<HTMLImageElement>('[data-ia]')!, ib = s.querySelector<HTMLImageElement>('[data-ib]')!;
+      const r = s.querySelector<HTMLInputElement>('[data-r]');
+      const na = s.querySelector<HTMLElement>('[data-na]')!, nb = s.querySelector<HTMLElement>('[data-nb]')!;
+      const name = (sel: HTMLSelectElement) => sel.selectedOptions[0]?.dataset.t ?? '';
+      a.addEventListener('change', () => { ia.src = `/img/${a.value}.jpg`; na.textContent = name(a); });
+      b.addEventListener('change', () => { ib.src = `/img/${b.value}.jpg`; nb.textContent = name(b); });
+      if (r) r.addEventListener('input', () => { ib.style.opacity = String(Number(r.value) / 100); r.style.setProperty('--p', `${r.value}%`); });
+    }
+  </script>
+</Base>

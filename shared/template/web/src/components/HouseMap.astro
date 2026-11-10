@@ -1,0 +1,188 @@
+---
+// Původ: components/HouseMap.astro z dejiny-domu-skill (https://github.com/vzoha/dejiny-domu-skill, commit bda6028bae08307727a4449931497c9f163ea691).
+// Naše úprava: místa z data/mista.json se v naší šabloně jmenují housePlaces.
+// Mapa domů a okolních míst (Leaflet + OpenStreetMap). Hlavní dům zvýrazněný.
+import 'leaflet/dist/leaflet.css';
+import { houseList, housePlaces as places, village, href, houseTitle, mainHouse } from '../lib/data.js';
+import { PLACE_KINDS, distText } from '../lib/places.js';
+const { height = '70vh', compact = false, focus = null } = Astro.props;
+const points = [
+  ...houseList.filter((h) => h.lat != null).map((h) => ({
+    lat: h.lat, lon: h.lon, label: houseTitle(h), text: h.kind, url: href.house(h.slug), urlText: 'Dějiny domu',
+    main: h.slug === (focus ?? mainHouse?.slug), house: true, dist: distText(village, h),
+  })),
+  ...places.map((p) => ({ lat: p.lat, lon: p.lon, label: p.name, text: p.desc, url: p.link || null, urlText: p.linkText || '',
+    kind: p.kind || 'jine', approx: !!p.approx, main: false, house: false, dist: distText(village, p) })),
+];
+const center = village.lat != null ? [village.lat, village.lon] : null;
+const mainPoint = points.find((p) => p.main);
+const kinds = { ...PLACE_KINDS, main: { ...PLACE_KINDS.main, name: mainPoint?.label ?? PLACE_KINDS.main.name } };
+const payload = JSON.stringify({ points, center, compact, focus: !!focus, kinds });
+---
+<div class="fmap" style={`height:${height}`} data-map={payload}></div>
+
+<script>
+  import L from 'leaflet';
+  const esc = (v: unknown) => String(v ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+  for (const el of document.querySelectorAll<HTMLElement>('.fmap')) {
+    const { points, center, compact, focus, kinds } = JSON.parse(el.dataset.map!);
+    // Gesture handling: page scroll stays page scroll. Zoom with Ctrl/⌘ + wheel, on touch move with two fingers.
+    const touch = window.matchMedia('(pointer: coarse)').matches;
+    const map = L.map(el, { scrollWheelZoom: false, dragging: !touch, tap: false });
+    const hint = L.DomUtil.create('div', 'fmap-hint', el);
+    hint.textContent = touch ? 'Mapu posunete dvěma prsty' : `Pro přiblížení mapy držte ${/Mac|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl'} a točte kolečkem`;
+    let hintTimer = 0;
+    const showHint = () => { hint.classList.add('on'); clearTimeout(hintTimer); hintTimer = window.setTimeout(() => hint.classList.remove('on'), 1200); };
+    el.addEventListener('wheel', (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        const p = map.mouseEventToContainerPoint(e as unknown as MouseEvent);
+        map.setZoomAround(p, map.getZoom() + (e.deltaY < 0 ? 1 : -1));
+      } else showHint();
+    }, { passive: false });
+    if (touch) {
+      el.addEventListener('touchstart', (e) => { if (e.touches.length > 1) map.dragging.enable(); else map.dragging.disable(); }, { passive: true });
+      el.addEventListener('touchmove', (e) => { if (e.touches.length === 1) showHint(); }, { passive: true });
+      el.addEventListener('touchend', () => map.dragging.disable(), { passive: true });
+    }
+    const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+    // Ortofoto a stabilní katastr ČÚZK (WMS) – přepínač vrstev vpravo nahoře
+    const orto = L.tileLayer.wms('https://ags.cuzk.cz/arcgis1/services/ORTOFOTO/MapServer/WMSServer', {
+      layers: '0', format: 'image/png', maxZoom: 20, attribution: '&copy; ČÚZK',
+    });
+    const katastr = L.tileLayer.wms('https://services.cuzk.cz/wms/wms.asp', {
+      layers: 'KN', format: 'image/png', transparent: true, maxZoom: 20, attribution: '&copy; ČÚZK',
+    });
+    L.control.layers({ 'Mapa': osm, 'Letecký snímek (ČÚZK)': orto }, { 'Dnešní katastr (parcely)': katastr }, { collapsed: compact || window.innerWidth <= 700 }).addTo(map);
+    const kindOf = (p: any) => p.main ? 'main' : p.house ? 'house' : p.kind;
+    const color = (k: string) => (kinds[k] || kinds.jine).color;
+    const all: L.LatLngExpression[] = [], near: L.LatLngExpression[] = [];
+    const ref = center ? L.latLng(center) : null;
+    const markers: L.CircleMarker[] = [];
+    const radius = (p: any) => p.main ? 10 : p.house ? 8 : 7;
+    let halo: L.CircleMarker | null = null;
+    points.forEach((p: any, i: number) => {
+      const k = kindOf(p), c = color(k);
+      const m = L.circleMarker([p.lat, p.lon], {
+        radius: radius(p), color: p.approx ? '#3b2e22' : '#fff', weight: 2,
+        dashArray: p.approx ? '3 3' : undefined, fillColor: c, fillOpacity: p.approx ? 0.55 : 0.95,
+      });
+      // Bublina jako karta webu: druh, název, vzdálenost / přibližná poloha, popis, odkazy
+      const meta = [p.dist && `<span>${esc(p.dist)}</span>`, p.approx && '<span class="fp-badge">poloha přibližná</span>'].filter(Boolean).join('');
+      const links = [
+        p.url && `<a class="fp-link" href="${esc(p.url)}">${esc(p.urlText || 'Víc o tomto místě')}</a>`,
+      ].filter(Boolean).join('');
+      m.bindPopup(`<div class="fp" style="--c:${c}">`
+        + (kinds[k] ? `<div class="fp-kind">${esc(kinds[k].name)}</div>` : '')
+        + `<div class="fp-title">${esc(p.label)}</div>`
+        + (meta ? `<div class="fp-meta">${meta}</div>` : '')
+        + (p.text ? `<p class="fp-desc">${esc(p.text)}</p>` : '')
+        + (links ? `<div class="fp-actions">${links}</div>` : '') + '</div>',
+        { className: 'fmap-popup', maxWidth: 300, minWidth: 300, autoPanPadding: [50, 50] });
+      m.bindTooltip(esc(p.label));
+      // Vybraný bod: větší a s prstencem; na stránce Mapa i zvýrazněná karta v seznamu
+      m.on('popupopen', () => {
+        m.setStyle({ radius: radius(p) + 3, weight: 3 }).bringToFront();
+        halo = L.circleMarker([p.lat, p.lon], { radius: radius(p) + 8, color: c, weight: 2.5, opacity: 0.7, fill: false, interactive: false }).addTo(map);
+        m.closeTooltip();
+        document.querySelectorAll('.pl-card.on').forEach((x) => x.classList.remove('on'));
+        document.getElementById(`misto-${i}`)?.classList.add('on');
+      });
+      m.on('popupclose', () => {
+        m.setStyle({ radius: radius(p), weight: 2 });
+        halo?.remove(); halo = null;
+      });
+      m.addTo(map);
+      markers.push(m);
+      all.push([p.lat, p.lon]);
+      if (!ref || p.house || ref.distanceTo([p.lat, p.lon]) < 700) near.push([p.lat, p.lon]);
+    });
+    // Vybrat bod zvenku (seznam pod mapou): přiblížit a otevřít bublinu
+    const select = (i: number) => {
+      const m = markers[i];
+      if (!m) return;
+      map.closePopup();
+      map.once('moveend', () => m.openPopup());
+      map.flyTo(m.getLatLng(), Math.max(map.getZoom(), 17), { duration: 0.6 });
+    };
+    (el as any).fmap = { map, markers, select };
+    const fit = (b: L.LatLngExpression[]) => b.length > 1 ? map.fitBounds(L.latLngBounds(b), { padding: [40, 40], maxZoom: 17 })
+      : b.length ? map.setView(b[0], 16) : center ? map.setView(center, 15) : map.setView([49.8, 15.5], 7);
+    const target = focus ? points.find((p: { main: boolean }) => p.main) : null;
+    if (target) map.setView([target.lat, target.lon], 17);
+    else fit(near.length ? near : all);
+
+    if (!focus && all.length > near.length) {
+      // Přepínač výřezu Ves / Okolí – ovládání mapy, proto vlevo nahoře pod +/−
+      const View = L.Control.extend({
+        onAdd() {
+          const box = L.DomUtil.create('div', 'leaflet-bar fmap-view');
+          L.DomEvent.disableClickPropagation(box);
+          box.innerHTML = '<button type="button" data-z="near" class="on" title="Přiblížit na ves">Ves</button>'
+            + '<button type="button" data-z="all" title="Ukázat i místa v okolí">Okolí</button>';
+          const btns = box.querySelectorAll<HTMLButtonElement>('button');
+          btns.forEach((b) => b.addEventListener('click', () => {
+            fit(b.dataset.z === 'all' ? all : near);
+            btns.forEach((x) => x.classList.toggle('on', x === b));
+          }));
+          return box;
+        },
+      });
+      new View({ position: 'topleft' }).addTo(map);
+    }
+
+    if (!compact) {
+      // Legenda: co znamenají barvy bodů
+      const Legend = L.Control.extend({
+        onAdd() {
+          const box = L.DomUtil.create('div', 'fmap-legend');
+          L.DomEvent.disableClickPropagation(box);
+          const used = new Set(points.map(kindOf));
+          const rows = Object.entries(kinds).filter(([k]) => used.has(k))
+            .map(([, v]: any) => `<li><i style="--c:${v.color}"></i>${esc(v.name)}</li>`).join('');
+          const approx = points.some((p: any) => p.approx) ? '<li><i class="approx"></i>přibližná poloha</li>' : '';
+          const open = window.innerWidth > 700 ? ' open' : '';   // na mobilu sbalené, ať legenda nezakrývá mapu
+          box.innerHTML = `<details${open}><summary>Vysvětlivky</summary><ul>${rows}${approx}</ul></details>`;
+          return box;
+        },
+      });
+      new Legend({ position: 'bottomleft' }).addTo(map);
+    }
+  }
+</script>
+
+<style is:global>
+  .fmap { width: 100%; border: 1px solid var(--line); border-radius: 12px; z-index: 0; }
+  .fmap-hint { position: absolute; inset: 0; z-index: 1001; display: grid; place-items: center; background: rgba(0, 0, 0, 0.45); color: #fff;
+    font: 600 1.05rem system-ui, sans-serif; text-align: center; padding: 1rem; pointer-events: none; opacity: 0; transition: opacity 0.25s; }
+  .fmap-hint.on { opacity: 1; }
+  .leaflet-popup-content { font-size: 0.85rem; line-height: 1.4; }
+  .fmap-popup .leaflet-popup-content-wrapper { border-radius: 12px; padding: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(51, 39, 29, 0.25); }
+  .fmap-popup .leaflet-popup-content { margin: 0; }
+  .fmap-popup a.leaflet-popup-close-button { top: 6px; right: 6px; color: #8a7d6d; }
+  .fp { box-sizing: border-box; border-top: 5px solid var(--c); padding: 0.75rem 1rem 0.85rem; font: 0.88rem/1.5 var(--sans, system-ui, sans-serif); color: #3f362d; }
+  .fp-kind { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6f6457; margin-right: 1.2rem; }
+  .fp-title { font: 600 1.08rem/1.25 var(--serif, Georgia, serif); color: #33271d; margin: 0.15rem 1.2rem 0.3rem 0; }
+  .fp-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.6rem; font-size: 0.78rem; color: #6f6457; margin-bottom: 0.4rem; }
+  .fp-badge { font-weight: 600; font-size: 0.7rem; padding: 0 0.45rem; border-radius: 999px; border: 1px dashed #9b8c78; background: #fbf7f0; }
+  .leaflet-popup-content p.fp-desc { margin: 0 0 0.6rem; }
+  .fp-actions { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; padding-top: 0.55rem; border-top: 1px dashed #e6ded1; }
+  .fp-actions a { font-weight: 600; color: #9a5b22; text-decoration: none; }
+  .fp-actions a:hover { text-decoration: underline; }
+  .fp-link::after { content: ' →'; }
+  .fmap-legend i { content: ''; display: inline-block; width: 0.8em; height: 0.8em; border-radius: 50%;
+    background: var(--c); border: 1px solid rgba(0,0,0,0.35); margin-right: 0.35em; vertical-align: -0.05em; }
+  .fmap-legend { background: rgba(255,255,255,0.94); padding: 0.5rem 0.7rem; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    font: 0.8rem/1.5 system-ui, sans-serif; color: #222; }
+  .fmap-legend summary { font-weight: 700; cursor: pointer; }
+  .fmap-legend ul { list-style: none; margin: 0.25rem 0 0; padding: 0; }
+  .fmap-legend i.approx { background: rgba(255,255,255,0.6); border: 2px dashed #3b2e22; }
+  .fmap-view { display: flex; background: #fff; overflow: hidden; }
+  .fmap-view button { font: 600 0.8rem system-ui, sans-serif; color: #333; background: #fff; border: 0; padding: 0 0.7rem; height: 30px; cursor: pointer; }
+  .fmap-view button + button { border-left: 1px solid #ccc; }
+  .fmap-view button:hover { background: #f4f4f4; }
+  .fmap-view button.on { background: #33271d; color: #fff; }
+</style>

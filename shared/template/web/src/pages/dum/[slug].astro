@@ -1,12 +1,13 @@
 ---
 // Stránka jednoho domu. Původ: pages/dum/[slug].astro z dejiny-domu-skill (bda6028).
-// Naše úprava: držitel nebo obyvatel s polem `os` odkazuje na stránku osoby v rodokmenu; bez mapy a příběhových tlačítek
-// (stránky mapy a příběhů domu přijdou s dalším krokem).
+// Naše úprava: držitel nebo obyvatel s polem `os` odkazuje na stránku osoby v rodokmenu; mapa domu (HouseMap); bez
+// příběhových tlačítek (příběhy domu přijdou s dalším krokem).
 import Base from '../../layouts/Base.astro';
 import Record from '../../components/Record.astro';
 import Timeline from '../../components/Timeline.astro';
 import RecLinks from '../../components/RecLinks.astro';
 import Vyhrady from '../../components/Vyhrady.astro';
+import HouseMap from '../../components/HouseMap.astro';
 import PersonLink from '../../components/PersonLink.astro';
 import { houses, records, dateKey, village, houseAddress, houseFullTitle, statusClass } from '../../lib/data.js';
 import '../../styles/domy.css';
@@ -77,6 +78,13 @@ const recs = h.records.filter((r) => records[r]).sort((a, b) => dateKey(records[
           </div>
         ))}
       </div>
+    </>
+  )}
+
+  {h.lat != null && (
+    <>
+      <h2>Poloha</h2>
+      <HouseMap height="50vh" compact focus={h.slug} />
     </>
   )}
 

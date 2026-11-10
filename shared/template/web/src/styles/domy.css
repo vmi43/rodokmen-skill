@@ -47,3 +47,21 @@ td .chip { white-space: nowrap; }
   .timeline li { grid-template-columns: 1fr; gap: 0.1rem; }
   .owner-list li { grid-template-columns: 4.8rem 1fr; }
 }
+
+/* Porovnání starých map (pages/mapy.astro). Vlastní styl; upstream dejiny-domu-skill ho má v modern.css. */
+.cmp { margin: 2rem 0; }
+.cmp-ctl { display: flex; align-items: center; flex-wrap: nowrap; gap: 0.6rem 1.2rem; background: var(--paper); border: 1px solid var(--line);
+  border-bottom: 0; border-radius: var(--radius) var(--radius) 0 0; padding: 0.8rem 1rem; margin: 1rem 0 0; }
+.cmp-ctl select { flex: none; min-width: 6.5rem; }
+.cmp-ctl input[type=range] { flex: 1 1 auto; min-width: 0; }
+.cmp-box { position: relative; border: 1px solid var(--line); border-radius: 0 0 var(--radius) var(--radius); overflow: hidden; background: var(--paper); }
+.cmp-box img { display: block; width: 100%; height: auto; }
+.cmp-box:not(.cmp-side) img + img { position: absolute; inset: 0; }
+.cmp-box.cmp-side { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+.cmp-names { display: flex; justify-content: space-between; gap: 1rem; margin: 0.5rem 0.2rem 0; }
+.cmp-names span:last-child { text-align: right; }
+@media (max-width: 640px) {
+  .cmp-ctl { flex-wrap: wrap; justify-content: space-between; padding: 0.7rem 0.8rem; }
+  .cmp-ctl input[type=range] { order: 3; flex-basis: 100%; margin: 0.4rem 0 0.2rem; }
+  .cmp-box.cmp-side { grid-template-columns: 1fr; }
+}
