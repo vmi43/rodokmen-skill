@@ -3,13 +3,14 @@
 import Base from '../layouts/Base.astro';
 import Timeline from '../components/Timeline.astro';
 import HouseMap from '../components/HouseMap.astro';
-import { village, hasHouses, houseList, housePlaces, maps } from '../lib/data.js';
+import { config, village, hasHouses, houseList, housePlaces, maps } from '../lib/data.js';
 const maMapu = village.lat != null || houseList.some((h) => h.lat != null) || housePlaces.length > 0;
 import '../styles/domy.css';
 ---
 <Base title={`Obec ${village.name}`}>
   <h1>{village.name || 'Obec'}</h1>
   {village.otherNames && <p class="muted">Dříve též: {village.otherNames}</p>}
+  {(config.dalsiPribehy ?? []).some((p) => p.slug === 'obec') && <p><a class="btn" href="/pribehy/obec/">Přečíst příběh obce →</a></p>}
   {village.desc && <p class="lead">{village.desc}</p>}
   <div class="table-box"><table><tbody>
     {village.municipality && <tr><th>Dnes</th><td>{village.municipality}</td></tr>}

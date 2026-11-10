@@ -1,0 +1,41 @@
+---
+// Další příběh: data/pribeh_<slug>.md (export_web.py je kopíruje do src/generated/pribehy/).
+// Původ: pages/pribehy/[slug].astro z dejiny-domu-skill (bda6028); bez komponenty Doplnky (viz docs/decisions.md).
+import Base from '../../layouts/Base.astro';
+import { config, houseList, href } from '../../lib/data.js';
+
+export function getStaticPaths() {
+  const files = import.meta.glob('../../generated/pribehy/*.md', { eager: true });
+  return Object.entries(files).map(([path, mod]) => ({
+    params: { slug: path.split('/').pop().replace(/\.md$/, '') },
+    props: { mod },
+  }));
+}
+const { mod } = Astro.props;
+const { Content, frontmatter } = mod;
+const { slug } = Astro.params;
+const ostatni = (config.dalsiPribehy ?? []).filter((p) => p.slug !== slug);
+// Protějšek tlačítka „Přečíst příběh domu/obce“: slug cp<adresa domu> (čp. 12 → cp12, ev. 3 → cpev-3) nebo obec.
+const dum = houseList.find((h) => slug === `cp${h.slug}`);
+const zpet = slug === 'obec' ? { href: '/obec/', text: 'Dějiny obce' } : dum ? { href: href.house(dum.slug), text: 'Dějiny domu' } : null;
+---
+<Base title={frontmatter.title}>
+  <p class="crumbs"><a href="/pribehy/">Příběhy</a></p>
+  <h1>{frontmatter.title}</h1>
+  {frontmatter.lead && <p class="lead">{frontmatter.lead}</p>}
+  <div class="prose"><Content /></div>
+
+  {(ostatni.length > 0 || zpet) && (
+    <div class="next-step">
+      {ostatni.length > 0 && (
+        <>
+          <p><strong>Další příběhy</strong></p>
+          <ul>
+            {ostatni.map((p) => <li><a href={`/pribehy/${p.slug}/`}>{p.title}</a>{p.lead && <> – {p.lead}</>}</li>)}
+          </ul>
+        </>
+      )}
+      <p>{zpet && <a class="btn" href={zpet.href}>{zpet.text} →</a>} <a class="btn" href="/zajimavosti/">Zajímavosti →</a></p>
+    </div>
+  )}
+</Base>

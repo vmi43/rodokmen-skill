@@ -1,7 +1,7 @@
 ---
 // Stránka jednoho domu. Původ: pages/dum/[slug].astro z dejiny-domu-skill (bda6028).
-// Naše úprava: držitel nebo obyvatel s polem `os` odkazuje na stránku osoby v rodokmenu; mapa domu (HouseMap); bez
-// příběhových tlačítek (příběhy domu přijdou s dalším krokem).
+// Naše úprava: držitel nebo obyvatel s polem `os` odkazuje na stránku osoby v rodokmenu; mapa domu (HouseMap); tlačítko
+// „Přečíst příběh domu“, když je data/pribeh_cp<adresa>.md.
 import Base from '../../layouts/Base.astro';
 import Record from '../../components/Record.astro';
 import Timeline from '../../components/Timeline.astro';
@@ -9,13 +9,14 @@ import RecLinks from '../../components/RecLinks.astro';
 import Vyhrady from '../../components/Vyhrady.astro';
 import HouseMap from '../../components/HouseMap.astro';
 import PersonLink from '../../components/PersonLink.astro';
-import { houses, records, dateKey, village, houseAddress, houseFullTitle, statusClass } from '../../lib/data.js';
+import { config, houses, records, dateKey, village, houseAddress, houseFullTitle, statusClass } from '../../lib/data.js';
 import '../../styles/domy.css';
 
 export function getStaticPaths() {
   return Object.keys(houses).map((slug) => ({ params: { slug } }));
 }
 const h = houses[Astro.params.slug];
+const maPribeh = (config.dalsiPribehy ?? []).some((p) => p.slug === `cp${h.slug}`);
 const recs = h.records.filter((r) => records[r]).sort((a, b) => dateKey(records[a].date) - dateKey(records[b].date));
 ---
 <Base title={houseFullTitle(h)} description={h.desc}>
@@ -27,6 +28,7 @@ const recs = h.records.filter((r) => records[r]).sort((a, b) => dateKey(records[
   </div>
   {h.desc && <p class="lead">{h.desc}</p>}
   {h.note && <p class="note">{h.note}</p>}
+  {maPribeh && <p><a class="btn" href={`/pribehy/cp${h.slug}/`}>Přečíst příběh domu →</a></p>}
   {h.story && (
     <section class="house-story">
       <h2>{h.story.title || 'Příběh domu'}</h2>

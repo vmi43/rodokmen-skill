@@ -372,7 +372,22 @@ def main():
 
     has_story = os.path.exists(os.path.join(DATA, "pribeh.md"))
     public_cfg = {k: v for k, v in cfg.items() if k != "prihlaseni"}
-    public_cfg["maPribeh"] = has_story
+    # další příběhy: data/pribeh_<slug>.md → /pribehy/<slug>/ (původ: export_web.py z dejiny-domu-skill, bda6028)
+    extra_stories = []
+    for fn in sorted(os.listdir(DATA)):
+        m = re.match(r"pribeh_([a-z0-9-]+)\.md$", fn)
+        if not m:
+            continue
+        text = strip_comments(open(os.path.join(DATA, fn), encoding="utf-8").read())
+        fm = dict(re.findall(r"^(title|lead|poradi|obdobi):\s*(.*)$", text.split("---")[1] if text.startswith("---") else "", re.M))
+        poradi = fm.get("poradi", "").strip()
+        extra_stories.append(dict(slug=m.group(1), title=fm.get("title", m.group(1)).strip().strip("'\""),
+                                  lead=fm.get("lead", "").strip().strip("'\""), text=text,
+                                  poradi=int(poradi) if poradi.isdigit() else 99, obdobi=fm.get("obdobi", "").strip().strip("'\"")))
+    extra_stories.sort(key=lambda st: (st["poradi"], st["slug"]))
+    public_cfg["maPribeh"] = has_story or bool(extra_stories)
+    public_cfg["maHlavniPribeh"] = has_story
+    public_cfg["dalsiPribehy"] = [{k: v for k, v in st.items() if k != "text"} for st in extra_stories]
     site = dict(config=public_cfg, places=places, root=slugs.get(1), aliases={a: slugs[a] for a in SAME}, people=people,
                 families=families, records=records, lines=lines,
                 issues=[dict(title=i, text="") if isinstance(i, str) else dict(title=i[0], text=i[1]) for i in ISSUES], stats=stats, hypotheses=hypotheses,
@@ -392,6 +407,14 @@ def main():
         write(os.path.join(gen_dir, dst), strip_comments(re.sub(r"^# .*\n", "", text, count=1)))
     story = os.path.join(DATA, "pribeh.md")
     write(os.path.join(gen_dir, "pribeh.md"), strip_comments(open(story, encoding="utf-8").read()) if has_story else "---\ntitle: Příběh\nlead: ''\n---\n")
+
+    stories_dir = os.path.join(gen_dir, "pribehy")
+    os.makedirs(stories_dir, exist_ok=True)
+    for old in os.listdir(stories_dir):
+        if old.endswith(".md") and old[:-3] not in {st["slug"] for st in extra_stories}:
+            os.remove(os.path.join(stories_dir, old))
+    for st in extra_stories:
+        write(os.path.join(stories_dir, st["slug"] + ".md"), st["text"])
 
     if not have_people:   # bez rodokmenu: prázdný vějíř, aby stránky, které ho načítají, šly sestavit (v nabídce nejsou)
         write(os.path.join(gen_dir, "fan.svg"), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"></svg>\n')
@@ -435,6 +458,7 @@ def main():
     # odkazy v textech, které nikam nevedou (adresa osoby se změní třeba doplněním roku narození: jan-novak → jan-novak-1798)
     targets = dict(osoba=people, zdroj=recs, rod=lines, rodina=families, dum=(house_part or {}).get("houses", {}))
     texts = {f: open(os.path.join(gen_dir, f), encoding="utf-8").read() for f in ("pribeh.md", "zajimavosti.md")}
+    texts.update({f"pribeh_{st['slug']}.md": st["text"] for st in extra_stories})
     texts["web.json"] = json.dumps(cfg, ensure_ascii=False)
     texts["osoby.py (hypotézy)"] = json.dumps(hypotheses, ensure_ascii=False)
     broken = [(f, m.group(0)) for f, t in texts.items()

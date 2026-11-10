@@ -29,7 +29,7 @@ def zapis(cesta, text, mod="w"):
         f.write(text)
 
 
-def export(domy=DOMY, osoby=OSOBY, zaznamy=ZAZNAMY, mapy=None, obrazky=(), web=None):
+def export(domy=DOMY, osoby=OSOBY, zaznamy=ZAZNAMY, mapy=None, obrazky=(), web=None, pribehy=None):
     """Vrátí (rc, výstup, složka site.json nebo None, složka projektu) – projekt se smaže až v `uklid`."""
     tmp = tempfile.mkdtemp(prefix="export_domy_")
     zapis(os.path.join(tmp, "data", "STAV.md"), "x")
@@ -40,6 +40,8 @@ def export(domy=DOMY, osoby=OSOBY, zaznamy=ZAZNAMY, mapy=None, obrazky=(), web=N
     zapis(os.path.join(tmp, "data", "web.json"), json.dumps(web or {"nazev": "Test", "prihlaseni": {"odpoved": "ano"}}))
     if mapy is not None:
         zapis(os.path.join(tmp, "data", "mapy.json"), json.dumps(mapy))
+    for nazev, text in (pribehy or {}).items():
+        zapis(os.path.join(tmp, "data", nazev), text)
     for img in obrazky:
         zapis(os.path.join(tmp, "vyrezy", img + ".jpg"), JPEG, "wb")
     tmpl = os.path.join(SHARED, "template", "web")
@@ -101,6 +103,22 @@ pripad("web s heslem obrázek zveřejní (za heslem to smí)",
 pripad("odkaz /dum/x/, který nikam nevede, se ohlásí",
        lambda rc, o, s, t: rc == 0 and "nefunkční odkaz /dum/nikde/" in o,
        export(web={"nazev": "Test", "prihlaseni": {"odpoved": "ano"}, "uvod": {"text": "viz /dum/nikde/"}}))
+PRIBEHY = {
+    "pribeh_obec.md": "---\ntitle: Ves Lhota\nlead: 'Od založení.'\nporadi: 2\n---\nText.\n",
+    "pribeh_cp1.md": "---\ntitle: Statek čp. 1\nporadi: 1\nobdobi: 1800–dnes\n---\n<!-- poznámka pro Clauda -->\nText o domu.\n",
+}
+pripad("další příběhy se vyexportují seřazené a bez poznámek pro Clauda",
+       lambda rc, o, s, t: rc == 0 and [p["slug"] for p in s["config"]["dalsiPribehy"]] == ["cp1", "obec"]
+       and s["config"]["dalsiPribehy"][0]["obdobi"] == "1800–dnes" and s["config"]["dalsiPribehy"][1]["lead"] == "Od založení."
+       and s["config"]["maPribeh"] is True and s["config"]["maHlavniPribeh"] is False and "text" not in s["config"]["dalsiPribehy"][0]
+       and "poznámka" not in open(os.path.join(t, "web", "src", "generated", "pribehy", "cp1.md"), encoding="utf-8").read(),
+       export(pribehy=PRIBEHY))
+pripad("bez příběhů není v nabídce příběh a seznam je prázdný",
+       lambda rc, o, s, t: rc == 0 and s["config"]["dalsiPribehy"] == [] and s["config"]["maPribeh"] is False,
+       export())
+pripad("odkaz /dum/x/ v dalším příběhu se ohlásí",
+       lambda rc, o, s, t: rc == 0 and "nefunkční odkaz /dum/nikde/ v pribeh_cp1.md" in o,
+       export(pribehy={"pribeh_cp1.md": "---\ntitle: A\n---\nviz [dům](/dum/nikde/)\n"}))
 
 print(f"\n{sum(VYSLEDKY)} z {len(VYSLEDKY)} v pořádku")
 sys.exit(0 if all(VYSLEDKY) else 1)

@@ -110,7 +110,7 @@
 
 **Jak je to provedeno.** Export domů je samostatný modul `shared/tools/domy_web.py` (+ `platnost.py` s validací odkazů a poloh, původ bda6028), rodokmenový export zůstává v `export_web.py`. `site.json` dostane klíče `village`, `houses`, `maps`, `mapGroups`, `housePlaces`, `houseStats`; místa z `mista.json` jdou do `housePlaces`, aby se nepletla s místy rodokmenu (`places`). Projekt bez `osoby.py` se vyexportuje i sestaví (prázdný `fan.svg`, nabídka bez rodokmenových stránek); běžný projekt dostane `domy.py` kopií šablony. Domy mají vlastní styl `styles/domy.css` načítaný jen z jejich stránek. Obrázky, které portál bez souhlasu nedovoluje zveřejnit, se na otevřený web nekopírují (`podminky.posoud_obrazek`).
 
-**Vynecháno zatím:** `Doplnky` (uživatelské doplňky z upstreamu), příběhová tlačítka a `pribehy/[slug]` pro dům. Mapa a staré mapy jsou doplněné níže (*Mapa domu a staré mapy*), `Gallery` vynechána.
+**Vynecháno zatím:** `Doplnky` (uživatelské doplňky z upstreamu). Příběhy domu jsou doplněné níže (*Další příběhy*). Mapa a staré mapy jsou doplněné níže (*Mapa domu a staré mapy*), `Gallery` vynechána.
 
 ## Založení projektu s domem: `--dum` a `--jen-dum` (2026-11-10)
 
@@ -131,3 +131,11 @@
 **Zavrženo.** `Gallery`: stránka domu už ukazuje fotky a dokumenty mřížkou `.docs`, druhá galerie by byla duplicita; vrátit, až bude potřeba skupinová galerie s dvojicemi „tehdy – dnes“.
 
 **Ověřeno.** `npm run build` rc=0 s ukázkou, čtyřmi domy a dvěma mapami ve skupině; vznikly `/mapy/`, `/obec/` a `/dum/*` s mapou, odkaz v nabídce a na obci je. **Neověřeno:** vzhled a chování mapy v prohlížeči (Leaflet běží až v prohlížeči), prolínání map. **Pozor:** `housePlaces` vychází z celého `mista.json`; v projektu s rodokmenem se na mapě domů ukážou i místa předků jako „Další místa“. Rozhodnout, až se to ukáže na skutečném projektu.
+
+## Další příběhy: `pribeh_<slug>.md` a `pribehy/[slug]` (2026-11-10)
+
+**Rozhodnuto.** Převzat upstreamový mechanismus: `data/pribeh_<slug>.md` → `/pribehy/<slug>/`, frontmatter `title`, `lead`, `poradi`, `obdobi`; seznam jde do `site.json` → `config.dalsiPribehy`, texty do `src/generated/pribehy/` (osiřelé se při exportu mažou). Slug `cp<adresa domu>` přidá na stránku domu tlačítko „Přečíst příběh domu“, `obec` tlačítko na stránku obce. Hlavní příběh `pribeh.md` zůstává; `/pribehy/` pod ním vypíše další příběhy, a když `pribeh.md` není, ukáže jen seznam (`config.maHlavniPribeh`). Odkazy `/dum/…` v příbězích kontroluje export jako u `pribeh.md`.
+
+**Zavrženo.** Upstreamový rozcestník s kartami a galerií (`obrazek`, `skupina`, `par`) – galerii jsme vynechali už dřív a kvůli obrázkům by bylo nutné napojit `posoud_obrazek`. `Doplnky` zůstávají vynechané. Příběh uvedený v `dum[slug]` z pole `pribeh` v `domy.py` zůstává jako krátký text přímo na stránce domu; delší příběh patří do `pribeh_cp<adresa>.md`.
+
+**Ověřeno.** `tests/web/test_export_domy.py shared` 13/13; živě `npm install` a `npm run build` rc=0 s ukázkou, domem a příběhy `cp1` a `obec` (tlačítka na `dum/1` a `obec`, seznam na `/pribehy/`). **Neověřeno:** vzhled v prohlížeči.

@@ -102,7 +102,8 @@ Místa z dějin obce (kaple, kříže, pomník, mlýn, škola) dávej na mapu do
 ## Fáze 5 – Zajímavosti a Příběh domu
 Podrobně `reference/pribehy.md`. Zajímavosti piš **průběžně** do `data/zajimavosti.md` a říkej je uživateli.
 Příběh domu nabídni, jakmile je ~4 doložených držitelů nebo ~150 let historie. Koncept dej **do chatu** ke schválení,
-pak `data/pribeh.md` a `web.json`.
+pak `data/pribeh.md` a `web.json`. Víc příběhů (dům, obec, výměnek) jde do `data/pribeh_<slug>.md`: slug `cp<adresa domu>`
+(čp. 12 → `cp12`, ev. 3 → `cpev-3`) přidá na stránku domu tlačítko „Přečíst příběh domu“, slug `obec` totéž na stránku obce.
 
 ## Fáze 6 – Web a zveřejnění
 Šablona webu má stránky `obec`, `domy` a `dum/[slug]` (zapnou se, když je `data/domy.py`); `npm run data` a `npm run build`

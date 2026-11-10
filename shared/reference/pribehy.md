@@ -61,6 +61,21 @@ jde později doplnit. `kontrola.py` na to upozorní. Uživateli to nabídni, i k
 4. Nastav `web.json` → `"pribeh": {"menu": "Příběh Novákových", "rod": 8, "tlacitko": "Přečíst příběh Novákových"}`
    a úvod (`uvod.nadpis`, 2–3 odstavce lákadla, fotka). Bez úvodu se na úvodní stránce ukáže aspoň název a `lead` příběhu.
 
+**Víc příběhů** (dům, výměnek, ves, rodina; původ: `reference/pribehy.md` z dejiny-domu-skill, bda6028): každý do
+`data/pribeh_<slug>.md` → stránka `/pribehy/<slug>/`. Jakmile jsou, `/pribehy/` pod hlavním příběhem (`pribeh.md`, je-li)
+vypíše seznam dalších. Frontmatter jako u `pribeh.md`, navíc `poradi` (menší dřív) a `obdobi` (např. `1654–dnes`):
+```markdown
+---
+title: Statek čp. 12
+lead: Jedna věta, která chytí.
+poradi: 1
+obdobi: 1654–dnes
+---
+```
+Slug `cp<adresa domu>` (čp. 12 → `cp12`, 12a → `cp12a`, ev. 3 → `cpev-3`, část obce `horni` a čp. 3 → `cphorni-3`) přidá na stránku
+domu tlačítko „Přečíst příběh domu“, slug `obec` tlačítko „Přečíst příběh obce“ na stránku obce. Karty s obrázky a galerie
+z upstreamu tu nejsou.
+
 **Jak má vypadat** (osvědčený tvar, asi 800–1500 slov):
 - Kapitoly po generacích, od nejstaršího předka k dnešku. Nadpis = člověk nebo jeho role + roky
   („Krejčí z Holic (asi 1756–1812)“, „Služka, která zachránila jméno“).
