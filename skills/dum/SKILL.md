@@ -39,9 +39,10 @@ Co je jen o domě, je níže. Kde se obě pravidla liší, platí tento skill pr
    a pokračuj podle „Rozpracováno“. Krátce shrň, kde jste skončili.
    **Verze:** porovnej `.skill_verze` v projektu se `SHARED_DIR/VERZE`; liší-li se, nabídni aktualizaci podle
    `skills/rodokmen/SKILL.md` (sekce *Na začátku každé konverzace*).
-2. Projekt ještě není → **Fáze 0** (založení projektu dějin domu ještě nemá vlastní volbu v `novy_projekt.py`;
-   do té doby založ běžný projekt a `data/domy.py` do něj zkopíruj ze `SHARED_DIR/template/dum/data/domy.py`).
-3. Zeptej se, jestli k domu patří i **rodokmen** (lidé z domu jsou často něčí předci). Má-li ho, držitelé a obyvatelé
+2. Projekt ještě není → **Fáze 0**. Zeptej se napřed na rodokmen (bod 3) a podle odpovědi založ projekt:
+   `python3 -I SHARED_DIR/tools/novy_projekt.py <složka> --dum` (dům i rodokmen) nebo `--jen-dum` (jen obec a domy,
+   bez `data/osoby.py`). `--dum` jde spustit i na existující projekt, kde `data/domy.py` chybí; upravený `domy.py` nepřepíše.
+3. Zeptej se (ještě před založením, viz bod 2), jestli k domu patří i **rodokmen** (lidé z domu jsou často něčí předci). Má-li ho, držitelé a obyvatelé
    se na osoby odkazují polem `os` (číslo osoby v `data/osoby.py`, viz `domy.py`).
 
 ## Fáze 1 – Co už víme

@@ -111,3 +111,13 @@
 **Jak je to provedeno.** Export domů je samostatný modul `shared/tools/domy_web.py` (+ `platnost.py` s validací odkazů a poloh, původ bda6028), rodokmenový export zůstává v `export_web.py`. `site.json` dostane klíče `village`, `houses`, `maps`, `mapGroups`, `housePlaces`, `houseStats`; místa z `mista.json` jdou do `housePlaces`, aby se nepletla s místy rodokmenu (`places`). Projekt bez `osoby.py` se vyexportuje i sestaví (prázdný `fan.svg`, nabídka bez rodokmenových stránek); běžný projekt dostane `domy.py` kopií šablony. Domy mají vlastní styl `styles/domy.css` načítaný jen z jejich stránek. Obrázky, které portál bez souhlasu nedovoluje zveřejnit, se na otevřený web nekopírují (`podminky.posoud_obrazek`).
 
 **Vynecháno zatím:** `Doplnky` (uživatelské doplňky z upstreamu), příběhová tlačítka a `pribehy/[slug]` pro dům, `HouseMap`, `mapy`, `Gallery`.
+
+## Založení projektu s domem: `--dum` a `--jen-dum` (2026-11-10)
+
+**Rozhodnuto.** `novy_projekt.py` má dvě volby: `--dum` přidá k projektu `data/domy.py` ze `shared/template/dum/` (rodokmen zůstává), `--jen-dum` navíc nezaloží `data/osoby.py`, takže web má jen obec a domy. Volba jde spustit i dodatečně na existující projekt a upravený `domy.py` nepřepíše (kopíruje se jen chybějící soubor).
+
+**Zavrženo.** Jediná volba `--dum` bez možnosti vynechat rodokmen: kostra `osoby.py` by na webu dělala prázdný rodokmen. Dvojice `--dum` + `--bez-rodokmenu`: dvě volby, z nichž jedna nedává smysl samostatně. `--jen-dum` s `--ukazka` skončí chybou, protože ukázka je rodokmen Novákových (použije se `--dum --ukazka`).
+
+**Ověřeno.** `tests/web/test_novy_projekt_dum.py shared` 9/9; živě `npm install` a `npm run build` rc=0 s ukázkou a čtyřmi domy, z toho dva se stejným čp. v různých částech obce (stránky `dum/1`, `dum/2`, `dum/horni-3`, `dum/dolni-3`).
+
+**Známé zbytky.** Bez `domy.py` se stránky `/domy/` a `/obec/` vyrobí jako prázdné a nelinkované (Astro neumí vynechat statickou stránku); nabídka je skrytá. Případně řešit později přesunem do dynamické cesty.

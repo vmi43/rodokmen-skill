@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """Založí nový projekt rodokmenu ze šablony skillu.
 
-Použití: python3 <skill>/tools/novy_projekt.py <cílová složka> [--ukazka] [--hlidac | --bez-hlidace]
+Použití: python3 <skill>/tools/novy_projekt.py <cílová složka> [--ukazka] [--dum | --jen-dum] [--hlidac | --bez-hlidace]
   --ukazka        nakopíruje i vymyšlená ukázková data (rodina Novákových), aby šel web hned vyzkoušet
+  --dum           přidá k projektu dějiny domu a obce (skill rodokmen:dum): data/domy.py ze šablony template/dum/;
+                  stránky Obec a Domy se na webu objeví, jen když je v projektu data/domy.py (jde i dodatečně
+                  na existující projekt: spustit znovu na stejnou složku s --dum)
+  --jen-dum       totéž, ale bez rodokmenu: nezaloží data/osoby.py (web má jen obec a domy, bez předků a vějíře);
+                  rodokmen lze přidat později vlastním data/osoby.py
   --hlidac        zapne hlídač sítě (hook v .claude/settings.json, tools/hlidac_site.py): zamítne příkazy,
                   které jdou na web archivu mimo brzdu tools/slusne.py; --bez-hlidace ho vypne
        python3 <skill>/tools/novy_projekt.py <složka projektu> --vyreseno <soubor> [--vyreseno <soubor> …]
@@ -47,13 +52,15 @@ VZDY_SABLONA = {"web/package-lock.json"}   # mění ho npm install, ne uživatel
 NEROZLISUJE = os.name == "nt" or sys.platform == "darwin"   # disk běžně nerozlišuje velikost písmen
 
 
-def copy_tree(src, dst):
-    """Zkopíruje chybějící soubory."""
+def copy_tree(src, dst, vynech=()):
+    """Zkopíruje chybějící soubory (vynech = jména souborů, která se nekopírují)."""
     for base, dirs, files in os.walk(src):
         dirs[:] = [d for d in dirs if d not in SKIP]
         rel = os.path.relpath(base, src)
         os.makedirs(os.path.join(dst, rel), exist_ok=True)
         for f in files:
+            if f in vynech:
+                continue
             new, out = os.path.join(base, f), os.path.join(dst, rel, f)
             if not os.path.lexists(out):
                 copy(new, out)
@@ -381,7 +388,18 @@ def main():
         sys.exit(0 if all([vyresit(dst, c) for c in cesty]) else 1)
     demo = "--ukazka" in sys.argv
     os.makedirs(dst, exist_ok=True)
-    copy_tree(os.path.join(SKILL, "template", "ukazka" if demo else "data"), os.path.join(dst, "data"))
+    jen_dum = "--jen-dum" in sys.argv
+    dum = jen_dum or "--dum" in sys.argv
+    if jen_dum and demo:
+        sys.exit("--jen-dum a --ukazka nejdou spolu: ukázka je rodokmen Novákových (použijte --dum --ukazka).")
+    if jen_dum and os.path.exists(os.path.join(dst, "data", "osoby.py")):
+        print("POZOR: projekt už má data/osoby.py; --jen-dum ho nemaže, web bude mít i rodokmen.")
+    if jen_dum:   # kostra bez osoby.py (bez něj export a web běží jen s domy)
+        copy_tree(os.path.join(SKILL, "template", "data"), os.path.join(dst, "data"), vynech={"osoby.py"})
+    else:
+        copy_tree(os.path.join(SKILL, "template", "ukazka" if demo else "data"), os.path.join(dst, "data"))
+    if dum:
+        copy_tree(os.path.join(SKILL, "template", "dum"), dst)
     if demo:
         for sub in ("vyrezy", "zdroje"):
             src = os.path.join(SKILL, "template", "ukazka_" + sub)
