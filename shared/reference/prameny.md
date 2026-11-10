@@ -10,6 +10,8 @@ Kde něco nevíš jistě (adresa portálu, co je digitalizované), ověř to. Co
 | Doba | Pramen | Co dá k domu | Kde |
 |---|---|---|---|
 | dnes | katastr nemovitostí, RÚIAN | parcela, k. ú., dnešní obec | `mista.py ruian "Osada čp"` (hned ve Fázi 0 – dnešní obec a k. ú. bývají jiné, než se čeká), nahlizenidokn.cuzk.cz |
+| 2009–dnes | Street View s časovou osou (Google, Mapy.com Panorama) | jak dům vypadal zvenku v posledních letech, kdy přibyla okna, omítka, přístavba, co zmizelo | prochází jen uživatel a popíše slovy (`portaly.md`); do PDF popis a odkaz, obrázek ne |
+| 1943–1945 | spojenecké průzkumné letecké snímky (NCAP, **jen okolí cílů náletů**: továrny, nádraží, města) | dům a obec za války, škody po náletu | jen ručně uživatel v Air Photo Finderu (`portaly.md`); obrázek jen s licencí NCAP |
 | 1938–dnes | letecké snímky | jak dům a dvůr vypadaly, kdy přibyly a zmizely stavby | ags.cuzk.gov.cz/archiv (Archiv ČÚZK, ročníky vypíše `cuzk_archiv.py lms`), ortofoto CENIA z 50. let (`cuzk_archiv.py mapa cenia50`, smí do PDF), ortofota po letech od 1998 (`ortofota.py serie`, ČÚZK smí do PDF), mapy.cz → „Letecká“ s volbou roku |
 | 1880–1950 | pozemkový katastr (mapa ~1900–1950) | parcely a budovy, sedí na dnešní mapu | `cuzk_archiv.py mapa pk` |
 | 1945–1952 | konfiskace a příděly (**hlavně pohraničí, majetek Němců, Maďarů a „zrádců“**) | komu dům vzali a komu ho přidělili, odhad, popis domu a živnosti, žádosti novoosídlenců | fondy Osidlovacího úřadu a Fondu národní obnovy (dům, živnost) a Národního pozemkového fondu (statek, půda) v SOA a SOkA, níže „Konfiskace a příděly 1945–1952“ |
@@ -27,7 +29,7 @@ Kde něco nevíš jistě (adresa portálu, co je digitalizované), ověř to. Co
 | 1721–1790 | karolinský katastr (**Slezsko**) | usedlosti a poplatníci, pozemky, mlýny, lesy, řemesla ve městech | ZA Opava, fond Karolínský katastr (107 knih, 57 kartonů, částečně přístupný). Zda je obec online, ověř v Digitální badatelně ZAO (`portaly.md`), jinak dotaz archivu |
 | 1651 | soupis poddaných podle víry (**jen Čechy**) | domácnosti s věkem, ale **ne vždy úplné**: děti někde všechny, jinde až od ~1 roku nebo od ~10 let (podle panství), věk zaokrouhlený | edice po krajích |
 | 1400–1700 | urbáře | povinnosti a platy jednotlivých usedlostí | fond velkostatku v SOA, edice |
-| pravěk–novověk | archeologické výzkumy a nálezy (AMČR) | starší fáze osídlení, zaniklé stavby, středověké jádro vsi; u běžné chalupy často nic | Digitální archiv AMČR (digiarchiv.aiscr.cz), hledej podle katastru; jen nekomerčně (`podminky.md`) |
+| pravěk–novověk | archeologické výzkumy a nálezy (AMČR) | starší fáze osídlení, zaniklé stavby, středověké jádro vsi; u běžné chalupy často nic | Digitální archiv AMČR (digiarchiv.aiscr.cz), hledej podle katastru; jen nekomerčně (`podminky.md`). Nejdřív `pamatky.py uan "Osada čp"`: leží dům na území s nálezy (ÚAN I prokázané, II předpokládané) a jak se území jmenuje – podle názvu pak hledej v AMČR; majiteli k tomu, že výkopy musí předem ohlásit archeologům |
 | 1914–1918, 1939–1945 | pomníky padlých, válečné hroby, evidence padlých | jména mužů z obce, kteří padli, s rokem narození a smrti; u padlých v 1. sv. válce útvar, místo smrti a domovská obec. Shoda s obyvatelem domu podle jména a věku | `valecne_hroby.py obec "Obec"`, `padli <Příjmení> --obec X` |
 | vše | Památkový katalog NPÚ (památky i evidované objekty bez ochrany) | vznik a stavební vývoj, popis, literatura, odkazy na fotky a plány NPÚ | `pamatky.py "Obec"`, `detail <id>`; dům v katalogu chybět smí. Fotky obce i mimo katalog `mis.py hledej`, plány a stavebněhistorické průzkumy Carmen (ručně, `portaly.md`) |
 | 1700–1990 | průmyslové a technické stavby (Industriální topografie VCPD FA ČVUT) | mlýn, pivovar, cihelna, továrna: datace, majitelé firmy, přestavby, zánik, literatura | `industrial.py "Obec"`, `detail <id>`; jen vybrané stavby, chybět smí |
@@ -43,6 +45,7 @@ Kde něco nevíš jistě (adresa portálu, co je digitalizované), ověř to. Co
 | 1880–1945 | Bildarchiv Herder-Institutu Marburg (**německá místa Čech, Moravy a Slezska**, ~800 tis. fotek, negativů, pohlednic, online třetina) | podoba obce, kostela, náměstí před odsunem; foto dokumentace památek | jen ručně uživatel v Bildkatalogu (Claude ho neotevírá), skeny objednat (`portaly.md`); obrázek jen se souhlasem a poplatkem |
 | 1895–1945 | pohlednice v obchodech a aukcích (akpool.de, delcampe.net, ansichtskarten-lexikon.de; **i malé vsi, hospody, mlýny**) | že pohled na obec nebo dům existuje, rok odeslání, co je na něm | jen ručně uživatel, český i německý název (`portaly.md`); jen vodítko, obrázek do výstupu ne, koupená pohlednice je vlastní originál |
 | 1850–2000 | zaniklé vsi, samoty, mlýny, dvory a kaple (zanikleobce.cz, **hlavně pohraničí po 1945, mlýny všude**) | co stálo kolem domu a zmizelo, dobové fotky a pohlednice, vzpomínky pamětníků, počty obyvatel a domů | `zanikleobce.py "Obec"` (okruh 3 km), `detail <id>`; příspěvky dobrovolníků, ověř v pramenech; fotky jen se souhlasem autora |
+| 1900–1990 | Fortepan (maďarský fotoarchiv, CC BY-SA; **z Česka hlavně Praha, Brno, lázně**) | amatérské a rodinné fotky ulic a domů | ručně fortepan.hu nebo „Fortepan Obec“ v hledání Commons (`portaly.md`); smí do výstupu s citací |
 | 1700–1960 | Wikimedia Commons: pohlednice, fotky, rytiny, plány, které nahráli lidé a instituce (**hlavně města, hrady, kostely**) | podoba obce a jednotlivých staveb; u měst sbírky pohlednic (Brück & Sohn) | `commons.py "Obec"`, `detail "<soubor>"`; volná licence, smí do PDF s autorem a licencí |
 | 1896–1925 | pohlednice AKON (Rakouská národní knihovna, **celá monarchie, hlavně města, lázně, hrady**) | podoba obce, náměstí, ulic, továren a hotelů kolem roku 1900 | `akon.py "Obec"` (okruh 3 km od středu obce, i německý název), `detail <id>`; obrázek volné dílo, smí do PDF s citací; plný AKON (asi 2× víc) odkazem na mapu |
 | 1860–1990 | fotografie, pohlednice, kresby a předměty ve sbírkách muzeí (eSbírky) | podoba domu, ulice, náměstí, slavností; staré negativy Národního a krajských muzeí | `esbirky.py "Obec"`, `detail <id>` (název obce v názvu předmětu); obrázek podle licence předmětu |
@@ -201,6 +204,11 @@ Archiv ČÚZK je na https://ags.cuzk.gov.cz/archiv/ (staré archivnimapy.cuzk.cz
   neuloží, vypíše listy a postup `rastry` → `prehled` → `export`.
   Dům na mapě pro čtenáře označ elipsou: `elipsa.py <mapa.jpg> <klíč> cx,cy,a,b,úhel --popisek "čp. 183"` (pixely
   mapy, elipsa přes celou parcelu), příkaz s čísly do `poznamka` v `mapy.json`.
+- **Reliéf terénu z laserového skenování** (DMR 5G, ČÚZK 2009–2013): `mapa relief "Osada čp" výstup.jpg 250` –
+  stínovaný terén bez stromů a domů, stejný výřez a čísla domů jako u PK. Ukáže, co na mapách ani ortofotu není:
+  základy zbořených stavení, zaniklé úvozové cesty, meze a plužiny, hráze vypuštěných rybníků, haldy, i pod lesem.
+  Porovnej s PK a stabilním katastrem: stopa, která sedí na zaniklou stavbu nebo cestu ze staré mapy, je nález.
+  Světlo je od severozápadu, hrany ve stejném směru zmizí. CC BY 4.0, **smí do PDF i na web** („ČÚZK, DMR 5G“).
 - **Ortofoto z 50. let** (CENIA, většinou 1952–54): `mapa cenia50 "Osada čp" výstup.jpg` – stejný výřez a čísla domů
   jako u PK, rok snímku a citaci vypíše. Pod CC BY, **smí do PDF i na web** s celou citací. Porovnání PK × ortofoto
   ukáže, co z dvora stálo po válce.

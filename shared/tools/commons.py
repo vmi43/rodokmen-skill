@@ -40,9 +40,23 @@ VYNECHAT = re.compile(r"\bpeople (of|from)|\bnamed after|bus stops|\broads?\b|\b
                       r"\bwiki ?loves|\bquality images|\bsound|\baudio|\bvideo", re.I)
 
 
+def _verze():
+    try:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "VERZE"), encoding="utf-8") as f:
+            return f.read().strip() or "0"
+    except OSError:
+        return "0"
+
+
+# Wikimedia chce od klientů API identifikaci s kontaktem (policy „User-Agent“); bez ní vrací 403. Kontakt je adresa
+# repozitáře, ne osobní e-mail. Platí jen pro Wikimedii (ostatní portály se představují přes slusne.UA).
+UA_WIKIMEDIA = f"rodokmen-skill/{_verze()} (https://github.com/vmi43/rodokmen-skill; genealogický nástroj, brzděný)"
+
+
 def api(adresa, **parametry):
     parametry.update(format="json", formatversion=2)
-    with urllib.request.urlopen(f"{adresa}?{urllib.parse.urlencode(parametry)}", timeout=60) as r:
+    req = urllib.request.Request(f"{adresa}?{urllib.parse.urlencode(parametry)}", headers={"User-Agent": UA_WIKIMEDIA})
+    with urllib.request.urlopen(req, timeout=60) as r:
         return json.load(r)
 
 

@@ -146,5 +146,27 @@ class AdresaTest(unittest.TestCase):
                          ["File:Olomouc, Panská 11.JPG", "File:Měšťanský dům (Olomouc), č.p.183.JPG"])
 
 
+class UserAgentTest(unittest.TestCase):
+    def test_wikimedia_ua_bez_emailu_s_verzi_a_adresou(self):
+        self.assertNotIn("@", commons.UA_WIKIMEDIA)
+        self.assertIn("github.com/vmi43/rodokmen-skill", commons.UA_WIKIMEDIA)
+        self.assertRegex(commons.UA_WIKIMEDIA, r"^rodokmen-skill/\d+\.\d+\.\d+ ")
+
+    def test_api_posila_ua(self):
+        videno = {}
+
+        class Odp:
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def read(self): return b"{}"
+
+        def falesny(req, timeout=None):
+            videno["ua"] = req.get_header("User-agent")
+            return Odp()
+        with mock.patch.object(commons.urllib.request, "urlopen", falesny):
+            commons.api("https://www.wikidata.org/w/api.php", action="query")
+        self.assertEqual(videno["ua"], commons.UA_WIKIMEDIA)
+
+
 if __name__ == "__main__":
     unittest.main()

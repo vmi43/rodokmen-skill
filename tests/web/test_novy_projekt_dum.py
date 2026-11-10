@@ -1,4 +1,4 @@
-"""Test voleb --dum a --jen-dum v shared/tools/novy_projekt.py (skill rodokmen:dum).
+"""Test voleb --dum, --jen-dum a --bez-webu v shared/tools/novy_projekt.py (skill rodokmen:dum).
 
 Z kořene repozitáře, složka `shared` je argument:
   python3 -I tests/web/test_novy_projekt_dum.py shared
@@ -100,6 +100,23 @@ def jen_dum_ukazka(dst):
     return rc != 0 and "nejdou spolu" in out and not je(dst, "data")
 
 
+def bez_webu(dst):
+    rc, _ = zaloz(dst, "--bez-webu")
+    return rc == 0 and not je(dst, "web") and je(dst, "tools", "export_web.py") and je(dst, "data", "STAV.md")
+
+
+def bez_webu_pak_s_webem(dst):
+    zaloz(dst, "--bez-webu")
+    rc, _ = zaloz(dst)
+    return rc == 0 and je(dst, "web", "package.json")
+
+
+def s_webem_a_bez_webu_nesmaze_web(dst):
+    zaloz(dst)
+    rc, _ = zaloz(dst, "--bez-webu")
+    return rc == 0 and je(dst, "web", "package.json")
+
+
 pripad("bez voleb: žádné domy", bez_voleb)
 pripad("--dum: domy.py a nástroj domy_web.py, rodokmen zůstává", s_dum)
 pripad("--jen-dum: domy.py bez osoby.py", jen_dum)
@@ -109,6 +126,9 @@ pripad("--dum nepřepíše upravený domy.py", neprepise)
 pripad("--jen-dum na projekt s rodokmenem osoby.py nemaže, jen upozorní", nemaze_osoby)
 pripad("--dum --ukazka: ukázkový rodokmen i domy.py", s_ukazkou)
 pripad("--jen-dum s --ukazka skončí chybou a nic nezaloží", jen_dum_ukazka)
+pripad("--bez-webu: data a nástroje, bez web/", bez_webu)
+pripad("--bez-webu a pak běh bez volby web doplní", bez_webu_pak_s_webem)
+pripad("--bez-webu na projekt s webem web nesmaže", s_webem_a_bez_webu_nesmaze_web)
 
 print(f"\n{sum(VYSLEDKY)} z {len(VYSLEDKY)} v pořádku")
 sys.exit(0 if all(VYSLEDKY) else 1)

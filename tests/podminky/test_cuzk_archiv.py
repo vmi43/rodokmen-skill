@@ -61,5 +61,29 @@ class PrazdnyTest(unittest.TestCase):
             builtins.__import__ = puvodni
 
 
+class ReliefTest(unittest.TestCase):
+    def test_relief_pta_dmr5g_a_uklada_obrazek(self):
+        from unittest import mock
+        videno = {}
+
+        def falesne_get(url, par, **k):
+            videno["url"], videno["par"] = url, par
+            return b"\xff\xd8\xff\xe0jpeg"
+
+        ulozeno = {}
+        with mock.patch.object(cuzk_archiv.mista, "stred", return_value=(49.96, 14.07)), \
+                mock.patch.object(cuzk_archiv.mista, "sjtsk", return_value=(-1000.0, -1100000.0)), \
+                mock.patch.object(cuzk_archiv, "get", falesne_get), \
+                mock.patch.object(cuzk_archiv, "save_jpeg", lambda img, out: ulozeno.update(out=out)), \
+                mock.patch.object(cuzk_archiv, "magick", lambda: None), \
+                mock.patch.object(cuzk_archiv, "adresy", lambda *a, **k: None), \
+                mock.patch.object(cuzk_archiv, "vyrez_sjtsk", lambda b: [0, 0, 1, 1]):
+            cuzk_archiv.mapa("relief", "49.96,14.07", "relief.jpg", 150, 800)
+        self.assertEqual(videno["url"], cuzk_archiv.DMR5G)
+        self.assertIn("GrayscaleHillshade", videno["par"]["renderingRule"])
+        self.assertEqual(ulozeno["out"], "relief.jpg")
+        self.assertEqual(videno["par"]["size"], "800,800")
+
+
 if __name__ == "__main__":
     unittest.main()

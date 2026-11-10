@@ -28,6 +28,7 @@ Použití (z kořene projektu: python3 -I tools/slusne.py tools/mista.py …):
 
 Souřadnice pro adresu jsou v mista.json v klíči "adresy": {"14": {"lat": …, "lon": …, "mapy": "Biskupice 14, …"}}.
 Ruční bod (např. zaniklý dům podle mapy z rodinné kroniky): přidej "rucne": true, nástroj ho nepřepíše.
+Původ bloku RÚIAN (`ruian`, `okoli`, `parcely`, odkazy na panorama): vzoha/dejiny-domu-skill (skills/dejiny-domu/tools/mista.py), commit 32bef07. Zbytek je náš.
 
 API klíč Mapy.com (zdarma, základní tarif 250 000 kreditů měsíčně, jedno hledání = 4 kredity): založ si účet a projekt
 na https://developer.mapy.com/portal-muj-ucet/ a vytvoř klíč. Dej ho do proměnné prostředí MAPY_API_KEY nebo do souboru
@@ -200,6 +201,12 @@ def adresa_a_obec(misto):
     return dotaz.strip(), obec.strip()
 
 
+def odkazy_panorama(lat, lon):
+    """Odkazy na dům ve Street View a Mapy.com – prochází jen uživatel, snímky do výstupu ne (reference/portaly.md)."""
+    return (f"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint={lat:.6f},{lon:.6f}"
+            f"  |  https://mapy.com/cs/zakladni?x={lon:.6f}&y={lat:.6f}&z=19 (tlačítko Panorama)")
+
+
 def ruian(dotaz):
     ulice_cislo, obec = adresa_a_obec(dotaz)
     adr = adresni_mista(ulice_cislo, "adresa,stavebniobjekt", obec)
@@ -210,6 +217,7 @@ def ruian(dotaz):
     for a in adr[:8]:
         at, g = a["attributes"], a["geometry"]
         print(f"{at['adresa']}   lat={g['y']:.5f}, lon={g['x']:.5f}")
+        print(f"   panorama (prochází uživatel): {odkazy_panorama(g['y'], g['x'])}")
         so = ruian_q(3, f"kod={at['stavebniobjekt']}", "identifikacniparcela")
         if not so or not so[0]["attributes"].get("identifikacniparcela"):
             continue

@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
 """Založí nový projekt rodokmenu ze šablony skillu.
 
-Použití: python3 <skill>/tools/novy_projekt.py <cílová složka> [--ukazka] [--dum | --jen-dum] [--hlidac | --bez-hlidace]
+Původ volby --bez-webu: vzoha/dejiny-domu-skill, commit 32bef07.
+
+Použití: python3 <skill>/tools/novy_projekt.py <cílová složka> [--ukazka] [--dum | --jen-dum] [--hlidac | --bez-hlidace] [--bez-webu]
   --ukazka        nakopíruje i vymyšlená ukázková data (rodina Novákových), aby šel web hned vyzkoušet
   --dum           přidá k projektu dějiny domu a obce (skill rodokmen:dum): data/domy.py ze šablony template/dum/;
                   stránky Obec a Domy se na webu objeví, jen když je v projektu data/domy.py (jde i dodatečně
                   na existující projekt: spustit znovu na stejnou složku s --dum)
   --jen-dum       totéž, ale bez rodokmenu: nezaloží data/osoby.py (web má jen obec a domy, bez předků a vějíře);
                   rodokmen lze přidat později vlastním data/osoby.py
+  --bez-webu      projekt jen s daty a nástroji: web/ se nezaloží ani neaktualizuje (stačí PDF nebo přepisy; ušetří
+                  ~300 MB node_modules). Dodatečně web přidá běh bez --bez-webu na stejnou složku
   --hlidac        zapne hlídač sítě (hook v .claude/settings.json, tools/hlidac_site.py): zamítne příkazy,
                   které jdou na web archivu mimo brzdu tools/slusne.py; --bez-hlidace ho vypne
        python3 <skill>/tools/novy_projekt.py <složka projektu> --vyreseno <soubor> [--vyreseno <soubor> …]
   --vyreseno      po ručním převzetí změn šablony (soubor „ke kontrole“, např. web/src/pages/index.astro) uloží
                   novou verzi šablony jako základ; soubor v projektu nezmění a další aktualizace ho už nehlásí
 
-Vytvoří: data/ (prázdné kostry nebo ukázka), web/ (Astro web), tools/ (kopie nástrojů),
+Vytvoří: data/ (prázdné kostry nebo ukázka), web/ (Astro web, ne s --bez-webu), tools/ (kopie nástrojů),
 vyrezy/, zdroje/, dokumenty/, pracovni/, CLAUDE.md, .gitignore, .gitattributes (konce řádků LF i na Windows)
 a .claude/launch.json (náhled v Claude desktop). Do .claude/settings.json doplní zákaz přímého curl/wget
 (stahování z archivů jde přes brzdu tools/slusne.py); ostatní nastavení v souboru nechá beze změny.
@@ -410,7 +414,8 @@ def main():
     stary = not os.path.isdir(os.path.join(dst, SABLONA))   # projekt ze starší verze (nebo nový)
     cek = nacti_cekajici(dst)
     sablona_webu = os.path.join(SKILL, "template", "web")
-    aktualizuj(sablona_webu, dst, "web", sorted(soubory(sablona_webu)), zaloha, vysl, stary, cek)
+    if "--bez-webu" not in sys.argv:
+        aktualizuj(sablona_webu, dst, "web", sorted(soubory(sablona_webu)), zaloha, vysl, stary, cek)
     tools = os.path.join(dst, "tools")
     os.makedirs(tools, exist_ok=True)
     nastroje = sorted(f for f in os.listdir(os.path.join(SKILL, "tools"))

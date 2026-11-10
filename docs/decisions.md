@@ -168,3 +168,20 @@ přiděleným pod zámkem, soubory `mapy` a `web`, odmítnutí neplatného Unico
 `zapis()` zapisují i ostatní nástroje; u nás to neplatí (`ebadatelna.py`, `mista.py` zapisují po svém, bez zámku), věta v záhlaví je
 opravená. Sjednotit je otevřená možnost, ne rozhodnutí.
 
+
+## `User-Agent` pro Wikimedii (2026-11-10)
+
+`commons.py` se Wikimedii představuje vlastním `UA_WIKIMEDIA`: `rodokmen-skill/<verze ze shared/VERZE> (https://github.com/vmi43/rodokmen-skill; …)`. Wikimedia chce od klientů API identifikaci s kontaktem a bez ní vrací 403 (`www.wikidata.org` ho dal 10. 11. 2026). Kontaktem je adresa repozitáře, **ne osobní e-mail** (rozhodl uživatel 10. 11. 2026, návrh potvrzen).
+- Zavrženo: změnit společné `slusne.UA`. Některé archivy odmítají cokoli jiného než „Mozilla/5.0 (…)“ a SOA Třeboň blokuje jméno „rodokmen“, takže by změna rozbila jiné portály. UA se mění jen v `commons.py`, ostatní nástroje zůstávají na `slusne.UA`.
+- Oprava dřívějšího zápisu: 403 nedostal „Mozilla/5.0 (rodokmen)“. `commons.py` poslal výchozí UA urllibu a `slusne.UA` do `urllib` nejde.
+- Test: `tests/podminky/test_commons.py` (`UserAgentTest`, bez e-mailu, s verzí a adresou, `api()` ho opravdu posílá), 15/15.
+
+## Přebírání upstreamu, krok (e) dokončen: `mista.py`, `relief`, `--bez-webu`, ruční portály (2026-11-10)
+
+Porovnáno proti `32bef07` (upstream je `vzoha/dejiny-domu-skill`; `sarsonj` je jen náš remote `upstream`, ale soubory z něj `raw` nevrací). `scripts/upstream.py` se na `api.github.com` opakovaně sekl (`IncompleteRead`), proto se soubory brali přímo přes `curl -g`.
+- **`mista.py`:** funkce společné s upstreamem jsou shodné. Přebráno jen `odkazy_panorama` a jeho výpis v `ruian` (Street View a Mapy.com na polohu domu, prochází jen uživatel). **Nepřebráno `obec_nebo_poloha` a `POLOHA`**: v upstreamu je nikdo nevolá. `hledej` a Nominatim zůstávají nepřevzaté (viz *Díl 2*).
+- **`cuzk_archiv.py`:** vrstva `relief` (DMR 5G, CC BY 4.0, smí do PDF i na web) a pomocník `magick()` (náš duplicitní blok v `adresy()` ho teď volá).
+- **`novy_projekt.py --bez-webu`:** web se nezaloží ani neaktualizuje; další běh bez volby ho doplní, běh s volbou na projekt s webem ho nesmaže.
+- **`prameny.md`:** řádky Street View, NCAP, Fortepan, `pamatky.py uan` v řádku AMČR a odstavec o reliéfu. **`portaly.md`:** sekce Street View, NCAP, Fortepan (beze změn, s původem v hlavičce); ostatní domovní portály z upstreamového `portaly.md` (veduty, Ostrava, Europeana…) se nepřebírají, jejich přehled drží `prameny.md`.
+- **Už bylo hotové:** `data.md` (věta o `zapis.py denik`), `SKILL.md` tabulka u `zapis.py denik`, `podminky.md` řádek reliéfu.
+- Testy: `test_mista.py` (2), `ReliefTest` v `test_cuzk_archiv.py` (6 celkem), `--bez-webu` ve `test_novy_projekt_dum.py` (12 z 12); aktualizace, kontrola, export domů a ostatní `tests/podminky` rc=0.

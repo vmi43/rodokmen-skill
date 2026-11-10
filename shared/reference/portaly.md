@@ -1,5 +1,7 @@
 # Portály archivů a jak z nich dostat snímky
 
+> Sekce Street View, NCAP a Fortepan: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/reference/portaly.md), commit 32bef07, beze změn. Ostatní domovní portály (veduty, Ostrava, Europeana…) tu zatím nejsou, jejich přehled drží `prameny.md`.
+
 Matriky jsou online u osmi státních archivů – podle toho, **kde předci žili** (dnešní kraje zhruba odpovídají):
 
 | Archiv | Oblast | Portál s matrikami | Vyzkoušeno se skillem |
@@ -404,6 +406,42 @@ vše potřebné je v `obsah.txt`.
 6. Je-li svazek už stažený strojově, **ponech verzi s vyšším rozlišením**, horší smaž (porovnej rozměry snímků) a do
    `research_log.md` napiš, co se smazalo.
 Složky bez záznamu ve `svazky.json` nemají `obsah.md`; vypiš je do `todo.md`, ať se doplní, až bude `obsah.txt`.
+
+## Street View s časovou osou (Google Maps, Mapy.com Panorama) – jen uživatel
+Jak dům vypadal v posledních ~15 letech, které online archivy nepokrývají: přístavba, nová okna a omítka, zbořená
+stodola, kdy zmizel nápis obchodu. Google má v Česku ročníky asi od 2009 (ikona hodin vlevo nahoře, „Zobrazit další
+data“), Mapy.com Panorama starší jízdy (pole „Nejnovější“ → rok; nejvíc ročníků krajská města, celá ČR 2021–2023).
+- **Snímky nesmí do výstupu ani se screenshotovat:** Google zakazuje Street View v tisku a PDF i snímek obrazovky
+  „for any purpose“, Mapy.com povolují Panoramu jen odkazem nebo přes API a zakazují ji stahovat i analyzovat obraz.
+  Proto **neprochází Claude ani v Chromu a nečte screenshoty**: prochází uživatel a slovy popíše, co se mezi ročníky
+  změnilo („2011 ještě dřevěná okna, 2019 plastová, stodola zbořená mezi 2012 a 2017“). Ty to zapíšeš s roky.
+- Odkaz na dům: `mista.py ruian "Osada čp"` vypíše i odkaz do Street View a Mapy.com na polohu domu.
+- Do PDF popis a odkaz (Google: Sdílet → Kopírovat odkaz; ověř, že otevře zvolený ročník). Na web vložené panorama:
+  Google Sdílet → Vložit mapu, Mapy.com Nástroje → Sdílet s pevným rokem (iframe). Obličeje a SPZ rozmazané,
+  přesto na webu zákazníka jen se souhlasem majitele domu.
+- Starší letecké ročníky na Mapy.com jen prohlížet, screenshot smí jen u aktuální letecké a základní mapy
+  („Zdroj: Mapy.com“ a copyright z rohu). Letecké snímky do výstupu ber z ČÚZK (`ortofota.py`, CENIA 50. let).
+
+## NCAP, spojenecké letecké snímky 1939–45 (airphotofinder.ncap.org) – jen uživatel
+National Collection of Aerial Photography (Historic Environment Scotland): snímky průzkumných letů RAF, USAAF a
+dalších spojenců. Česko pokrývá jen asi 35 letů 1943–45 (sbírka ACIU) a část MAPRW, hlavně kolem cílů náletů:
+továrny, rafinerie, nádraží, velká města (přesný seznam letů NCAP nezveřejňuje). Pro dům ve vsi daleko od cílů nejspíš nic; starší
+české letecké snímky (od 1936) má Archiv ČÚZK (`cuzk_archiv.py lms`).
+- **Claude ho neotevírá, ani nástrojem, ani v Chromu:** podmínky webu (čl. 8.1) zakazují jakéhokoli robota
+  a automatizovaný nástroj i jen pro přístup. Hledá uživatel sám v Air Photo Finderu (mapa, posunout na obec,
+  filtr let 1943–1945); ty poradíš, kde a co hledat, a z jeho popisu zapíšeš zjištění (let, datum, snímek).
+- Většina z 30 milionů snímků není digitalizovaná: Scan on Demand podle čísla letu a snímku, placená rešerše
+  NCAP £90 předem (nevratně). Mimo NCAP mají ukořistěné snímky Luftwaffe americké Národní archivy (NARA).
+- **Obrázek do výstupu jen s licencí NCAP:** osobní užití zdarma, do zprávy (report) £15, do knihy od £55 za snímek
+  bez DPH. Bez licence jen zjištění a citace „NCAP, sbírka, let, snímek, datum“.
+
+## Fortepan (fortepan.hu) – jen ručně
+Maďarský komunitní fotoarchiv (přes 200 000 fotek amatérů a rodin, 1900–1990), vše CC BY-SA 3.0. Z Česka jen asi
+1 250 fotek na 77 místech, hlavně Praha (680) a Brno (200), lázně a výlety 1950–1970; vesnice skoro nikdy (10. 11. 2026).
+- Hledá uživatel na fortepan.hu (místa bývají **maďarsky**: Prága), nebo na Commons: Fortepan tam nahrál velkou část
+  sbírky (soubory „… Fortepan 12345.jpg“), hledání `Fortepan Obec` v Commons najde i soubory bez kategorie obce,
+  které `commons.py` nevidí.
+- Smí do výstupu i za peníze: uveďte „Fortepan / jméno dárce, číslo fotky“ a licenci CC BY-SA 3.0.
 
 ## Ostatní portály – obecný postup
 Nástroje pro ně hotové nejsou. Postupuj takto a výsledek zapiš do `STAV.md`, ať to příště víš:
