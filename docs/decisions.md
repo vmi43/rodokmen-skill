@@ -75,3 +75,13 @@
 **Proč.** Plugin má stejně jedno číslo a oba skills sdílí `tools/` i `template/`. Dvě verze by se rozcházely a `novy_projekt.py` si pamatuje jen jedno číslo v `.skill_verze`.
 
 **Důsledek.** `CLAUDE.md` repa a `novy_projekt.py` čtou `shared/VERZE`. Číslo se dál zvedá na stejných třech místech.
+
+## Šablona domu: `shared/template/dum/` a pole `os` (vazba domu na osobu)
+
+**Rozhodnuto 2026-11-10.** Datový soubor domu je `shared/template/dum/data/domy.py`, mimo `shared/template/data/`, takže ho `novy_projekt.py` nekopíruje do každého rodokmenového projektu. Do projektu ho dá až volba pro dům (krok (c) v `docs/todo.md`).
+
+**Vazba osoba ↔ dům.** Držitel a obyvatel v `domy.py` mají nepovinné pole `os` = číslo téže osoby v `data/osoby.py`. Jen jedním směrem (dům → osoba), aby vazba byla na jednom místě. Upstream má vazbu jen textem v `note`; `note` zůstává pro osoby mimo přímou linii.
+
+**Zatím neplatí.** Kontrola, že `os` odkazuje na existující osobu, v `kontrola.py` není; doplní se s krokem (c).
+
+**Skill `dum` neopisuje rodokmen.** Brzda, pomocníci, technické pasti a „co nikdy“ jsou jen v `skills/rodokmen/SKILL.md`; `skills/dum/SKILL.md` na ně odkazuje (pravidlo jednoho místa). Cena: `dum` vyžaduje načtení `rodokmen/SKILL.md`, ověřit při prvním skutečném použití.
