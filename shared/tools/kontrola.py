@@ -29,13 +29,98 @@ def slova_obce(fakty):
     return list(dict.fromkeys(OBEC_RE.findall(" ".join(fakty))))[:4]
 
 
+STAVY_DOMU = ("doc", "lit", "prob", "fam", "unk")
+
+
+def _rok(x):
+    m = re.search(r"\b(\d{4})\b", str(x or ""))
+    return int(m.group(1)) if m else None
+
+
+def kontrola_domu(ns, P, keys):
+    """Kontrola data/domy.py (skill rodokmen:dum): (chyby, upozornění, citované zápisy).
+    Pole `os` u držitele a obyvatele je číslo osoby v data/osoby.py a musí tam existovat."""
+    err, warn, cited = [], [], set()
+    OBEC, D = ns.get("OBEC", {}), ns.get("D", {})
+    if not OBEC.get("nazev"):
+        warn.append("domy.py: OBEC nemá název")
+
+    def poloha(kde, x):
+        lat, lon = x.get("lat"), x.get("lon")
+        if lat is None and lon is None:
+            return
+        if not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in (lat, lon)):
+            err.append(f"{kde}: lat a lon musí být obě čísla (je {lat!r}, {lon!r})")
+        elif not (-90 <= lat <= 90 and -180 <= lon <= 180):
+            err.append(f"{kde}: poloha {lat}, {lon} není na Zemi (prohozené lat a lon?)")
+        elif not (48.5 <= lat <= 51.1 and 12.0 <= lon <= 18.9):
+            warn.append(f"{kde}: poloha {lat}, {lon} je mimo Česko – je to záměr?")
+
+    def polozka(kde, x, nazev="text"):
+        st = x.get("st", "unk")
+        if st not in STAVY_DOMU:
+            err.append(f"{kde}: neznámý stav '{st}' (povolené: {', '.join(STAVY_DOMU)})")
+        for r in x.get("r", []):
+            cited.add(r)
+            if r not in keys:
+                err.append(f"{kde} cituje neexistující zápis '{r}'")
+        if st == "doc" and not x.get("r"):
+            warn.append(f"{kde} ({str(x.get(nazev, ''))[:50]}) je 'doc', ale necituje žádný zápis")
+        if st == "lit" and not (x.get("zdroj") or x.get("note") or x.get("r")):
+            warn.append(f"{kde} ({str(x.get(nazev, ''))[:50]}) je 'lit' – doplň 'zdroj' (kniha, strana)")
+        if x.get("os") is not None:
+            o = x["os"]
+            if isinstance(o, bool) or not isinstance(o, int):
+                err.append(f"{kde}: 'os' má být číslo osoby v data/osoby.py (je {o!r})")
+            elif o not in P:
+                err.append(f"{kde}: 'os' {o} – osoba {o} v data/osoby.py není")
+
+    poloha("OBEC", OBEC)
+    for i, e in enumerate(ns.get("OBEC_UDALOSTI", [])):
+        if _rok(e.get("rok")) is None:
+            warn.append(f"událost obce č. {i + 1}: rok bez letopočtu – na webu se zařadí na konec")
+        polozka(f"událost obce {e.get('rok')}", e)
+    for cp, d in D.items():
+        if not isinstance(cp, str):
+            err.append(f"dům {cp!r}: klíč domu piš jako text (\"30\"), ne číslo")
+        if d.get("st", "unk") not in STAVY_DOMU:
+            err.append(f"dům {cp}: neznámý stav '{d.get('st')}'")
+        for e in d.get("udalosti", []):
+            polozka(f"dům {cp}, událost {e.get('rok')}", e)
+        for o in d.get("drzitele", []):
+            polozka(f"dům {cp}, držitel {o.get('n')}", o, "n")
+            od, do = _rok(o.get("od")), _rok(o.get("do"))
+            if not (o.get("od") or o.get("do")):
+                warn.append(f"dům {cp}, držitel {o.get('n')}: chybí 'od' i 'do'")
+            elif od and do and od > do:
+                err.append(f"dům {cp}, držitel {o.get('n')}: 'od' {o['od']} je po 'do' {o['do']} (prohozené?)")
+        for o in d.get("obyvatele", []):
+            polozka(f"dům {cp}, obyvatel {o.get('n')}", o, "n")
+            roky = [int(y) for y in re.findall(r"\d{4}", str(o.get("y", "")))]
+            if len(roky) >= 2 and roky[0] > roky[-1]:
+                err.append(f"dům {cp}, obyvatel {o.get('n')}: roky {o['y']} jsou pozpátku")
+        if d.get("lat") is None and d.get("lon") is None:
+            warn.append(f"dům {cp}: nemá polohu (tools/mista.py ruian \"Osada {cp}\" nebo z mapy, zapiš lat/lon)")
+        else:
+            poloha(f"dům {cp}", d)
+    return err, warn, cited
+
+
 def main():
     err, warn = [], []
     ns = {}
+    domy = {}
+    jen_dum = not os.path.exists(os.path.join(DATA, "osoby.py")) and os.path.exists(os.path.join(DATA, "domy.py"))
     try:
-        exec(open(os.path.join(DATA, "osoby.py"), encoding="utf-8").read(), ns)
+        if not jen_dum:   # projekt jen s dějinami domu (bez rodokmenu) osoby.py mít nemusí
+            exec(open(os.path.join(DATA, "osoby.py"), encoding="utf-8").read(), ns)
     except Exception as e:  # noqa: BLE001
         sys.exit(f"CHYBA: data/osoby.py nejde načíst: {e}")
+    if os.path.exists(os.path.join(DATA, "domy.py")):
+        try:
+            exec(open(os.path.join(DATA, "domy.py"), encoding="utf-8").read(), domy)
+        except Exception as e:  # noqa: BLE001
+            sys.exit(f"CHYBA: data/domy.py nejde načíst: {e}")
     P, SIDE, LINES, SAME = ns.get("P", {}), ns.get("SIDE", []), ns.get("LINES", {}), ns.get("SAME", {})
     zaz = jload("zaznamy.json", [])
     svazky, prep, hl = jload("svazky.json", {}), jload("prepisy.json", {}), jload("zvyrazneni.json", {})
@@ -45,7 +130,12 @@ def main():
         err.append(f"zápisy se stejným klíčem: {sorted(dup)}")
     keys = set(keys)
 
-    if 1 not in P:
+    cited_domy = set()
+    if domy:
+        e_d, w_d, cited_domy = kontrola_domu(domy, P, keys)
+        err += e_d
+        warn += w_d
+    if 1 not in P and not jen_dum:
         err.append("chybí osoba 1 (výchozí osoba rodokmenu)")
     for k, p in P.items():
         if not isinstance(k, int) or k < 1:
@@ -74,7 +164,7 @@ def main():
         if k not in range(8, 16):
             err.append(f"LINES: rod {k} – rody mají čísla 8 až 15 (pradědečci a prababičky)")
 
-    cited = ({r for p in P.values() for r in p.get("r", [])} | {r for s in SIDE for r in s.get("r", [])}
+    cited = (cited_domy | {r for p in P.values() for r in p.get("r", [])} | {r for s in SIDE for r in s.get("r", [])}
              | {r for h in ns.get("HYPOTEZY", []) if isinstance(h, dict) for r in h.get("zaznamy", [])})
     for z in zaz:
         k = z.get("klic", "?")
@@ -94,7 +184,8 @@ def main():
         if k not in prep:
             warn.append(f"zápis {k}: chybí přepis a překlad v data/prepisy.json")
         if k not in cited:
-            warn.append(f"zápis {k}: necituje ho žádná osoba (doplnit do 'r' u osoby nebo bočního příbuzného)")
+            warn.append(f"zápis {k}: necituje ho žádná osoba ani dům (doplnit do 'r')" if domy else
+                        f"zápis {k}: necituje ho žádná osoba (doplnit do 'r' u osoby nebo bočního příbuzného)")
 
     znamy = [k for k in range(8, 16) if P.get(k, {}).get("st") in ("doc", "prob")]
     chybi = [f"{k} ({P[k].get('n', '?')})" for k in znamy if k not in LINES]
@@ -271,7 +362,7 @@ def main():
 
     log = os.path.join(DATA, "research_log.md")
     rows = sum(1 for l in open(log, encoding="utf-8") if re.match(r"^\| \d+ \|", l)) if os.path.exists(log) else 0
-    print(f"{len(P)} osob, {len(zaz)} zápisů, {len(svazky)} svazků, {rows} řádků deníku")
+    print((f"{len(domy.get('D', {}))} domů, " if domy else "") + f"{len(P)} osob, {len(zaz)} zápisů, {len(svazky)} svazků, {rows} řádků deníku")
     for e in err:
         print("CHYBA:", e)
     for w in warn:

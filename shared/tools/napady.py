@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Náměty na zajímavosti: projde data/osoby.py a vypíše věci, ze kterých bývají hezké „fun facts“.
+"""Náměty na zajímavosti: projde data/osoby.py (a data/domy.py, je-li) a vypíše věci, ze kterých bývají hezké „fun facts“.
 
 Použití (z kořene projektu): python3 -I tools/napady.py [složka projektu]
 
@@ -26,8 +26,37 @@ EPIDEMIE = {1771: "hladomor", 1772: "hladomor a tyfus", 1805: "tyfus", 1831: "ch
 
 def load():
     ns = {}
-    exec(open(os.path.join(ROOT, "data", "osoby.py"), encoding="utf-8").read(), ns)
-    return ns["P"], ns.get("LINES", {}), ns.get("SAME", {})
+    if os.path.exists(os.path.join(ROOT, "data", "osoby.py")):   # projekt jen s dějinami domu osoby.py mít nemusí
+        exec(open(os.path.join(ROOT, "data", "osoby.py"), encoding="utf-8").read(), ns)
+    return ns.get("P", {}), ns.get("LINES", {}), ns.get("SAME", {})
+
+
+def napady_domy(ideas, P):
+    """Náměty z data/domy.py (skill rodokmen:dum): dlouhé držení, časté střídání, rod po generace, vazba na předky."""
+    p = os.path.join(ROOT, "data", "domy.py")
+    if not os.path.exists(p):
+        return
+    ns = {}
+    exec(open(p, encoding="utf-8").read(), ns)
+    rok = lambda x: next(iter(re.findall(r"\d{4}", str(x or ""))), None)
+    for cp, d in ns.get("D", {}).items():
+        dum = f"čp. {cp}" + (f" ({d['nazev']})" if d.get("nazev") else "")
+        dr = d.get("drzitele", [])
+        roky = [int(r) for x in dr for r in (rok(x.get("od")), rok(x.get("do"))) if r]
+        if len(dr) >= 4 and roky:
+            ideas["Dům a jeho držitelé"].append(f"{dum}: {len(dr)} držitelů za {max(roky) - min(roky)} let – proč se tolikrát střídali?")
+        for x in dr:
+            od, do = rok(x.get("od")), rok(x.get("do"))
+            if od and do and int(do) - int(od) >= 40:
+                ideas["Dlouhé držení domu"].append(f"{dum}: {x.get('n')} {int(do) - int(od)} let ({od}–{do})")
+        prijmeni = [x.get("n", "").split()[-1] for x in dr if x.get("n")]
+        for i in range(len(prijmeni) - 2):
+            if prijmeni[i] == prijmeni[i + 1] == prijmeni[i + 2]:
+                ideas["Dům v jedné rodině"].append(f"{dum}: tři držitelé po sobě s příjmením {prijmeni[i]}")
+                break
+        for x in dr + d.get("obyvatele", []):
+            if x.get("os") in P:
+                ideas["Předek žil v domě"].append(f"{dum}: {x.get('n')} je předek č. {x['os']} ({P[x['os']].get('n')}) – dům patří do rodinného příběhu")
 
 
 def event(p, sym):
@@ -157,6 +186,7 @@ def main():
     for line, t in sorted(trades.items()):
         ideas["Řemesla a postavení v rodech"].append(f"{line}: {', '.join(sorted(t))[:300]}")
 
+    napady_domy(ideas, P)
     if not ideas:
         print("Zatím nic – doplň do osob data narození, sňatků a úmrtí (fakta začínající *, ×, †).")
     for title, items in ideas.items():

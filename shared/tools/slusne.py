@@ -227,6 +227,15 @@ def zakaz(host, url):
                 raise Zastaveno(KOD)
 
 
+def _podminky():
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        import podminky
+    finally:
+        sys.path.pop(0)
+    return podminky
+
+
 def pockej(url_nebo_host, obrazek=None):
     """Před dotazem: počká na volný slot (rezervace pod zámkem, čeká se bez zámku). Zastavený web -> Zastaveno."""
     host = urlsplit(url_nebo_host).hostname if "://" in url_nebo_host else url_nebo_host
@@ -237,6 +246,7 @@ def pockej(url_nebo_host, obrazek=None):
         return
     if obrazek is None:
         obrazek = je_obrazek(url_nebo_host)
+    _podminky().zkontroluj_stahovani(url_nebo_host, "obr" if obrazek else "dotaz")   # tabulka podmínek portálů (podminky.json)
     klic = "dalsi_obrazek" if obrazek else "dalsi_dotaz"
     path = _cesta(skupina)
     with _Zamek(path + ".lock"):

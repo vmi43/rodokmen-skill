@@ -18,7 +18,7 @@ OBEC = dict(
     farnost="",          # kam patřila farou (matriky!) („Dolní Lhota“)
     panstvi="",          # panství před 1848 („Kamenice / Pacov“)
     popis="",            # 2–4 věty pro úvod stránky obce
-    lat=None, lon=None,  # střed vsi (tools/mista.py hledej "Horní Lhota, Pelhřimov")
+    lat=None, lon=None,  # střed vsi (tools/mista.py ruian "Horní Lhota 12" nebo ručně z mapy)
 )
 
 # Časová osa obce: dict(rok="1352", text="…", st="lit", r=[klíče], zdroj="vlastivěda okresu, s. 389")
@@ -44,8 +44,8 @@ OBEC_UDALOSTI = [
 # )
 #
 # `os` (nepovinné, u držitele i obyvatele) = číslo téže osoby v data/osoby.py (Kekulého číslo předka). Má-li projekt
-# i rodokmen, je to jediné místo vazby: dům odkazuje na osobu, osoba na dům ne. (Kontrola, že číslo v osoby.py
-# existuje, se do kontrola.py teprve doplní.) U osoby mimo přímou linii (strýc, soused) `os` vynech a odkaz na rodokmen napiš do `note`.
+# i rodokmen, je to jediné místo vazby: dům odkazuje na osobu, osoba na dům ne. (kontrola.py hlídá, že číslo
+# v osoby.py existuje.) U osoby mimo přímou linii (strýc, soused) `os` vynech a odkaz na rodokmen napiš do `note`.
 D = {
 }
 

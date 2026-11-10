@@ -53,7 +53,9 @@ Cíl: vytěžit všechno, co uživatel má, než sáhneš do archivů.
   fotky, kupní smlouvy, plány, přestavby, požáry, jméno po domácku („U Nováků“).
 - Zapiš: `data/pametnici.md` (kdo co řekl), události do `domy.py` se stavem `fam`, literaturu se stavem `lit` a `zdroj`.
 - **Dnešní stav:** parcela a k. ú. (nahlizenidokn.cuzk.cz, ručně), poloha domu z mapy; osada často patří k jiné obci,
-  než uživatel čeká. Nástroj `mista.py ruian "Osada čp"` (adresa, parcela, k. ú., poloha) se teprve přidává.
+  než uživatel čeká. Hned na začátku pusť `python3 -I tools/mista.py ruian "Osada čp"` (dnešní adresa, obec, parcela, k. ú.,
+  poloha; ve městě `"Ulice čp/čo"`, obec za čárkou zúží výběr). `mista.py okoli "Osada čp"` vypíše dnešní adresy sousedů,
+  `mista.py parcely "Osada čp"` dnešní stavební parcely (čísla pro hledání domu na staré mapě).
   Staré mapy a letecké snímky, které uživatel má, zapiš s rokem a zdrojem.
 
 ## Fáze 2 – Kostra: obec, farnost, panství, čísla
@@ -75,9 +77,9 @@ najdi svazek, stáhni snímek přes nástroje a **přečti ho sám**, zapiš ná
 Rozdíly pro dům:
 - **Zápis nálezu** končí šestým krokem do **`data/domy.py`**: událost domu, držitel nebo obyvatelé (`st="doc"`, `r=[klíč]`),
   případně událost obce. Klíč zápisu `obec_druh_cp_kdo_rok`, např. `lhota_scitani_cp12_1890`.
-- **`kontrola.py` a `export_web.py` `domy.py` zatím nečtou:** co do něj zapíšeš, nikdo nezkontroluje a na web se to
-  nedostane. Zapisuj proto opatrně, po každém kroku soubor načti zpátky (`python3 -I -c "import runpy; runpy.run_path('data/domy.py')"`)
-  a uživateli to řekni jednou větou.
+- **`kontrola.py` `domy.py` čte** (stavy, citované zápisy, poloha, `od` před `do`, pole `os` musí ukazovat na osobu
+  v `osoby.py`), `napady.py` z něj vypisuje náměty. **`export_web.py` `domy.py` zatím nečte:** na web se zatím nedostane.
+  Řekni to uživateli jednou větou a po každém zápisu pusť `python3 -I tools/kontrola.py`.
 - **`doc` jen to, co jsi četl přímo na snímku.** Literatura je `lit` (i dobrá vlastivěda se plete). Shoda bez dokladu je `prob`.
 - **Celé domácnosti:** ze sčítání zapiš všechny obyvatele domu, i čeleď a výměnkáře. Jsou to taky dějiny domu.
 - **Čti celý zápis včetně okrajů:** v gruntovních knihách jsou dodatky o splátkách a dalším prodeji.
@@ -113,5 +115,9 @@ fotky sousedů). **Nic nezveřejňuj bez výslovného souhlasu uživatele.**
 ## Mapa souborů a nástroje
 Soubory projektu a nástroje jsou stejné jako u rodokmenu (`skills/rodokmen/SKILL.md`, *Mapa souborů projektu* a *Nástroje*),
 navíc `data/domy.py` (`OBEC`, `OBEC_UDALOSTI`, domy `D`, `ISSUES`). Soubory `data/pametnici.md` (co víme od lidí)
-a `data/mapy.json` (staré mapy) šablona zatím nemá, založ je podle potřeby. Nástroje jen pro dům (`cuzk_archiv.py`,
-`podminky.py`, `zdravi.py`) a rozšíření `mista.py` (`ruian`, `okoli`, `parcely`) se do `shared/tools/` teprve přidávají.
+a `data/mapy.json` (staré mapy) šablona zatím nemá, založ je podle potřeby. Nástroje jen pro dům: `cuzk_archiv.py`
+(Archiv ČÚZK: `listy` = které listy stabilního katastru dům pokrývají, `rady`, `mapa`, `export`, `lms`), `mista.py ruian|okoli|parcely`,
+`podminky.py <adresa>` (co smí nástroj stáhnout a který obrázek smí na web; hlídá to i `slusne.py`) a `zdravi.py` (kontrola nástrojů
+proti živým portálům; `--rychle`, `--jen cuzk,ruian`). Návody `reference/prameny.md` (kde co hledat podle doby), `reference/texty.md`
+(psaní textů) a `reference/podminky.md`. Nástroje z `prameny.md`, které tu zatím nejsou (`pamatky.py`, `narp.py`, `veduty.py` …), jsou
+vypsané v jejím záhlaví – u nich postupuj ručně na webu portálu. Výstup `cuzk_archiv.py mapa` počítá s `data/mapy.json`, který šablona zatím nemá.
