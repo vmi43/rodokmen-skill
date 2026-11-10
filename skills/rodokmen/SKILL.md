@@ -162,7 +162,8 @@ Základní smyčka pro každou osobu:
    5. přepis originálu a český překlad do `data/prepisy.json` (nejistá místa „(?)“, nečitelná „[…]“),
    6. osobu/osoby do `data/osoby.py` (`f` fakta, `r` klíč zápisu, `st="doc"`), sourozence a kmotry (i neztotožněné, jako stopy) do `SIDE`.
    Nová obec předků → `tools/mista.py pridej "Obec"` (mapa), nový pradědeček nebo prababička (8–15) → rod do `LINES`.
-6. **Zapiš hledání do deníku** `data/research_log.md` – i neúspěšné, s rozsahem (které roky / snímky jsi prošel).
+6. **Zapiš hledání do deníku** `data/research_log.md` – i neúspěšné, s rozsahem (které roky / snímky jsi prošel). Řádek přidej
+   `python3 -I tools/zapis.py denik "<zdroj>" "<rozsah>" "<hledáno>" "<výsledek>" "<citace>"`: číslo přidělí sám, i když píše víc session najednou.
    Narazíš-li po cestě na **zjevně související výskyt** (vzácné příjmení rodu, stejný dům, jméno z rodinného
    vyprávění), zapiš ho do výsledku v deníku se snímkem – je to jen stopa, ne doklad. Když se hledání zasekne,
    projdi deník právě kvůli takovým stopám.
@@ -335,7 +336,8 @@ Nedělej to pořád. Postup:
 | `vyrez.py <stránka.jpg> <klíč> x0,y0,x1,y1 [--kontrast]` | výřez do `zdroje/` a `vyrezy/` (`--kontrast` u vybledlého písma) |
 | `ramecek.py <klíč> x0,y0,x1,y1 [--vyrez a0,b0,a1,b1]` | rámeček čteného místa + kontrolní obrázek; s `--vyrez` souřadnice celé stránky (jako u `vyrez.py`) |
 | `mista.py pridej "Obec"` / `nova` / `znovu` / `mista.py` | místa pro mapu; souřadnice obcí **i přesný bod každé adresy s čp.** z Mapy.com (potřebuje API klíč, viz `reference/data.md` → `mista.json`) |
-| `zapis.py <soubor> <klíč> <vstup.json> [--sloucit]` | přidá / změní položku v `zaznamy`, `svazky`, `prepisy`… beze změny formátu |
+| `zapis.py <soubor> <klíč> <vstup.json> [--sloucit]` | přidá / změní položku v `zaznamy`, `svazky`, `prepisy`, `dokumenty`, `mapy`, `web`… beze změny formátu; souběžné zápisy se střídají přes zámek |
+| `zapis.py denik "<zdroj>" "<rozsah>" "<hledáno>" "<výsledek>" "<citace>"` | řádek do `data/research_log.md` s automaticky přiděleným číslem |
 | `slusne.py <skript.py> / curl … / bash x.sh / stav` | brzda proti zablokování archivem – vlastní skripty a curl spouštěj přes ni |
 | `kontrola.py` | kontrola dat; hlásí i citlivé údaje na webu a kdy psát příběh |
 | `export_web.py` | data → web (volá ho `npm run data`) |

@@ -1,5 +1,5 @@
 {
-  "_info": "Podmínky portálů pro nástroje skillu. Zdroj a vysvětlení: reference/podminky.md (jen veřejné zdroje, není to právní rada). dotazy/obrazky = smí nástroj stahovat stránky / snímky z této domény. vyrez = smí jít obrázek do výstupu: ano | neresi (podmínky mlčí) | nekomercne | souhlas | ne. vyjimky = pravidlo podle textu v adrese, zdroji nebo názvu (malá písmena). Tabulka obsahuje jen portály, které naše nástroje používají; původ a další portály: vzoha/dejiny-domu-skill, skills/dejiny-domu/tools/podminky.json, commit bda6028. U www.portafontium.eu a ebadatelna.soapraha.cz hodnoty odpovídají tomu, co dělá náš nástroj a slusne.py (docs/decisions.md).",
+  "_info": "Podmínky portálů pro nástroje skillu. Zdroj a vysvětlení: reference/podminky.md (jen veřejné zdroje, není to právní rada). dotazy/obrazky = smí nástroj stahovat stránky / snímky z této domény. vyrez = smí jít obrázek do výstupu: ano | neresi (podmínky mlčí) | nekomercne | souhlas | ne. vyjimky = pravidlo podle textu v adrese, zdroji nebo názvu (malá písmena). Tabulka obsahuje jen portály, které naše nástroje používají; původ a další portály: vzoha/dejiny-domu-skill, skills/dejiny-domu/tools/podminky.json, commit 32bef07 (z dalších portálů jen ty, které naše nástroje používají). U www.portafontium.eu a ebadatelna.soapraha.cz hodnoty odpovídají tomu, co dělá náš nástroj a slusne.py (docs/decisions.md).",
   "portaly": {
     "digi.ceskearchivy.cz": {
       "nazev": "SOA Třeboň (DigiArchiv)",
@@ -278,6 +278,119 @@
           "proc": "veřejné dílo s ověřenými autory (70 let po smrti posledního)"
         }
       ]
+    },
+    "commons.wikimedia.org": {
+      "nazev": "Wikimedia Commons",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "jen volné licence (Public domain, CC0, CC BY, CC BY-SA), komerční užití dovolené s autorem a licencí; API pro roboty, robots.txt zakazuje * /w/, Claude-User nejmenuje (9. 11. 2026)",
+      "jinak": ""
+    },
+    "upload.wikimedia.org": {
+      "nazev": "Wikimedia Commons (soubory)",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "soubory Commons, licence u souboru (commons.py detail) (9. 11. 2026)",
+      "jinak": ""
+    },
+    "www.wikidata.org": {
+      "nazev": "Wikidata",
+      "dotazy": true,
+      "obrazky": false,
+      "vyrez": "ano",
+      "proc": "data CC0, API pro roboty (9. 11. 2026)",
+      "jinak": ""
+    },
+    "geolab.cz": {
+      "nazev": "Geolab UJEP",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "s citací Rakouského státního archivu (číslo sekce), Geolabu a MŽP",
+      "jinak": ""
+    },
+    "oldmaps.geolab.cz": {
+      "nazev": "Geolab UJEP",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "s citací Rakouského státního archivu (číslo sekce), Geolabu a MŽP",
+      "jinak": ""
+    },
+    "pamatkovykatalog.cz": {
+      "nazev": "Památkový katalog NPÚ",
+      "dotazy": true,
+      "obrazky": false,
+      "vyrez": "neresi",
+      "proc": "seznam památek je otevřená data CC BY 4.0, web bez robots.txt a bez ověření (8. 11. 2026); fotky jsou na iispp.npu.cz",
+      "jinak": ""
+    },
+    "geoportal.npu.cz": {
+      "nazev": "Geoportál NPÚ (území s archeologickými nálezy)",
+      "dotazy": true,
+      "obrazky": false,
+      "vyrez": "ano",
+      "proc": "ÚAN je otevřená data CC BY-SA 4.0 (metadata NPÚ), veřejná služba ArcGIS bez ověření (10. 11. 2026); nástroj bere jen kategorii a název území",
+      "jinak": ""
+    },
+    "iispp.npu.cz": {
+      "nazev": "NPÚ – MIS a Carmen (fotky, plány, průzkumy)",
+      "dotazy": true,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "fotky a plány jsou dílo NPÚ: zveřejnit jen se smlouvou, web nejvýš 200×300 px nebo s vodoznakem, v tisku licence od 1 500 Kč (badatelský řád a ceník NPÚ, 8. 11. 2026)",
+      "jinak": "Popis a odkaz vypíše pamatky.py detail, fotku si uživatel prohlédne přes odkaz. Carmen (/carmen/) má ochranu proti robotům – hledá uživatel v prohlížeči. Do PDF nebo na web jen odkaz, nebo kopii objednat u NPÚ (k neveřejnému užití).",
+      "vyjimky": [
+        {
+          "obsahuje": "/carmen/",
+          "dotazy": false,
+          "obrazky": false,
+          "proc": "Carmen přesměruje na ověření proti robotům (/carmen/challenge, 8. 11. 2026)",
+          "jinak": "Uživatel otevře odkaz Carmen z pamatky.py detail v prohlížeči a pošle ti, co našel. Kopii průzkumu nebo plánu objedná u NPÚ (gnr.sbirkaplanu@npu.cz)."
+        }
+      ]
+    },
+    "www.google.com": {
+      "nazev": "Google Maps a Street View",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "ne",
+      "proc": "Geo Guidelines: snímky Street View nesmí do tisku ani PDF a nesmí se screenshotovat „for any purpose“, jen vložit (iframe) nebo odkázat; robots.txt zakazuje * /maps/ (10. 11. 2026)",
+      "jinak": "Street View s časovou osou (ikona hodin, ročníky od ~2009) prochází uživatel sám a slovy popíše, co se na domě změnilo; ty to zapíšeš s rokem snímku. Do PDF jen popis a odkaz (Sdílet → Kopírovat odkaz; ověř, že otevře zvolený ročník), na web i vložené panorama (Sdílet → Vložit mapu)."
+    },
+    "mapy.com": {
+      "nazev": "Mapy.com (Seznam), Panorama a letecké snímky",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "ne",
+      "proc": "Podmínky užití Mapy.com, čl. III.4: screenshot jen mapových podkladů a aktuální Letecké mapy (s logem nebo „Zdroj: Mapy.com“ a copyrightem, tisk do 5 000 ks); Panoramu a starší letecké ročníky ne, Panorama jen odkazem nebo přes API, zakázáno i stahovat a analyzovat obraz Panoramy (10. 11. 2026)",
+      "jinak": "Panorama s volbou roku (Nejnovější → ročník) prochází uživatel sám a slovy popíše změny. Do PDF popis a odkaz, na web iframe s pevným rokem (Nástroje → Sdílet). Starší letecké snímky jen prohlížet; do výstupu ortofota ČÚZK nebo CENIA 50. let. Screenshot základní či turistické mapy a aktuální letecké smí s „Zdroj: Mapy.com“ a copyrightem z rohu mapy."
+    },
+    "mapy.cz": {
+      "nazev": "Mapy.cz (= Mapy.com)",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "ne",
+      "proc": "stejné podmínky jako mapy.com (10. 11. 2026)",
+      "jinak": "Viz mapy.com."
+    },
+    "www.ncap.org": {
+      "nazev": "NCAP, National Collection of Aerial Photography (Edinburgh)",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "podmínky webu čl. 8.1 zakazují jakéhokoli robota, scraper a automatizovaný nástroj „to access, obtain, copy“ (i Air Photo Finder); obrázky Crown Copyright, licence: osobní zdarma, do zprávy (report) £15, kniha od £55 za snímek bez DPH (10. 11. 2026)",
+      "jinak": "Air Photo Finder (airphotofinder.ncap.org, mapa) prohledá uživatel sám; ty poradíš polohu a roky 1943–45. V Česku jen asi 35 průzkumných letů (ACIU) a MAPRW, hlavně kolem cílů náletů (továrny, rafinerie, nádraží). Snímek do výstupu jen s licencí NCAP; jinak zjištění s citací (sbírka, let, snímek)."
+    },
+    "airphotofinder.ncap.org": {
+      "nazev": "NCAP Air Photo Finder",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "podmínky webu čl. 8.1 zakazují jakéhokoli robota, scraper a automatizovaný nástroj „to access, obtain, copy“ (i Air Photo Finder); obrázky Crown Copyright, licence: osobní zdarma, do zprávy (report) £15, kniha od £55 za snímek bez DPH (10. 11. 2026)",
+      "jinak": "Air Photo Finder (airphotofinder.ncap.org, mapa) prohledá uživatel sám; ty poradíš polohu a roky 1943–45. V Česku jen asi 35 průzkumných letů (ACIU) a MAPRW, hlavně kolem cílů náletů (továrny, rafinerie, nádraží). Snímek do výstupu jen s licencí NCAP; jinak zjištění s citací (sbírka, let, snímek)."
     }
   }
 }

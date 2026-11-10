@@ -119,7 +119,8 @@ Soubory projektu a nástroje jsou stejné jako u rodokmenu (`skills/rodokmen/SKI
 navíc `data/domy.py` (`OBEC`, `OBEC_UDALOSTI`, domy `D`, `ISSUES`). Soubory `data/pametnici.md` (co víme od lidí)
 a `data/mapy.json` (staré mapy) šablona zatím nemá, založ je podle potřeby. Nástroje jen pro dům: `cuzk_archiv.py`
 (Archiv ČÚZK: `listy` = které listy stabilního katastru dům pokrývají, `rady`, `mapa`, `export`, `lms`), `mista.py ruian|okoli|parcely`,
-`podminky.py <adresa>` (co smí nástroj stáhnout a který obrázek smí na web; hlídá to i `slusne.py`) a `zdravi.py` (kontrola nástrojů
+`pamatky.py` (Památkový katalog NPÚ), `commons.py` (staré fotky z Wikimedia Commons s licencí), `geolab.py` (vojenská mapování z Geolabu),
+`elipsa.py` (označení domu na mapě), `podminky.py <adresa>` (co smí nástroj stáhnout a který obrázek smí na web; hlídá to i `slusne.py`) a `zdravi.py` (kontrola nástrojů
 proti živým portálům; `--rychle`, `--jen cuzk,ruian`). Návody `reference/prameny.md` (kde co hledat podle doby), `reference/texty.md`
-(psaní textů) a `reference/podminky.md`. Nástroje z `prameny.md`, které tu zatím nejsou (`pamatky.py`, `narp.py`, `veduty.py` …), jsou
+(psaní textů) a `reference/podminky.md`. Nástroje z `prameny.md`, které tu zatím nejsou (`mis.py`, `narp.py`, `veduty.py` …), jsou
 vypsané v jejím záhlaví – u nich postupuj ručně na webu portálu. Výstup `cuzk_archiv.py mapa` počítá s `data/mapy.json`, který šablona zatím nemá.

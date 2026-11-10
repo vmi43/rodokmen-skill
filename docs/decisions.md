@@ -151,3 +151,20 @@
 **Zavrženo.** Upstreamový rozcestník s kartami a galerií (`obrazek`, `skupina`, `par`) – galerii jsme vynechali už dřív a kvůli obrázkům by bylo nutné napojit `posoud_obrazek`. `Doplnky` zůstávají vynechané. Příběh uvedený v `dum[slug]` z pole `pribeh` v `domy.py` zůstává jako krátký text přímo na stránce domu; delší příběh patří do `pribeh_cp<adresa>.md`.
 
 **Ověřeno.** `tests/web/test_export_domy.py shared` 13/13; živě `npm install` a `npm run build` rc=0 s ukázkou, domem a příběhy `cp1` a `obec` (tlačítka na `dum/1` a `obec`, seznam na `/pribehy/`). **Neověřeno:** vzhled v prohlížeči.
+
+## Přebírání upstreamu, krok (e): `commons.py`, `geolab.py`, `pamatky.py` (2026-11-10)
+
+Upstream je teď na `32bef07` (9 commitů za naším základem `bda6028`). Přebrané soubory a pomocné moduly `vzdalenost.py` a `nazvy.py`
+(oba krátké, jinde u nás nejsou) mají v hlavičce původ a commit `32bef07`; jedinou úpravou je `import slusne` místo
+`slusne.instaluj()` (u nás se brzda zapíná importem). Do `podminky.json` přibylo 13 portálů, které tyto nástroje používají
+(Commons, Wikidata, Geolab, Památkový katalog, geoportál a MIS NPÚ) a portály, které nástroje zakazují (Google, Mapy.com, Mapy.cz,
+NCAP). Zbylých 44 upstreamových portálů se **nepřebralo**, protože patří nástrojům, které tu nejsou (`mza.py`, `trebon.py`, `dnnt.py`,
+`ipr_praha.py`, `esbirky`, `ddb`…); tabulka má podle svého záhlaví obsahovat jen portály, které naše nástroje používají.
+Odkazy na `mis.py` a `ortofota.py` v převzatých textech jsme přepsali na existující nástroje. Nepřebral se `tests/test_nastroje.py` (1 228 řádků pro
+nástroje, které tu nejsou); z něj jsou jen testy `zapis.py`.
+
+**`zapis.py` převzat celý** (náš byl starší podmnožina): zámek mezi procesy (`pracovni/.zamky/`), příkaz `denik` s číslem řádku
+přiděleným pod zámkem, soubory `mapy` a `web`, odmítnutí neplatného Unicode a běhu ze složky skillu. Upstream tvrdí, že přes
+`zapis()` zapisují i ostatní nástroje; u nás to neplatí (`ebadatelna.py`, `mista.py` zapisují po svém, bez zámku), věta v záhlaví je
+opravená. Sjednotit je otevřená možnost, ne rozhodnutí.
+

@@ -100,7 +100,7 @@ Viz `web.md`.
 
 ## Markdown poznámky
 - `research_log.md` – tabulka `| # | datum | zdroj | rozsah | hledáno | výsledek | citace |`, nové řádky na konec, i negativní.
-  Web ji zobrazuje jako „Výzkumný deník“.
+  Web ji zobrazuje jako „Výzkumný deník“. Řádky přidávej `python3 -I tools/zapis.py denik …` (číslo přidělí sám pod zámkem).
 - `zajimavosti.md` – `## Nadpis` + text, odkazy `[Jméno](/osoba/<slug>/)`.
 - `pribeh.md` – „Příběh <hlavního rodu>“: frontmatter `title`, `lead` + kapitoly `##`; když soubor neexistuje,
   položka menu se skryje. Jak psát: `pribehy.md`.
