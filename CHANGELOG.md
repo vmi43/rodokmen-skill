@@ -6,6 +6,32 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.9.0 – 11. 11. 2026
+
+**Nové**
+- Nový skill **`rodokmen:dum`**: dějiny domu, chalupy nebo statku. Vychází z projektu
+  [dejiny-domu-skill](https://github.com/vzoha/dejiny-domu-skill), ale používá stejné metody, nástroje a web jako rodokmen.
+  Projekt s domem založíš `novy_projekt.py --dum` (nebo `--jen-dum` bez rodokmenu, `--bez-webu` bez webu).
+- Web má stránky obce, seznamu domů, domu (události, držitelé, obyvatelé, mapa), starých map (porovnání vedle sebe
+  nebo prolnutím) a další příběhy (`data/pribeh_<slug>.md`). Osobu v rodokmenu jde provázat s domem polem `os`.
+- Nové nástroje: `cuzk_archiv.py` (Archiv ČÚZK, stabilní katastr, stínovaný terén), `mista.py ruian|okoli|parcely`,
+  `pamatky.py` (Památkový katalog a archeologická území), `commons.py` (staré fotky z Wikimedia Commons s licencí),
+  `geolab.py` (vojenská mapování), `elipsa.py` (označení domu na mapě), `zdravi.py` (kontrola nástrojů proti živým portálům),
+  `kramerius.py` (České digitální knihovny, nahradil starší verzi), `ramecek.py --vyrez`.
+- `podminky.py` a `podminky.json`: nástroje znají podmínky portálů (téměř 40) a obrázky, které portál bez souhlasu nedovoluje
+  zveřejnit, na veřejný web nepustí; `kontrola.py` na ně upozorní.
+- `zapis.py` zapisuje se zámky a umí deník, mapy a web.
+
+**Opravy**
+- Dotazy na Wikimedii dostaly 403 kvůli špatné hlavičce `User-Agent`; opravené, přerušené odpovědi se zkusí jednou znovu.
+- `geolab.py export` padal na chybějící funkci ve sdílené brzdě; doplněná.
+
+**Návody**
+- `reference/prameny.md` (kam pro co), `podminky.md` (co portály dovolují), `texty.md` (psaní textů na web),
+  sekce *Dům, obec a staré mapy* v `web.md`.
+- Soubory společné oběma skillům jsou ve složce `shared/` (kvůli pluginu); starší projekt se aktualizuje jako dřív.
+- SOA Praha (eBadatelna) dál nástroji zakazuje robots.txt, `ebadatelna.py` zůstává vypnutý; snímky stahuje jen prohlížeč.
+
 ## 0.8.2 – 5. 11. 2026
 
 **Opravy**

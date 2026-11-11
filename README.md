@@ -9,6 +9,10 @@ znalost rodiny a rozhodujete.
 
 Vznikl při skutečném hledání předků jedné rodiny.
 
+Od verze 0.9.0 je v pluginu i druhý skill **`rodokmen:dum`** – dějiny domu, chalupy nebo statku (čísla popisná,
+držitelé a obyvatelé, staré mapy, příběh domu a obce). Má stejné metody, nástroje i web jako rodokmen, vychází z
+projektu [vzoha/dejiny-domu-skill](https://github.com/vzoha/dejiny-domu-skill) a lze je používat vedle sebe v jednom projektu.
+
 > **Fork.** Toto je fork projektu [sarsonj/rodokmen-skill](https://github.com/sarsonj/rodokmen-skill) od Jindřicha Šaršona
 > (licence MIT, viz [LICENSE](LICENSE)). Správcem tohoto forku je Vaclav Miller ([vmi43](https://github.com/vmi43)).
 > Chyby a poznámky k této verzi sem: [issues forku](https://github.com/vmi43/rodokmen-skill/issues). Níže je původní
@@ -16,7 +20,7 @@ Vznikl při skutečném hledání předků jedné rodiny.
 
 **Autor a správce původního projektu:** Jindřich Šaršon ([sarsonj@gmail.com](mailto:sarsonj@gmail.com), [GitHub](https://github.com/sarsonj))
 
-**Aktuální verze: 0.8.2 (vydána 5. 11. 2026).** Skill se průběžně vyvíjí – opravuji chyby a doplňuji postupy pro další archivy
+**Aktuální verze: 0.9.0 (vydána 11. 11. 2026).** Skill se průběžně vyvíjí – opravuji chyby a doplňuji postupy pro další archivy
 podle toho, na co narazíte vy. Jak aktualizovat, najdete v části [Instalace](#instalace), přehled změn
 po verzích v [CHANGELOG.md](CHANGELOG.md).
 
@@ -71,7 +75,7 @@ s přepisem a překladem, „Co hledáme“ a deník hledání. **[Podívejte se
 AI se vyvíjí rychle a za pár měsíců může skill dávat lepší, nebo jen jiné výsledky. Proto je tu uvedeno, s čím byl
 vyzkoušený.
 
-- **Stav k 5. 11. 2026 (verze 0.8.2):** Claude Code s hlavním modelem **Claude Opus 5.5**. Pomocníci, kteří hledají
+- **Stav k 11. 11. 2026 (verze 0.9.0):** Claude Code s hlavním modelem **Claude Opus 5.5**. Pomocníci, kteří hledají
   a čtou matriky jako první, běží na **Claude Sonnet 5.5**. Každý jejich nález pak hlavní model ověřuje na snímku.
 - Vyzkoušeno na několika skutečných rodokmenech (největší má 243 předků v 11 generacích a 192 matričních zápisů).
   Výsledek se porovnával s větví, kterou jsme léta dělali ručně.
@@ -142,6 +146,8 @@ O mladší údaje se žádá na matričním úřadě. Claude vám řekne, kdy to
 ```
 skills/rodokmen/
   SKILL.md           průvodce pro Clauda (fáze, pravidla)
+skills/dum/
+  SKILL.md           průvodce pro dějiny domu (rodokmen:dum)
 shared/              společné soubory skillů
   VERZE              číslo verze (podle něj Claude pozná, že má aktualizovat projekt)
   reference/         podrobné návody: čtení matrik, portály archivů, formát dat, web, soukromí,
