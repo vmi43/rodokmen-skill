@@ -353,6 +353,7 @@ Nedělej to pořád. Postup:
 | `aron_search.py "Obec" [filtr] [max] [--sken]` | najde svazky matrik na ARON (SOA Zámrsk); `"Obec,Fara"` zúží stejnojmenné obce; `--sken` doplní počet snímků nebo „BEZ SNÍMKŮ“ |
 | `aron_img.py <apu> info / <snímek> 1 pracovni/x.jpg / rozsah <od-do> / link <n> / svazek` | stáhne snímek nebo rozsah po jednom (log OK/SELHALO), dá odkaz, zapíše svazek |
 | `zarad.py [složka] [--proved]` | zařadí ručně stažené knihy (složka s `obsah.txt`): náhled, pak přejmenování, `svazky.json`, `obsah.md` (`portaly.md`) |
+| `pomucka.py rozbor <pdf>`, `pomucka.py hledej <obec> [N\|O\|Z] [rok] [--vse]` | rozebere Archivní pomůcku NAD 190 (východočeské matriky, PDF stažené ručně; potřebuje `qpdf` a `pdftotext`) a najde knihy s odkazy na ARON a ZIP (`portaly.md`) |
 | `portafontium.py obec / fara / info / snimek / link / svazek` | matriky SOA Plzeň (západní Čechy, Porta fontium) bez prohlížeče (`obec` = knihy obce podle far) |
 | `ebadatelna.py link / a-link`, `snimek / a-snimek` | trvalý odkaz; náhled a výřez ze snímku uloženého z prohlížeče – stahovat nástroj nesmí (archiv od 2. 11. 2026 zakazuje), postup v `portaly.md` |
 | `cache.py stav / najdi <adresa> / uloz <soubor.json>`, `--nahled x.jpg` | sdílená mezipaměť obrázků (ukládá ji brzda sama); uložení snímku eBadatelny z prohlížeče, rovnou s náhledem 1600 px |

@@ -477,6 +477,12 @@ odkazy (ARON `apu` a ZIP ke stažení). Její aktuální verze je na ARON
 (https://aron.vychodoceskearchivy.cz/apu/fffd3232-0fec-4dbf-80d3-12e461a5ed5c, `OAOZA00190_ZA.pdf`); kopii v projektu
 považuj za možná zastaralou. Odkazy jsou anotace v PDF (`pdftotext` je nevypíše). Kniha může začínat na jedné straně
 a odkazy na další, u matričních úřadů je kniha už na úrovni 3 a 1 278 knih odkaz nemá (jen badatelna).
+Nástroj `pomucka.py` ji rozebere: PDF stáhni ručně z ARON, pak jednorázově
+`python3 -I tools/pomucka.py rozbor <pomucka.pdf>` (potřebuje `qpdf` a `pdftotext`: `brew install qpdf poppler`; zapíše
+`pracovni/pomucka_190.json`) a hledej `python3 -I tools/pomucka.py hledej "Obec" [N|O|Z] [rok] [--vse]`. Výpis dává ZIP se
+všemi snímky a adresu svazku v ARON (apu_id je její poslední část, dál `aron_img.py <apu_id> info`). Nástroj pomůcku
+nestahuje a při tvaru, který nezná (odkazy nejsou dvojice ARON a ZIP), skončí, aby nespároval odkazy špatně. Ověřeno
+na verzi z 11. 11. 2026: 14 189 knih, 12 911 odkazů, všechny spárované.
 
 ## Street View s časovou osou (Google Maps, Mapy.com Panorama) – jen uživatel
 Jak dům vypadal v posledních ~15 letech, které online archivy nepokrývají: přístavba, nová okna a omítka, zbořená
