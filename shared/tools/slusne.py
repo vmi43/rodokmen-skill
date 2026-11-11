@@ -105,6 +105,16 @@ def _slozka_bez_zamku():
     return _slozka_[0]
 
 
+MAX_DLAZDIC = 3000   # jeden snímek v plném rozlišení má nejvýš stovky dlaždic; víc = chybná odpověď serveru
+
+
+def strop_dlazdic(pocet, kde):
+    """Skončí dřív, než nástroj začne stahovat nesmyslně velký snímek (server poslal špatné rozměry).
+    Převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/tools/slusne.py), commit bda6028; volá ji geolab.py."""
+    if pocet > MAX_DLAZDIC:
+        sys.exit(f"{kde}: snímek by měl {pocet} dlaždic (strop {MAX_DLAZDIC}) – server poslal nečekané rozměry, nic nestahuji.")
+
+
 class Zastaveno(SystemExit):
     """Web je zastavený. Dědí ze SystemExit: smyčky `except Exception` / `except OSError` ji nespolknou."""
 
