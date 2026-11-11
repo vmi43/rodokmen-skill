@@ -74,13 +74,17 @@ Najdeš v ní `tools/` (nástroje), `template/` (šablona projektu a webu) a `re
    `python3 -I SHARED_DIR/tools/novy_projekt.py <složka>`
    Stačí-li uživateli jen data a výstupy (PDF, přepisy) bez webu, přidej `--bez-webu` (ušetří ~300 MB `node_modules`);
    web jde přidat později během bez téhle volby na stejnou složku.
+   **V Claude Code se zapnutým sandboxem** (macOS desktop) skript nesmí zapsat `.claude/launch.json` ani
+   `.claude/settings.json`: dokončí `tools/` a `.skill_verze` a vypíše „NEZAPSÁNO: …“. Pak soubory doplň sám nástrojem
+   Write/Edit podle výpisu (cizí hooky v `settings.json` neměň) nebo skript pusť znovu mimo sandbox se souhlasem uživatele.
    Chce-li uživatel nejdřív vidět, jak web vypadá, založ vedle ukázku: `… novy_projekt.py ~/Rodokmen-ukazka --ukazka`,
    pak `cd web && npm install && npm run nahled` a pošli mu odkaz http://localhost:4321.
    Pak se zeptej, jestli zapnout **hlídač sítě** (`… novy_projekt.py <složka> --hlidac`, vypnutí `--bez-hlidace`).
    Vysvětli jednou větou: archivy blokují IP adresu po sérii rychlých dotazů. Hlídač je malý skript v projektu
    (`tools/hlidac_site.py`), který před každým příkazem zkontroluje, že stahování jde přes brzdu, a jinak ho zamítne.
    Sám nic nestahuje. Bez něj platí jen pravidla níže a zákaz přímého `curl`/`wget` v `.claude/settings.json`.
-3. V projektu `git init` a první uložení (git = historie změn, kdyby se něco pokazilo). Doporuč pokračovat v Claude Code
+3. V projektu `git init` a první uložení (git = historie změn, kdyby se něco pokazilo; v sandboxu Claude Code
+   `git` nesmí zapisovat do `.git`, pusť ho mimo sandbox se souhlasem uživatele). Doporuč pokračovat v Claude Code
    **z této složky** (soubor `CLAUDE.md` v ní zajistí, že příště navážeš).
 4. Vyplň v `data/STAV.md` sekci „Pro koho“ a v `data/web.json` název webu („Rodokmen Novákových“),
    jakmile znáš příjmení výchozí osoby (šablona je prázdná).
@@ -116,6 +120,11 @@ Cíl: znát co nejvíc o 3–4 generacích nazpět, než sáhneš do matrik.
 
 ## Fáze 2 – Matriky, generace po generaci
 Podrobný postup čtení: `reference/matriky.md`. Portály archivů: `reference/portaly.md`. Metodika: `reference/playbook.md` (EN).
+
+**Zeptej se, v jaké je situaci** (začínám × ověřuji hotový rodokmen). Začíná-li od nuly, nezná kontext a chce mít svazky
+u sebe, nabídni jako první volbu **ruční stažení celých knih** (`portaly.md`, „Ručně stažené knihy“). Má-li už rodokmen
+a jen ověřuje osoby a zápisy, stavěj **cílené dotazy** (obec, kniha, roky, snímek) a stahuj jen to nutné, ne celé knihy.
+Obojí respektuje brzdu a omezení strojového přístupu.
 
 Základní smyčka pro každou osobu:
 1. **Vyber cíl a začni od nejmladšího zápisu.** Vezmi nejmladšího předka bez dokladu a hledej jeho **nejmladší
@@ -198,6 +207,8 @@ Pravidla, která chrání kvalitu (naučená na skutečném projektu):
 Archivy blokují IP adresu po sérii rychlých dotazů (MZA i celou síť na hodiny, ZA Opava na 30 minut). Blokaci
 nezpůsobují nástroje, ale rychlé dočasné skripty a smyčky `curl`. Nástroje v `tools/` mají brzdu samy: společný limit
 pro každý web (dotaz 1 za 2 s, obrázky 10 za s) pro všechny procesy na počítači.
+- **Hlídač kontroluje spuštěný příkaz, ne text v něm** (ověřeno: `grep curl …` a heredoc se jménem nástroje projdou, `curl`
+  na web ne). Jednorázové skripty a úpravy nástrojů stejně piš nástrojem Write/Edit do souboru a spusť ho přes brzdu.
 - **Síť jen přes brzdu, i u pomocníků:** vlastní skript `python3 -I tools/slusne.py pracovni/x.py …`, curl
   `python3 -I tools/slusne.py curl …`, shellový skript `python3 -I tools/slusne.py bash pracovni/x.sh`. Přímé
   `curl`/`wget` má projekt zakázané (`.claude/settings.json`); i místní náhled webu zkoušej přes `slusne.py curl`.
@@ -230,12 +241,28 @@ Ať zmíní i zjevně související výskyty (viz krok 6 výše). Výstupy pomoc
 na dvě čitelné poloviny), než ho zapíšeš jako `doc`. Uživateli to vysvětli správně: pomocníci nečtou hůř, je to stejný
 model. Jde o princip čtyř očí a pomocník nemá kontext (dvě rodiny stejného jména ve vsi, dva Janové na statku).
 Prohlížeč může mít najednou jen jeden pomocník, proto dávej přednost nástrojům bez prohlížeče.
-**Pomocníky spouštěj na levnějším modelu** (Agent s `model: "sonnet"`): hledání a první čtení zvládnou a stojí zlomek
-kreditů. Ověření na snímku a zápis do dat dělá hlavní model (ty). Uživateli to řekni, ať ví, proč kredity tolik neubývají.
+**Pomocníky spouštěj na levnějším modelu a odstupňuj ho podle úlohy:** výchozí je Sonnet (`model: "sonnet"`: hledání a první
+čtení zvládne a stojí zlomek kreditů); mechanika bez čtení písma (stahování snímků, seznamy svazků, kontrola dat) zvládne
+Haiku; složitější úlohy (rekonstrukce domácností, sporné ztotožnění) patří Opusu a jednotlivá nejtěžší čtení (kurent,
+latina) Fable. Ověření na snímku a zápis do dat dělá vždy hlavní model (ty). Uživateli to řekni, ať ví, proč kredity
+tolik neubývají.
 Osvědčilo se 3–4 pomocníci na různé větve a archivy současně, jedno kolo ≈ 15–25 nových předků.
 Pomocníci stojí hodně kreditů – před velkým kolem řekni uživateli, co plánuješ a proč, a nech si to schválit.
 Do zadání jim napiš technické pasti z `reference/matriky.md` (macOS: zsh; Windows: `python -I -X utf8`, `magick`)
 a pravidla brzdy výše (síť jen přes `tools/slusne.py`, při hlášce „zastavený“ skončit a ohlásit).
+**Jak zadání psát (z praxe, pomocníci jinak končí po pár snímcích nebo si domýšlejí):**
+- pevný rozsah „od–do snímek“, „bez limitu snímků, nezastavuj se“ (pomocník si jinak vyloží velikost rozsahu jako důvod
+  skončit) a **po každém snímku řádek do `pracovni/pom_<větev>/postup.md`** (snímek, rok, první a poslední jméno, počet
+  zápisů na snímku); bez toho platí „nic nenalezeno“ jen jako „bez zásahu“, a v tabulce nesmí stát nic, co pomocník neviděl,
+- nejvýš asi 10 snímků na pomocníka, čtení po jedné půlce dvoustrany v malých dávkách (při velkém rozsahu přijde „media
+  removed: request limit“); každý zápis zvětšit přes `overit.py` a číst ze zvětšení; co se nezobrazilo, hlásit jako
+  „neověřeno“,
+- u dlouhé knihy chtěj přesné zlomky polohy zápisu na snímku (ověření pak jde jedním `overit.py`) a u každého nalezeného
+  zápisu uložit celý snímek a výřez, jinak zápisy jako přepisy a výřezy chybí,
+- místa uváděj v základním tvaru (Vinaře, okr. Kutná Hora), ne jen v tvaru z přepisu („z Vinař“),
+- knihy po vsích (kniha oddaných z přelomu 18./19. stol. v SOA Praha bývá členěná po vsích) před čtením rozděl na sekce,
+  roky nekalibruj,
+- delegovaní pomocníci nemusí mít povolený `aron_img.py`: dej ho předem do projektového `.claude/settings.json`.
 **V zadání chtěj u každého prošlého snímku, co na něm skutečně přečetl** (rok, první jméno), ne jen „prošel jsem
 sn. 20–40“ – pomocník jinak přehlédne, že se mu část snímků nenačetla. Na špatně čitelné knihy (kurent 1. poloviny
 19. století, vybledlé snímky) pomocníky nepouštěj, nebo jim dej přesný snímek; ARON a Porta fontium zvládají dobře.
@@ -279,6 +306,9 @@ Skill se zlepšuje podle zkušeností lidí, kteří ho používají. Proto **pr
 - nový archiv nebo portál a postup, který fungoval (adresy, pasti, omezení), nástroje, které sis musel napsat sám,
 - místa, kde návod mlčel nebo radil špatně, a co uživatel chtěl, ale skill to neuměl (nápady na web apod.).
 
+Úpravy samotného skillu ze sandboxu: soubory jde měnit nástrojem Edit, ale `git checkout`/`commit`/`merge` v repozitáři
+skillu musí běžet mimo sandbox se souhlasem uživatele.
+
 Piš obecně a stručně. Zapisuj technický postup, ne údaje o rodině (žádní žijící lidé, žádné citlivé věci).
 **Ve vhodnou chvíli připomeň uživateli, že může poznámky poslat správci skillu**: po zveřejnění webu, na konci velkého
 kola nebo sezení, když je v poznámkách něco podstatného (chyba, nový archiv), a pak zhruba jednou za pár sezení.
@@ -320,8 +350,9 @@ Nedělej to pořád. Postup:
 ## Nástroje (`tools/`, spouštět z kořene projektu `python3 -I tools/<nástroj>`)
 | Nástroj | Co dělá |
 |---|---|
-| `aron_search.py "Obec"` | najde svazky matrik na ARON (SOA Zámrsk); `"Obec,Fara"` zúží stejnojmenné obce |
-| `aron_img.py <apu> info / <snímek> 1 pracovni/x.jpg / link <n> / svazek` | stáhne snímek, dá odkaz, zapíše svazek |
+| `aron_search.py "Obec" [filtr] [max] [--sken]` | najde svazky matrik na ARON (SOA Zámrsk); `"Obec,Fara"` zúží stejnojmenné obce; `--sken` doplní počet snímků nebo „BEZ SNÍMKŮ“ |
+| `aron_img.py <apu> info / <snímek> 1 pracovni/x.jpg / rozsah <od-do> / link <n> / svazek` | stáhne snímek nebo rozsah po jednom (log OK/SELHALO), dá odkaz, zapíše svazek |
+| `zarad.py [složka] [--proved]` | zařadí ručně stažené knihy (složka s `obsah.txt`): náhled, pak přejmenování, `svazky.json`, `obsah.md` (`portaly.md`) |
 | `portafontium.py obec / fara / info / snimek / link / svazek` | matriky SOA Plzeň (západní Čechy, Porta fontium) bez prohlížeče (`obec` = knihy obce podle far) |
 | `ebadatelna.py link / a-link`, `snimek / a-snimek` | trvalý odkaz; náhled a výřez ze snímku uloženého z prohlížeče – stahovat nástroj nesmí (archiv od 2. 11. 2026 zakazuje), postup v `portaly.md` |
 | `cache.py stav / najdi <adresa> / uloz <soubor.json>`, `--nahled x.jpg` | sdílená mezipaměť obrázků (ukládá ji brzda sama); uložení snímku eBadatelny z prohlížeče, rovnou s náhledem 1600 px |

@@ -36,6 +36,18 @@ Adresy u nevyzkoušených portálů ověř při prvním použití (portály se m
   Jen část stránky v plném rozlišení: `… <snímek> 0 pracovni/detail.jpg 0.0,0.4,1.0,0.7`.
   Nástroj stáhne celý sken jedním požadavkem (jako tlačítko „stáhnout“ v ARONu) a zmenšení i výřez dělá z disku;
   další výřezy téže stránky už na archiv nejdou. Dlaždice (desítky pomalých požadavků) jen jako záloha.
+- **Je svazek online?** `aron_search.py` vypíše i svazky bez skenů; `aron_search.py "Obec" "" 40 --sken` doplní u každého
+  (nejvýš 40) počet snímků nebo „BEZ SNÍMKŮ“. Lhůta 75 let ještě neznamená online: digitalizace pokulhává (oddací kniha
+  a rejstřík oddaných z roku 1939 skeny neměly, kniha narozených téže farnosti ano).
+- **Víc snímků najednou:** `python3 -I tools/aron_img.py <apu_id> rozsah 546-578 [úroveň] [složka]` stahuje po jednom
+  (výchozí složka `pracovni/aron_<apu8>/`, soubory `s<n>.jpg`), hotové přeskočí, vypíše OK/SELHALO u každého snímku
+  a po třech selháních za sebou skončí s výpisem, co chybí. Rychlost serveru kolísá (5 s i 7 min na snímek): nejdřív
+  zkus jeden snímek. `info` může odpovídat z mezipaměti (`pracovni/.cache_aron`), takže není test dostupnosti serveru.
+- **Kontrola farnosti:** obec nemusí patřit do knihy sousedního města ve stejné farnosti či děkanství. `aron_search.py "Obec"`
+  vypisuje i rejstříky společné pro celou skupinu farností (řádky „farnost (A, B, C…)“), což svádí k dojmu, že obec je
+  ve farnosti města. Než začneš číst velkou knihu, ověř, že obec nemá vlastní svazek („matrika NAROZENÝCH, Obec“ s menším
+  počtem snímků): jednou se pět hodin stahovala kniha sousední farnosti (578 snímků), přitom vlastní kniha obce měla 102.
+  U stejnojmenných obcí hlídej kraj.
 - **Odkaz na snímek** (pole `odkaz` v `zaznamy.json`): `python3 -I tools/aron_img.py <apu_id> link <snímek>`.
 - **Svazek do dat:** `python3 -I tools/aron_img.py <apu_id> svazek` (klíč = prvních 8 znaků apu_id → pole `svazek` v zápisu).
 - V ARON jsou i další fondy (sčítání lidu, některé gruntovní knihy, kroniky) – `aron_search.py "Obec" "název fondu"`.
@@ -153,6 +165,29 @@ Adresy u nevyzkoušených portálů ověř při prvním použití (portály se m
   viz `matriky.md`, Čtení písma) a poznamenej to v přepisu.
 - Svazek do `svazky.json` ručně (Ostatní portály, krok 4, klíč `ebad_<matrikaId>`, archiválie `ebad_a_<id>`).
   Denní údržba portálu kolem 4:44 (asi 2 minuty); večer a v noci bývá nedostupná (zhruba 22:45–0:45 a kolem 2:00).
+
+- **Z praxe (rejstříky a dvoustrany):** rejstřík narozených je řazený podle písmene a uvnitř roku, ne abecedně. Sloupec
+  „Matrik“ je římské číslo svazku (tom. IX), „Seite“ číslo strany **knihy** (ne snímku); stránky se číslují po listech
+  a snímek = dvě strany. Písmeno N bývá hned vpravo vedle M na téže dvoustraně. Rejstřík oddaných (Oi) uvádí jen příjmení
+  ženicha, rok a den, bez strany: zápis hledej půlením po snímcích podle roku (snímek = dvoustrana, 3 zápisy vlevo i vpravo;
+  stačí 3–4 náhledy, pak jeden snímek v plném rozlišení). Rejstřík zemřelých často odkazuje jen na „tom. + stranu“
+  a kniha zemřelých po 1873 online není; řádek rejstříku ale dá datum, povolání a u žen i místo narození, což stačí
+  k ztotožnění. Rejstříky čtou jména nespolehlivě (Petra × Kateřina, Josef × František) a číslo folia v nich nemusí
+  sedět: vždy ověř v knize a rok si zkalibruj z nadpisů stran.
+- **Sdružené svazky a vlastní knihy osad:** pole „obsah“ (u sdružených rejstříků) říká, na kterých stranách je která obec
+  a druh (iN/iO/iZ) – přečti ho dřív, než začneš listovat; svazek N+O+Z+I jde chronologicky a samostatný rejstřík
+  narozených v něm nemusí být. Osada může mít v matrice farnosti **vlastní knihu**, takže zápis nenajdeš v hlavní knize
+  farnosti: před čtením naslepo ověř seznam knih obce a pole „lokality“. Podle seznamu lokalit v popisu jedné knihy poznáš
+  i farnost vsi (obce ve společné knize = jedna farnost), seznam ale bývá neúplný: čti všechny knihy farnosti pro daný
+  rok. Popis „General description“ u svazku jen s rejstříkem říká, kde který oddíl leží.
+- **Dvoustrana oddaných:** ženich vlevo, nevěsta a svědci vpravo. Výřez pro web dělej přes celou dvoustranu a rámečky
+  dva. Jeden snímek může být rozevřený list s vloženým lístkem a tentýž list celý na sousedním snímku: čti z čistšího.
+- **HTTP 403 u eBadatelny:** místo obvyklého 429/503 se objeví, i když prohlížeč uživatele stránku otevře (portál chce
+  JavaScript a povolená vyskakovací okna). Nástroj ani brzdu neobcházej; požádej uživatele, ať signaturu knihy a rozsah
+  let najde ve svém prohlížeči, a mezitím použij ARON (a naopak: oba portály jsou záloha jeden druhého). **Claude in
+  Chrome** (rozšíření) 403 obchází a popisy knih jdou stáhnout `fetch` z JavaScriptu v kartě, brzda skillu to ale nehlídá:
+  limit hlídej ručně (po jedné, odstup aspoň 2,5 s) a hromadně jen se souhlasem uživatele. `javascript_tool` má timeout
+  45 s, delší smyčka musí běžet v kartě na pozadí (`window.__x`) a číst se po částech.
 
 ## AHMP Praha – `tools/ahmp_search.sh`, `tools/ahmp_scan.py`
 - `bash tools/ahmp_search.sh "Smíchov"` → svazky Sbírky matrik: popis | farnost | (XID, id, počet snímků).
@@ -392,20 +427,56 @@ A když osoba „chybí“ v očekávaných matrikách (stěhovala se se službo
 - Pořadí: nejdřív matriky; noviny, když chybí stopa kvůli stěhování, nebo když jde o úředníka/vojáka a chceme příběh.
 
 ## Ručně stažené knihy (složka s `obsah.txt`) – kterýkoli archiv
-Když archiv skripty nepouští nebo je blokuje (SOA Praha, MZA Brno, SOA Třeboň, občas i ARON), stáhne uživatel knihu
-hromadně sám (tlačítko „stáhnout“ na portálu) a dá ji do `pracovni/<původní název>/` spolu se souborem **`obsah.txt`**
-(popis knihy; na konci odkaz s číslem knihy, u eBadatelny `matrikaId`). Na stránku svazku v archivu **nechoď** –
-vše potřebné je v `obsah.txt`.
-1. Přečti `obsah.txt`. Klíč svazku je číslo z odkazu: eBadatelna `ebad_<matrikaId>`, ARON `<apu>`, Porta fontium `pf_<kniha>`.
+Strojový přístup k ARON a eBadatelně dnes nemusí jít (eBadatelna nástroj zakazuje, ARON občas přestane vydávat snímky
+bez hlášky), ruční jde. Ruční stahování je proto **první volba, když uživatel začíná od nuly**: nezná kontext, neví,
+ve kterých knihách hledat, a chce mít svazky u sebe. **Má-li už rodokmen a jen ověřuje** konkrétní osoby a zápisy, jsou
+lepší cílené dotazy (obec, kniha, roky, snímek) a stahuj jen to nutné, ne celé knihy; dál platí brzda a omezení
+strojového přístupu. Na začátku se proto zeptej, v jaké situaci je (začínám × ověřuji hotový rodokmen).
+
+Uživatel knihu stáhne hromadně sám (tlačítko „stáhnout“ na portálu) a dá ji do `pracovni/<původní název>/` spolu se
+souborem **`obsah.txt`** (popis knihy; na konci odkaz s číslem knihy). Na stránku svazku v archivu **nechoď** – vše
+potřebné je v `obsah.txt`.
+- **eBadatelna:** ke stažení snímků musí mít uživatel **založený účet** (přihlášení); bez něj portál celé svazky nevydá.
+  Řekni mu to hned na začátku, ať nehledá, proč tlačítko nefunguje.
+- **ARON:** účet není potřeba. Na stránce svazku je tlačítko **„Stáhnout všechny snímky“**. Složka se jmenuje
+  `CZ_215000010_00190_<apu8>_sign-<signatura>`, snímky `…_NNNNN_sign-<sign>.jpg` (5 číslic od 00001), plné rozlišení
+  (asi 1,5× větší než úroveň 1 našeho nástroje). Odkaz v `obsah.txt` má tvar `…/apu/<apu>/dao/<apu>/file/<id>`; klíč
+  svazku je prvních 8 znaků apu. Chybí-li v `obsah.txt` plný apu, vezmi ho ze `svazky.json`.
+- **Co má `obsah.txt` říct** (stačí zkopírovat řádky „Signature“, „Date from to“, „Localities“, „Scans“ a odkaz, ne celou
+  stránku): (1) archiv a portál, (2) identifikátor svazku (eBadatelna `matrikaId`, ARON `apu`, u archivalií
+  `archivalieId`) a signatura či název, (3) typ knihy (N/O/Z, rejstřík, nebo druh archivalie: pozemková kniha, kronika),
+  (4) roky od–do, (5) farnost a lokality (výchozí stopa, bývá neúplná), (6) počet snímků, (7) URL stránky svazku.
+  **Složku bez `obsah.txt` nezařazuj naslepo**: znáš-li jen počet snímků, zeptej se na zbytek.
+- **Archiválie z eBadatelny** (pozemková kniha, kronika; odkaz `…/ArchivaliePage/archivalieId/N`): číslo není
+  `matrikaId`, klíč je `ebad_a_<archivalieId>` (jako u `ebadatelna.py a-svazek`), ve `svazky.json` pole `typ: "archivalie"`;
+  `obsah.txt` má jiný formát než u matrik, přečti ho celý.
+
+Zařazení dělá **`python3 -I tools/zarad.py [pracovni/<složka> …]`** (bez sítě, bez složek vezme všechny s `obsah.txt`): nejdřív
+náhled s klíčem, novým názvem a rozpory (počet snímků × `obsah.txt`, název × `svazky.json`, jiný klíč ve jménu složky);
+ukaž ho uživateli, po potvrzení pusť znovu s `--proved`. Nástroj provede kroky 1–5, vypíše strojové kopie a staré cesty
+v textech (kroky 6 a 7 děláš ty, nic nemaže) a `obsah.md` zapíše jako koncept, který doplň. U archiválie použije klíč
+`archivalie_<id>`, je-li už ve `svazky.json`, jinak `ebad_a_<id>`. Postup, který nástroj dělá:
+1. Přečti `obsah.txt`. Klíč svazku je číslo z odkazu: eBadatelna `ebad_<matrikaId>`, ARON `aron_<apu8>` (prvních 8 znaků
+   apu; ve `svazky.json` je klíč bez předpony, jak ho zapisuje `aron_img.py … svazek`), Porta fontium `pf_<kniha>`.
 2. Složku přejmenuj na `pracovni/<klíč>_<název>_manual/`. Název = část názvu svazku před první čárkou (u svazku, který už
    je v `svazky.json`, pole `svazek`; u nového první řádek `obsah.txt`), bez diacritiky, malými písmeny, mezery a `-`
-   jako `_` (např. `ebad_15849_hruby_jesenik_26_manual`). Klíč ve `svazky.json` zůstává bez přípony.
+   jako `_` (např. `ebad_15849_hruby_jesenik_26_manual`). Klíč ve `svazky.json` zůstává bez přípony. Název z `obsah.txt`
+   porovnej s `matrikaId`: jednou měl `obsah.txt` chybný název („Zleby-27“), přitom id sedělo.
 3. Snímky přejmenuj na `s<n>.jpg` (n bez úvodních nul, podle pořadí).
 4. Z obsahu napiš `obsah.md` do složky (rozsah let, co kniha obsahuje, rejstříky a na kterých snímcích).
-5. Svazek zapiš přes `zapis.py svazky` s polem **`"upload": "manual"`** (strojově stažené mají `"auto"`).
-6. Je-li svazek už stažený strojově, **ponech verzi s vyšším rozlišením**, horší smaž (porovnej rozměry snímků) a do
-   `research_log.md` napiš, co se smazalo.
+5. Svazek zapiš přes `zapis.py svazky` s polem **`"upload": "manual"`** (strojově stažené mají `"auto"`). Počet snímků
+   ve složce musí sedět s údajem o počtu snímků z `obsah.txt`; nesedí-li, řekni to.
+6. Je-li svazek už stažený strojově, **ponech verzi s vyšším rozlišením**, horší smaž až po shodě počtů snímků a po
+   diffu toho, co zmizelo (porovnej rozměry snímků), a do `research_log.md` napiš, co se smazalo.
+7. **Oprav staré cesty v textech:** po přejmenování zůstanou v `todo.md`, `STAV.md` a deníku staré cesty
+   (`pracovni/aron_df66a409/…`). Najdi je a nabídni přepsání (viz `/replace`).
 Složky bez záznamu ve `svazky.json` nemají `obsah.md`; vypiš je do `todo.md`, ať se doplní, až bude `obsah.txt`.
+
+**Archivní pomůcka SOA Hradec Králové (NAD 190, PDF asi 4350 stran)** je rejstřík všech východočeských matrik s přímými
+odkazy (ARON `apu` a ZIP ke stažení). Její aktuální verze je na ARON
+(https://aron.vychodoceskearchivy.cz/apu/fffd3232-0fec-4dbf-80d3-12e461a5ed5c, `OAOZA00190_ZA.pdf`); kopii v projektu
+považuj za možná zastaralou. Odkazy jsou anotace v PDF (`pdftotext` je nevypíše). Kniha může začínat na jedné straně
+a odkazy na další, u matričních úřadů je kniha už na úrovni 3 a 1 278 knih odkaz nemá (jen badatelna).
 
 ## Street View s časovou osou (Google Maps, Mapy.com Panorama) – jen uživatel
 Jak dům vypadal v posledních ~15 letech, které online archivy nepokrývají: přístavba, nová okna a omítka, zbořená

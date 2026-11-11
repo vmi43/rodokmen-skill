@@ -23,7 +23,10 @@ Výsledky na Windows 11 (Python 3.13, Git Bash, PowerShell 7), 2. 11. 2026:
 | `test_hlidac.py`, 0.6.0 | 39 z 59 | 0 z 59 (příkaz hooku se nespustí) |
 
 Na macOS je pro 127.0.0.2 potřeba alias na lo0 (`sudo ifconfig lo0 alias 127.0.0.2 up`, stejně pro .3, .4 a .5);
-bez něj jde `test_brzda.py` pustit v Dockeru (`python:3.12-bookworm`).
+bez něj jde `test_brzda.py` pustit v Dockeru (`python:3.12-bookworm`). Aliasy zmizí po restartu a v sandboxu Claude Code
+test neběží (bind selže), pouští se mimo sandbox. Zkušenost uživatele z macOS (2. 11. 2026): `test_brzda.py` 24 z 24
+i `test_mezipamet.py` prošly jen s aliasy `.2` a `.3`; zavřený port z testu 9 (`.4`) alias nepotřebuje. U testu na
+tiché spojení (`.5`) jsme to neověřili, proto je výše pro jistotu uvedené i `.5`.
 
 Od 0.6.1 zapisuje `novy_projekt.py --hlidac` na Windows hook bez shellu (`command` + `args`), takže nezáleží na tom,
 jestli hooky běží v Git Bashi, nebo v PowerShellu. `test_hlidac.py` zkouší tvar bez shellu vždy, shellový tvar jen mimo

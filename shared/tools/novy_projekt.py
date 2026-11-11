@@ -430,15 +430,32 @@ def main():
                 zapis(p, data.replace(b"\r\n", b"\n"))
     for d in ("vyrezy", "zdroje", "dokumenty", "pracovni"):
         os.makedirs(os.path.join(dst, d), exist_ok=True)
-    os.makedirs(os.path.join(dst, ".claude"), exist_ok=True)
-    for name in ("CLAUDE.md", ".gitignore", ".gitattributes", "poznamky_pro_skill.md", os.path.join(".claude", "launch.json")):
+    for name in ("CLAUDE.md", ".gitignore", ".gitattributes", "poznamky_pro_skill.md"):
         out = os.path.join(dst, name)
         if not os.path.lexists(out):
             copy(os.path.join(SKILL, "template", name), out)
-    nastaveni(dst, True if "--hlidac" in sys.argv else False if "--bez-hlidace" in sys.argv else None)
     with open(os.path.join(dst, ".skill_verze"), "w", encoding="utf-8") as f:   # SKILL.md podle něj nabídne aktualizaci
         f.write(open(os.path.join(SKILL, "VERZE"), encoding="utf-8").read())
+    # .claude/ chrání sandbox Claude Code (zápis končí PermissionError): chyba nesmí shodit skript, ať je hotová
+    # aktualizace tools/ a .skill_verze; co se nezapsalo, vypíšeme a Claude to doplní sám (Edit/Write)
+    nezapsano = []
+    try:
+        os.makedirs(os.path.join(dst, ".claude"), exist_ok=True)
+        out = os.path.join(dst, ".claude", "launch.json")
+        if not os.path.lexists(out):
+            copy(os.path.join(SKILL, "template", ".claude", "launch.json"), out)
+    except OSError as e:
+        nezapsano.append((".claude/launch.json", os.path.join(SKILL, "template", ".claude", "launch.json"), e))
+    try:
+        nastaveni(dst, True if "--hlidac" in sys.argv else False if "--bez-hlidace" in sys.argv else None)
+    except OSError as e:
+        nezapsano.append((".claude/settings.json", None, e))
     print("Projekt připraven:", dst)
+    for jmeno, zdroj, e in nezapsano:
+        print(f"NEZAPSÁNO: {jmeno} ({e}). Sandbox chrání .claude/; zbytek je hotový. "
+              + (f"Vytvoř ho nástrojem Write podle {zdroj}." if zdroj else
+                 "Doplň do něj nástrojem Edit zákaz curl/wget a hook hlídače (viz tools/novy_projekt.py, nastaveni), "
+                 "nebo spusť skript mimo sandbox se souhlasem uživatele. Cizí hooky v něm se nikdy nemění."))
     for k, popis in (("prepsano", "Přepsáno novou verzí (bez vlastních úprav)"),
                      ("zalohovano", "Přepsáno, původní verze je v " + os.path.join(zaloha, "puvodni")
                       + " (projekt neměl uloženou šablonu – vlastní úpravy převezměte ze zálohy)"),

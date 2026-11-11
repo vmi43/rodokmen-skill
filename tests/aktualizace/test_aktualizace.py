@@ -10,7 +10,7 @@ import glob, os, shutil, subprocess, sys, tempfile, time, traceback
 
 SKILL = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else "shared")
 RADKY = [f"radek {i}" for i in range(1, 21)]
-POCET = 20   # počet případů v pripady()
+POCET = 21   # počet případů v pripady()
 PRESKOCENO = "přeskočeno: "   # případ, který tu nejde vyzkoušet (počítá se zvlášť)
 
 
@@ -343,6 +343,24 @@ def pripady(koren):
         yield f"cíl zálohy jako odkaz ({druh}) se odmítne"
     else:
         yield PRESKOCENO + "odkaz na místě zálohy nejde vytvořit (chybí oprávnění)"
+
+    # 21. .claude/ nejde zapsat (sandbox Claude Code): skript nespadne, .skill_verze a tools/ jsou hotové, výpis řekne,
+    #     co se nezapsalo
+    p2 = os.path.join(koren, "projekt_sandbox")
+    os.makedirs(os.path.join(p2, ".claude"))
+    os.chmod(os.path.join(p2, ".claude"), 0o555)
+    try:
+        if os.access(os.path.join(p2, ".claude"), os.W_OK):   # root nebo Windows: zákaz nejde navodit
+            yield PRESKOCENO + ".claude/ nejde zamknout (root nebo Windows)"
+        else:
+            out = spust(s, p2)
+            assert "NEZAPSÁNO: .claude/launch.json" in out, out
+            assert "NEZAPSÁNO: .claude/settings.json" in out, out
+            assert cti(os.path.join(p2, ".skill_verze")) == "9.9.9\n", out
+            assert cti(os.path.join(p2, "tools", "nastroj.py")) == cti(os.path.join(s, "tools", "nastroj.py")), out
+            yield ".claude/ bez zápisu: skript dokončí tools/ a .skill_verze a vypíše, co chybí"
+    finally:
+        os.chmod(os.path.join(p2, ".claude"), 0o755)
 
 
 def main():

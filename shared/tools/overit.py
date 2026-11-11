@@ -10,6 +10,7 @@ def magick():  # když ImageMagick chybí, skončí hned (před stahováním) sr
     return m
 MAGICK=magick()
 K='--kontrast' in sys.argv; A=[a for a in sys.argv[1:] if a!='--kontrast']
+if len(A)<3 or A[0] in ('-h','--help'): sys.exit(open(__file__,encoding='utf-8').read().split('\n')[1].lstrip('# '))  # bez argumentů nápověda, ne traceback
 f,box,pre=A[0:3]; mode=A[3] if len(A)>3 else 'h'
 W,H=map(int,subprocess.run([MAGICK,f+'[0]','-format','%w %h','info:'],capture_output=True,text=True).stdout.split())
 x0,y0,x1,y1=map(float,box.split(','))
