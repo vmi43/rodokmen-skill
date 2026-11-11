@@ -1,0 +1,396 @@
+{
+  "_info": "Podmínky portálů pro nástroje skillu. Zdroj a vysvětlení: reference/podminky.md (jen veřejné zdroje, není to právní rada). dotazy/obrazky = smí nástroj stahovat stránky / snímky z této domény. vyrez = smí jít obrázek do výstupu: ano | neresi (podmínky mlčí) | nekomercne | souhlas | ne. vyjimky = pravidlo podle textu v adrese, zdroji nebo názvu (malá písmena). Tabulka obsahuje jen portály, které naše nástroje používají; původ a další portály: vzoha/dejiny-domu-skill, skills/dejiny-domu/tools/podminky.json, commit 32bef07 (z dalších portálů jen ty, které naše nástroje používají). U www.portafontium.eu a ebadatelna.soapraha.cz hodnoty odpovídají tomu, co dělá náš nástroj a slusne.py (docs/decisions.md).",
+  "portaly": {
+    "digi.ceskearchivy.cz": {
+      "nazev": "SOA Třeboň (DigiArchiv)",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "snímky jen k prohlížení online, kopírování zakázáno; robots.txt zakazuje robotům stránky aplikace",
+      "jinak": "Snímky čte uživatel v prohlížeči a ty radíš (co hledat, jak číst písmo). Snímek si můžete objednat u archivu (25 Kč) nebo požádat o souhlas: digi@ceskearchivy.cz."
+    },
+    "www.portafontium.eu": {
+      "nazev": "SOA Plzeň (Porta fontium)",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "souhlas",
+      "proc": "podmínky skripty nezakazují; popisy archiválií smí k nevýdělečným účelům s citací, snímky mimo portál jen podle § 92 autorského zákona (osobní potřeba, věda, výuka, s uvedením zdroje a adresy); robots.txt Crawl-delay 10 s (ověřeno 5. 11. 2026, docs/decisions.md)",
+      "jinak": "Nástroj portafontium.py smí jen pro osobní bádání a s brzdou 10 s (slusne.py). Obrázek na veřejný web chce souhlas archivu; za peníze jen badatelna nebo objednané skeny."
+    },
+    "ebadatelna.soapraha.cz": {
+      "nazev": "SOA Praha (eBadatelna)",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "neresi",
+      "proc": "od 2. 11. 2026 robots.txt zakazuje nástroji rodokmen vše a server vrací 403 (slusne.py, ZAKAZ)",
+      "jinak": "Matriky čti v prohlížeči eBadatelny: výřez zápisu ze snímku, který prohlížeč načetl, a snímek obrazovky (reference/portaly.md, SOA Praha). Neobcházej to."
+    },
+    "digi.nacr.cz": {
+      "nazev": "Národní archiv (konskripce, policejní přihlášky)",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "neresi",
+      "proc": "jen robots.txt (Disallow pro všechny, AI nejmenuje); podmínky ani ochrana nenalezeny (8. 11. 2026) – na žádost badatele smí, jen hledané přihlášky"
+    },
+    "digitalnibadatelna.nacr.cz": {
+      "nazev": "Národní archiv (Digitální badatelna)",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "vstupní ověření „jste člověk“; zveřejnit jen se souhlasem",
+      "jinak": "Uživatel snímek uloží v prohlížeči do pracovni/, ty ho přečteš."
+    },
+    "digi.soalitomerice.cz": {
+      "nazev": "SOA Litoměřice (Digitální badatelna)",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "vstupní ověření, po ~100 rychlých požadavcích blok; zveřejnit jen se souhlasem",
+      "jinak": "Knihu najde uživatel v prohlížeči, snímky pak stáhne soal_zoomify.py z obrázkového serveru (reference/portaly.md)."
+    },
+    "images.soalitomerice.cz": {
+      "nazev": "SOA Litoměřice (obrázkový server)",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "souhlas",
+      "proc": "zveřejnit jen se souhlasem a s citací",
+      "jinak": ""
+    },
+    "digi.archives.cz": {
+      "nazev": "ZA Opava (Digitální badatelna)",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "ochrana proti robotům a CAPTCHA; zveřejnit jen se souhlasem",
+      "jinak": "Knihu najde uživatel v prohlížeči (CAPTCHU řeší on), snímky pak stáhne soal_zoomify.py."
+    },
+    "images.archives.cz": {
+      "nazev": "ZA Opava (obrázkový server)",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "souhlas",
+      "proc": "zveřejnit jen se souhlasem a s citací",
+      "jinak": ""
+    },
+    "www.mza.cz": {
+      "nazev": "MZA Brno (Acta publica)",
+      "dotazy": true,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "stránku knihy a snímky chrání ověření ALTCHA; zveřejnit a dál využívat jen s písemným souhlasem",
+      "jinak": "Hledání knih smí skript (adresa v reference/portaly.md, MZA Brno). Stránku knihy otevře uživatel v prohlížeči, ověření vyřeší sám a snímek uloží do pracovni/ nebo pošle snímek obrazovky; ty ho přečteš."
+    },
+    "portal.nacr.cz": {
+      "nazev": "Národní archivní portál (evidence fondů)",
+      "dotazy": true,
+      "obrazky": false,
+      "vyrez": "neresi",
+      "proc": "veřejná evidence fondů všech archivů (zákon o archivnictví § 18b), bez robots.txt a bez ověření; snímky tu nejsou (8. 11. 2026)",
+      "jinak": ""
+    },
+    "aron.vychodoceskearchivy.cz": {
+      "nazev": "SOA Hradec Králové (ARON)",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "neresi",
+      "proc": "stahovat se smí; archiv si stěžuje na AI boty – málo a pomalu",
+      "jinak": ""
+    },
+    "katalog.ahmp.cz": {
+      "nazev": "Archiv hl. m. Prahy",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "souhlas",
+      "proc": "obrázky jen na objednávku s účelem, na web nejvýš 500 px s vodoznakem",
+      "jinak": ""
+    },
+    "data.matricula-online.eu": {
+      "nazev": "Matricula",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "nekomercne",
+      "proc": "licence CC BY-NC-ND: jen nevýdělečně, beze změn, se zdrojem",
+      "jinak": ""
+    },
+    "www.familysearch.org": {
+      "nazev": "FamilySearch",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "podmínky zakazují roboty a hromadné stahování",
+      "jinak": "Uživatel snímek stáhne ručně do pracovni/, ty ho přečteš."
+    },
+    "kramerius5.nkp.cz": {
+      "nazev": "Kramerius NK",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "neresi",
+      "proc": "volná díla; díla nedostupná na trhu (DNNT) jen číst",
+      "jinak": ""
+    },
+    "anno.onb.ac.at": {
+      "nazev": "ANNO (ÖNB)",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "ÖNB s dalším užitím souhlasí (kromě skenů od Googlu)",
+      "jinak": ""
+    },
+    "ags.cuzk.gov.cz": {
+      "nazev": "Archiv ČÚZK (ÚAZK)",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "zveřejnění reprodukce archiválie ÚAZK bez souhlasu a poplatku, s citací",
+      "jinak": "",
+      "vyjimky": [
+        {
+          "obsahuje": "indikační",
+          "vyrez": "souhlas",
+          "proc": "indikační skici Čech patří Národnímu archivu, Moravy MZA – zveřejnit jen se souhlasem"
+        },
+        {
+          "obsahuje": "letecký měřický",
+          "vyrez": "souhlas",
+          "proc": "archivní letecké snímky ČÚZK jen pro vlastní potřebu"
+        }
+      ]
+    },
+    "archivnimapy.cuzk.gov.cz": {
+      "nazev": "Archiv ČÚZK (ÚAZK)",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "zveřejnění reprodukce archiválie ÚAZK bez souhlasu a poplatku, s citací",
+      "jinak": "",
+      "vyjimky": [
+        {
+          "obsahuje": "indikační",
+          "vyrez": "souhlas",
+          "proc": "indikační skici Čech patří Národnímu archivu, Moravy MZA – zveřejnit jen se souhlasem"
+        },
+        {
+          "obsahuje": "letecký měřický",
+          "vyrez": "souhlas",
+          "proc": "archivní letecké snímky ČÚZK jen pro vlastní potřebu"
+        }
+      ]
+    },
+    "ags.cuzk.cz": {
+      "nazev": "Archiv ČÚZK (ÚAZK)",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "zveřejnění reprodukce archiválie ÚAZK bez souhlasu a poplatku, s citací",
+      "jinak": "",
+      "vyjimky": [
+        {
+          "obsahuje": "indikační",
+          "vyrez": "souhlas",
+          "proc": "indikační skici Čech patří Národnímu archivu, Moravy MZA – zveřejnit jen se souhlasem"
+        },
+        {
+          "obsahuje": "letecký měřický",
+          "vyrez": "souhlas",
+          "proc": "archivní letecké snímky ČÚZK jen pro vlastní potřebu"
+        }
+      ]
+    },
+    "gis.cenia.cz": {
+      "nazev": "CENIA",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "letecké snímky 50. let pod CC BY 4.0 s celým zdrojem",
+      "jinak": "",
+      "vyjimky": [
+        {
+          "obsahuje": "vojenske_mapovani",
+          "vyrez": "souhlas",
+          "proc": "u vojenských mapování na geoportálu CENIA si podmínky odporují – stejnou mapu vezmi z Geolabu"
+        }
+      ]
+    },
+    "geoportal.gov.cz": {
+      "nazev": "CENIA",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "letecké snímky 50. let pod CC BY 4.0 s celým zdrojem",
+      "jinak": "",
+      "vyjimky": [
+        {
+          "obsahuje": "vojenske_mapovani",
+          "vyrez": "souhlas",
+          "proc": "u vojenských mapování na geoportálu CENIA si podmínky odporují – stejnou mapu vezmi z Geolabu"
+        }
+      ]
+    },
+    "api.ceskadigitalniknihovna.cz": {
+      "nazev": "Česká digitální knihovna (Krameria knihoven)",
+      "dotazy": true,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "hledání a OCR text veřejných děl; podmínky CDK nenalezeny, za peníze jako MZK (souhlas)",
+      "jinak": ""
+    },
+    "www.ceskadigitalniknihovna.cz": {
+      "nazev": "Česká digitální knihovna (web)",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "skeny patří knihovně uložení (MZK, UK, VKOL…), podmínky CDK nenalezeny – za peníze jako MZK (souhlas); UK a VKOL viz výjimka (10. 11. 2026)",
+      "jinak": "Uživatel otevře odkaz a obrázek uloží tlačítkem Export, ty ho přečteš. Nástroje hledají přes API (kramerius.py --knihovna).",
+      "vyjimky": [
+        {
+          "obsahuje": "kramerius, volné dílo",
+          "vyrez": "ano",
+          "proc": "veřejné dílo UK nebo VKOL s ověřenými autory (70 let po smrti posledního, data v MODS): podmínky knihoven omezují jen díla po přihlášení; do zdroje napiš „Kramerius, volné dílo“ až po ověření autorů (10. 11. 2026)"
+        }
+      ]
+    },
+    "kramerius.cuni.cz": {
+      "nazev": "Kramerius Univerzity Karlovy",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "podmínky užití omezují jen díla po přihlášení; licence „public“ ještě neznamená volné dílo – ověř autory (10. 11. 2026)",
+      "jinak": "Uživatel volné dílo uloží v prohlížeči, ty ho přečteš. Hledej přes Českou digitální knihovnu (kramerius.py … --knihovna vkol / cuni), autory ověř kramerius.py autori <uuid>.",
+      "vyjimky": [
+        {
+          "obsahuje": "kramerius, volné dílo",
+          "vyrez": "ano",
+          "proc": "veřejné dílo s ověřenými autory (70 let po smrti posledního)"
+        }
+      ]
+    },
+    "kramerius.vkol.cz": {
+      "nazev": "Kramerius Vědecké knihovny v Olomouci",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "podmínky užití omezují jen díla po přihlášení; licence „public“ ještě neznamená volné dílo – ověř autory (Olomouc 1946: „public“, autor † 1974) (10. 11. 2026)",
+      "jinak": "Uživatel volné dílo uloží v prohlížeči, ty ho přečteš. Hledej přes Českou digitální knihovnu (kramerius.py … --knihovna vkol / cuni), autory ověř kramerius.py autori <uuid>.",
+      "vyjimky": [
+        {
+          "obsahuje": "kramerius, volné dílo",
+          "vyrez": "ano",
+          "proc": "veřejné dílo s ověřenými autory (70 let po smrti posledního)"
+        }
+      ]
+    },
+    "commons.wikimedia.org": {
+      "nazev": "Wikimedia Commons",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "jen volné licence (Public domain, CC0, CC BY, CC BY-SA), komerční užití dovolené s autorem a licencí; API pro roboty, robots.txt zakazuje * /w/, Claude-User nejmenuje (9. 11. 2026)",
+      "jinak": ""
+    },
+    "upload.wikimedia.org": {
+      "nazev": "Wikimedia Commons (soubory)",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "soubory Commons, licence u souboru (commons.py detail) (9. 11. 2026)",
+      "jinak": ""
+    },
+    "www.wikidata.org": {
+      "nazev": "Wikidata",
+      "dotazy": true,
+      "obrazky": false,
+      "vyrez": "ano",
+      "proc": "data CC0, API pro roboty (9. 11. 2026)",
+      "jinak": ""
+    },
+    "geolab.cz": {
+      "nazev": "Geolab UJEP",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "s citací Rakouského státního archivu (číslo sekce), Geolabu a MŽP",
+      "jinak": ""
+    },
+    "oldmaps.geolab.cz": {
+      "nazev": "Geolab UJEP",
+      "dotazy": true,
+      "obrazky": true,
+      "vyrez": "ano",
+      "proc": "s citací Rakouského státního archivu (číslo sekce), Geolabu a MŽP",
+      "jinak": ""
+    },
+    "pamatkovykatalog.cz": {
+      "nazev": "Památkový katalog NPÚ",
+      "dotazy": true,
+      "obrazky": false,
+      "vyrez": "neresi",
+      "proc": "seznam památek je otevřená data CC BY 4.0, web bez robots.txt a bez ověření (8. 11. 2026); fotky jsou na iispp.npu.cz",
+      "jinak": ""
+    },
+    "geoportal.npu.cz": {
+      "nazev": "Geoportál NPÚ (území s archeologickými nálezy)",
+      "dotazy": true,
+      "obrazky": false,
+      "vyrez": "ano",
+      "proc": "ÚAN je otevřená data CC BY-SA 4.0 (metadata NPÚ), veřejná služba ArcGIS bez ověření (10. 11. 2026); nástroj bere jen kategorii a název území",
+      "jinak": ""
+    },
+    "iispp.npu.cz": {
+      "nazev": "NPÚ – MIS a Carmen (fotky, plány, průzkumy)",
+      "dotazy": true,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "fotky a plány jsou dílo NPÚ: zveřejnit jen se smlouvou, web nejvýš 200×300 px nebo s vodoznakem, v tisku licence od 1 500 Kč (badatelský řád a ceník NPÚ, 8. 11. 2026)",
+      "jinak": "Popis a odkaz vypíše pamatky.py detail, fotku si uživatel prohlédne přes odkaz. Carmen (/carmen/) má ochranu proti robotům – hledá uživatel v prohlížeči. Do PDF nebo na web jen odkaz, nebo kopii objednat u NPÚ (k neveřejnému užití).",
+      "vyjimky": [
+        {
+          "obsahuje": "/carmen/",
+          "dotazy": false,
+          "obrazky": false,
+          "proc": "Carmen přesměruje na ověření proti robotům (/carmen/challenge, 8. 11. 2026)",
+          "jinak": "Uživatel otevře odkaz Carmen z pamatky.py detail v prohlížeči a pošle ti, co našel. Kopii průzkumu nebo plánu objedná u NPÚ (gnr.sbirkaplanu@npu.cz)."
+        }
+      ]
+    },
+    "www.google.com": {
+      "nazev": "Google Maps a Street View",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "ne",
+      "proc": "Geo Guidelines: snímky Street View nesmí do tisku ani PDF a nesmí se screenshotovat „for any purpose“, jen vložit (iframe) nebo odkázat; robots.txt zakazuje * /maps/ (10. 11. 2026)",
+      "jinak": "Street View s časovou osou (ikona hodin, ročníky od ~2009) prochází uživatel sám a slovy popíše, co se na domě změnilo; ty to zapíšeš s rokem snímku. Do PDF jen popis a odkaz (Sdílet → Kopírovat odkaz; ověř, že otevře zvolený ročník), na web i vložené panorama (Sdílet → Vložit mapu)."
+    },
+    "mapy.com": {
+      "nazev": "Mapy.com (Seznam), Panorama a letecké snímky",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "ne",
+      "proc": "Podmínky užití Mapy.com, čl. III.4: screenshot jen mapových podkladů a aktuální Letecké mapy (s logem nebo „Zdroj: Mapy.com“ a copyrightem, tisk do 5 000 ks); Panoramu a starší letecké ročníky ne, Panorama jen odkazem nebo přes API, zakázáno i stahovat a analyzovat obraz Panoramy (10. 11. 2026)",
+      "jinak": "Panorama s volbou roku (Nejnovější → ročník) prochází uživatel sám a slovy popíše změny. Do PDF popis a odkaz, na web iframe s pevným rokem (Nástroje → Sdílet). Starší letecké snímky jen prohlížet; do výstupu ortofota ČÚZK nebo CENIA 50. let. Screenshot základní či turistické mapy a aktuální letecké smí s „Zdroj: Mapy.com“ a copyrightem z rohu mapy."
+    },
+    "mapy.cz": {
+      "nazev": "Mapy.cz (= Mapy.com)",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "ne",
+      "proc": "stejné podmínky jako mapy.com (10. 11. 2026)",
+      "jinak": "Viz mapy.com."
+    },
+    "www.ncap.org": {
+      "nazev": "NCAP, National Collection of Aerial Photography (Edinburgh)",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "podmínky webu čl. 8.1 zakazují jakéhokoli robota, scraper a automatizovaný nástroj „to access, obtain, copy“ (i Air Photo Finder); obrázky Crown Copyright, licence: osobní zdarma, do zprávy (report) £15, kniha od £55 za snímek bez DPH (10. 11. 2026)",
+      "jinak": "Air Photo Finder (airphotofinder.ncap.org, mapa) prohledá uživatel sám; ty poradíš polohu a roky 1943–45. V Česku jen asi 35 průzkumných letů (ACIU) a MAPRW, hlavně kolem cílů náletů (továrny, rafinerie, nádraží). Snímek do výstupu jen s licencí NCAP; jinak zjištění s citací (sbírka, let, snímek)."
+    },
+    "airphotofinder.ncap.org": {
+      "nazev": "NCAP Air Photo Finder",
+      "dotazy": false,
+      "obrazky": false,
+      "vyrez": "souhlas",
+      "proc": "podmínky webu čl. 8.1 zakazují jakéhokoli robota, scraper a automatizovaný nástroj „to access, obtain, copy“ (i Air Photo Finder); obrázky Crown Copyright, licence: osobní zdarma, do zprávy (report) £15, kniha od £55 za snímek bez DPH (10. 11. 2026)",
+      "jinak": "Air Photo Finder (airphotofinder.ncap.org, mapa) prohledá uživatel sám; ty poradíš polohu a roky 1943–45. V Česku jen asi 35 průzkumných letů (ACIU) a MAPRW, hlavně kolem cílů náletů (továrny, rafinerie, nádraží). Snímek do výstupu jen s licencí NCAP; jinak zjištění s citací (sbírka, let, snímek)."
+    }
+  }
+}

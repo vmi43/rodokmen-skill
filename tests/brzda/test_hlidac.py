@@ -4,14 +4,14 @@ Hlídač se spouští přesně tak, jak ho do .claude/settings.json zapíše `no
 (command + args – tvar pro Windows od 0.6.1) a mimo Windows i shellovým příkazem přes bash (a PowerShell, je-li).
 U zamítnutí kontroluje i to, že odpověď je platné UTF-8 (Claude Code ji tak čte). Hlídač nic nestahuje.
 Z kořene repozitáře (přes obal, test obsahuje příkazy s curl):
-  python3 -I skills/rodokmen/tools/slusne.py tests/brzda/test_hlidac.py skills/rodokmen
+  python3 -I shared/tools/slusne.py tests/brzda/test_hlidac.py shared
 Případy vznikly z testů hooku na Windows (PR #53). Stav 0.6.0 na Windows 11, 2. 11. 2026: přes Git Bash 39 z 59
 (zamítnutí v cp1250; `import json, urllib.request` v heredocu i ve skriptu, `bash -c "curl …"` a Monitor projdou);
 přes PowerShell 0 z 59 – příkaz hooku se nespustí (chybí &), skončí kódem 1 a pustí všechno.
 """
 import json, os, shutil, subprocess, sys, tempfile
 
-SKILL = os.path.abspath(sys.argv[1])          # …/skills/rodokmen (tools/hlidac_site.py, tools/novy_projekt.py)
+SKILL = os.path.abspath(sys.argv[1])          # …/shared (tools/hlidac_site.py, tools/novy_projekt.py)
 sys.path.insert(0, os.path.join(SKILL, "tools"))
 import novy_projekt                            # noqa: E402 – stejný příkaz hooku, jaký zapisuje --hlidac
 

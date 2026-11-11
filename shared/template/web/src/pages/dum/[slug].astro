@@ -1,0 +1,103 @@
+---
+// Stránka jednoho domu. Původ: pages/dum/[slug].astro z dejiny-domu-skill (bda6028).
+// Naše úprava: držitel nebo obyvatel s polem `os` odkazuje na stránku osoby v rodokmenu; mapa domu (HouseMap); tlačítko
+// „Přečíst příběh domu“, když je data/pribeh_cp<adresa>.md.
+import Base from '../../layouts/Base.astro';
+import Record from '../../components/Record.astro';
+import Timeline from '../../components/Timeline.astro';
+import RecLinks from '../../components/RecLinks.astro';
+import Vyhrady from '../../components/Vyhrady.astro';
+import HouseMap from '../../components/HouseMap.astro';
+import PersonLink from '../../components/PersonLink.astro';
+import { config, houses, records, dateKey, village, houseAddress, houseFullTitle, statusClass } from '../../lib/data.js';
+import '../../styles/domy.css';
+
+export function getStaticPaths() {
+  return Object.keys(houses).map((slug) => ({ params: { slug } }));
+}
+const h = houses[Astro.params.slug];
+const maPribeh = (config.dalsiPribehy ?? []).some((p) => p.slug === `cp${h.slug}`);
+const recs = h.records.filter((r) => records[r]).sort((a, b) => dateKey(records[a].date) - dateKey(records[b].date));
+---
+<Base title={houseFullTitle(h)} description={h.desc}>
+  <p class="crumbs"><a href="/domy/">Domy</a> · <span>{h.part || village.name}</span></p>
+  <h1>{houseAddress(h)}{h.name && <span class="muted"> – {h.name}</span>}</h1>
+  <div class="chips">
+    {h.kind && <span class="chip">{h.kind}</span>}
+    <span class={`chip ${statusClass(h.st)}`}>{h.status}</span>
+  </div>
+  {h.desc && <p class="lead">{h.desc}</p>}
+  {h.note && <p class="note">{h.note}</p>}
+  {maPribeh && <p><a class="btn" href={`/pribehy/cp${h.slug}/`}>Přečíst příběh domu →</a></p>}
+  {h.story && (
+    <section class="house-story">
+      <h2>{h.story.title || 'Příběh domu'}</h2>
+      {h.story.paras.map((p) => <p>{p}</p>)}
+    </section>
+  )}
+
+  {h.numbers.length > 0 && (
+    <>
+      <h2>Čísla domu v čase</h2>
+      <ul class="facts">{h.numbers.map((n) => <li><strong>{n.num}</strong> <span class="muted">({n.when})</span></li>)}</ul>
+    </>
+  )}
+
+  {h.events.length > 0 && (<><h2>Časová osa</h2><Timeline events={h.events} /></>)}
+
+  {h.owners.length > 0 && (
+    <>
+      <h2>Držitelé</h2>
+      <div class="table-box"><table>
+        <thead><tr><th>Od</th><th>Do</th><th>Držitel</th><th>Jak dům získal</th><th>Doklad</th></tr></thead>
+        <tbody>
+          {h.owners.map((o) => (
+            <tr>
+              <td class="small" style="white-space:nowrap">{o.since}</td>
+              <td class="small" style="white-space:nowrap">{o.until}</td>
+              <td>{o.name}{o.person && <> <PersonLink slug={o.person} showYears={false} /> <span class="small muted">v rodokmenu</span></>}{o.note && <div class="small muted">{o.note}</div>}</td>
+              <td class="small">{o.how}</td>
+              <td><div class="src-line"><span class={`chip ${statusClass(o.st)}`}>{o.status}</span><Vyhrady caveats={o.caveats} /><RecLinks ids={o.records} /></div></td>
+            </tr>
+          ))}
+        </tbody>
+      </table></div>
+    </>
+  )}
+
+  {h.people.length > 0 && (
+    <>
+      <h2>Obyvatelé</h2>
+      <div class="grid2">
+        {h.people.map((p) => (
+          <div class="card">
+            <h3>{p.name} {p.years && <span class="muted small">{p.years}</span>}</h3>
+            {p.role && <p class="small"><strong>{p.role}</strong></p>}
+            {p.facts.length > 0 && <ul class="facts small">{p.facts.map((f) => <li>{f}</li>)}</ul>}
+            {p.person && <p class="small">V rodokmenu: <PersonLink slug={p.person} /></p>}
+            {p.note && <p class="small muted">{p.note}</p>}
+            <p class="small src-line"><span class={`chip ${statusClass(p.st)}`}>{p.status}</span><Vyhrady caveats={p.caveats} /><RecLinks ids={p.records} /></p>
+          </div>
+        ))}
+      </div>
+    </>
+  )}
+
+  {h.lat != null && (
+    <>
+      <h2>Poloha</h2>
+      <HouseMap height="50vh" compact focus={h.slug} />
+    </>
+  )}
+
+  {h.docs.length > 0 && (
+    <>
+      <h2>Fotografie a dokumenty</h2>
+      <div class="docs">{h.docs.map((d) => <figure><a href={`/img/${d.img}.jpg`} target="_blank" rel="noopener"><img src={`/img/${d.img}.jpg`} alt={d.caption} loading="lazy" /></a><figcaption>{d.caption}</figcaption></figure>)}</div>
+    </>
+  )}
+
+  <h2>Prameny</h2>
+  {recs.length ? <div class="recs">{recs.map((r) => <Record id={r} showHouses exclude={h.slug} />)}</div>
+    : <p class="muted">K tomuto domu zatím nemáme přečtený zápis.</p>}
+</Base>

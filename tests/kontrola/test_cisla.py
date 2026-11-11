@@ -1,7 +1,7 @@
 """Test kontroly partnerů na sousedním Kekulého čísle a čísel domů proti přepisům v tools/kontrola.py.
 
 Z kořene repozitáře, testovaná kontrola je argument:
-  python3 -I tests/kontrola/test_cisla.py skills/rodokmen/tools/kontrola.py
+  python3 -I tests/kontrola/test_cisla.py shared/tools/kontrola.py
   (Windows: python -I -X utf8 …)
 Každý případ si postaví vlastní dočasný projekt (data/osoby.py, zaznamy.json, prepisy.json) s vymyšlenou rodinou,
 zkopíruje do něj kontrola.py a pustí ji. Nic nestahuje, jen standardní knihovna.

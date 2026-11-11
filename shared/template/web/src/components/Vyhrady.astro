@@ -1,0 +1,6 @@
+---
+// Štítky jistoty (cteni/dum = "nejiste" v domy.py) vedle štítku původu údaje.
+// Původ: components/Vyhrady.astro z dejiny-domu-skill (bda6028).
+const { caveats = [] } = Astro.props;
+---
+{caveats.map((c) => <span class="chip st-prob">{c}</span>)}

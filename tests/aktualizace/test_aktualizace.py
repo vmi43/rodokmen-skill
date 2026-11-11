@@ -3,12 +3,12 @@
 Skript si v dočasné složce postaví malý falešný skill (template/ a tools/ s kopií novy_projekt.py), založí z něj
 projekt, mění šablonu i projekt a spouští aktualizaci. Nic nestahuje, potřebuje jen Python (a git pro slučování).
 Z kořene repozitáře:
-  python3 -I tests/aktualizace/test_aktualizace.py skills/rodokmen
+  python3 -I tests/aktualizace/test_aktualizace.py shared
 Na Windows `python -I -X utf8`. Skončí kódem 1, když některý případ selže.
 """
 import glob, os, shutil, subprocess, sys, tempfile, time, traceback
 
-SKILL = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else "skills/rodokmen")
+SKILL = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else "shared")
 RADKY = [f"radek {i}" for i in range(1, 21)]
 POCET = 20   # počet případů v pripady()
 PRESKOCENO = "přeskočeno: "   # případ, který tu nejde vyzkoušet (počítá se zvlášť)

@@ -1,7 +1,7 @@
 """Regresní test brzdy tools/slusne.py s lokálními servery na 127.0.0.2 a 127.0.0.3 (localhost brzda nebrzdí).
 
 Z kořene repozitáře, přes obal (test sám spouští curl), testovaná brzda je argument:
-  python3 -I skills/rodokmen/tools/slusne.py tests/brzda/test_brzda.py skills/rodokmen/tools/slusne.py
+  python3 -I shared/tools/slusne.py tests/brzda/test_brzda.py shared/tools/slusne.py
   (Windows: python -I -X utf8 …; pusť z Git Bashe i z PowerShellu – bash z PowerShellu je Git\\bin\\bash.exe,
   který si přestaví PATH)
   ROZSIRENI=0 … – jen základní testy (bez heredocu, prodlužování stopky, podprocesů a opakovaného souběhu vláken)
@@ -69,7 +69,7 @@ VLAKNA = soubor("vlakna.py",
                 "import sys, urllib.request, concurrent.futures as cf\n"
                 "with cf.ThreadPoolExecutor(8) as ex:\n"
                 "    list(ex.map(lambda u: urllib.request.urlopen(u, timeout=10).read(), sys.argv[1:]))\n")
-OPAVA = soubor("opava.py",   # digi.archives.cz přesměrovaný na lokální server (jen v tomto procesu)
+OPAVA = soubor("opava.py",   # archives.cz přesměrovaný na lokální server (jen v tomto procesu)
                "import socket, sys, urllib.request\n_g = socket.getaddrinfo\n"
                "socket.getaddrinfo = lambda h, *a, **k: _g('127.0.0.2' if h.endswith('archives.cz') else h, *a, **k)\n"
                "for u in sys.argv[1:]:\n    print(urllib.request.urlopen(u, timeout=10).status, flush=True)\n")
@@ -208,8 +208,8 @@ check("slusne.py bash: 429 z curl ve skriptu zastaví další dotazy", not zazna
 
 # 8) stránka „zablokováno“ s kódem 200 (ZA Opava) a limit 4 s pro archives.cz
 e = stav("s8"); t0 = time.time()
-r = spust([OPAVA, f"http://digi.archives.cz:{PA}/api?o=1", f"http://digi.archives.cz:{PA}/api?o=2",
-           f"http://digi.archives.cz:{PA}/blocked", f"http://digi.archives.cz:{PA}/api?o=po"], e)
+r = spust([OPAVA, f"http://images.archives.cz:{PA}/api?o=1", f"http://images.archives.cz:{PA}/api?o=2",
+           f"http://images.archives.cz:{PA}/blocked", f"http://images.archives.cz:{PA}/api?o=po"], e)
 z = rozestupy(zaznamy(t0, "/"))
 check("archives.cz: limit 4 s a stránka „zablokováno“ (200)", r.returncode == KOD and len(z) == 2 and all(x >= 3.9 for x in z),
       f"kód {r.returncode}, rozestupy {z} s, po stránce „zablokováno“ už nic")

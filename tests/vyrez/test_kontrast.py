@@ -1,7 +1,7 @@
 """Test přepínače --kontrast ve vyrez.py a overit.py (vybledlé snímky).
 
 Z kořene repozitáře:
-  python3 -I tests/vyrez/test_kontrast.py skills/rodokmen/tools
+  python3 -I tests/vyrez/test_kontrast.py shared/tools
   (Windows: python -I -X utf8 …)
 Každý případ si postaví dočasný projekt s vymyšleným bledým snímkem (světle šedé písmo na šedém papíře),
 zkopíruje do něj nástroj a pustí ho. Nic nestahuje; potřebuje ImageMagick (magick).

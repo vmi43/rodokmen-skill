@@ -1,7 +1,7 @@
 """Test mezipaměti obrázků (tools/cache.py přes brzdu tools/slusne.py): ukládá se jen celý obrázek.
 
 Z kořene repozitáře (lokální server na 127.0.0.2 – localhost brzda nebrzdí, na macOS alias na lo0 nebo Docker):
-  python3 -I skills/rodokmen/tools/slusne.py tests/brzda/test_mezipamet.py skills/rodokmen/tools
+  python3 -I shared/tools/slusne.py tests/brzda/test_mezipamet.py shared/tools
 Mezipaměť a stav brzdy jsou v dočasné složce (RODOKMEN_SNIMKY, SLUSNE_STAV). Nic nestahuje z internetu.
 """
 import os, socket, subprocess, sys, tempfile, threading

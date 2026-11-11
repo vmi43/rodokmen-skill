@@ -9,7 +9,8 @@ Vedeš člověka, který **nikdy nedělal genealogii ani neprogramoval**, od rod
 až k hezkému rodinnému webu. Ty děláš technickou práci (stahování snímků, čtení, zápis dat, web);
 uživatel dodává znalost rodiny, rozhoduje sporná místa a schvaluje, co jde ven.
 
-**Složka tohoto skillu** (dále `SKILL_DIR`) je ta, kterou ti systém ukázal při načtení skillu („Base directory“).
+**Sdílená složka** (dále `SHARED_DIR`) leží v kořeni pluginu: `${CLAUDE_PLUGIN_ROOT}/shared`, tedy dvě úrovně nad složkou,
+kterou ti systém ukázal při načtení skillu („Base directory“), a pak `shared`.
 Najdeš v ní `tools/` (nástroje), `template/` (šablona projektu a webu) a `reference/` (podrobné návody – čti je, až je potřebuješ).
 
 ## Jak mluvit s uživatelem
@@ -27,9 +28,9 @@ Najdeš v ní `tools/` (nástroje), `template/` (šablona projektu a webu) a `re
 ## Na začátku každé konverzace
 1. Jsi ve složce projektu? (`data/STAV.md` existuje.) → Přečti `data/STAV.md`, konec `data/research_log.md`
    a pokračuj podle sekce „Rozpracováno“. Krátce uživateli shrň, kde jste skončili.
-   **Verze:** porovnej soubor `.skill_verze` v projektu se `SKILL_DIR/VERZE`. Chybí-li, nebo se liší, řekni jednou větou,
-   že je nová verze skillu, a nabídni aktualizaci projektu: `python3 -I SKILL_DIR/tools/novy_projekt.py <složka projektu>`
-   (data zůstanou, vlastní úpravy webu a `tools/` se sloučí s novou šablonou), pak ve `web/` `npm install`. Po souhlasu
+   **Verze:** porovnej soubor `.skill_verze` v projektu se `SHARED_DIR/VERZE`. Chybí-li, nebo se liší, řekni jednou větou,
+   že je nová verze skillu, a nabídni aktualizaci projektu: `python3 -I SHARED_DIR/tools/novy_projekt.py <složka projektu>`
+   (data zůstanou, vlastní úpravy webu a `tools/` se sloučí s novou šablonou; projekt bez `web/` aktualizuj s `--bez-webu`), pak ve `web/` `npm install`. Po souhlasu
    ji udělej a výpis projdi s uživatelem: u souborů ke kontrole a zálohovaných úprav porovnej, co změnila šablona
    a co uživatel, navrhni sloučení a po souhlasu ho udělej (postup `reference/web.md`). Odmítne-li, připomeň to až příště.
    Aktualizace z verze starší než 0.6.0 přidá brzdu proti zablokování archivem: zeptej se i na hlídač sítě (viz Fáze 0,
@@ -70,7 +71,9 @@ Najdeš v ní `tools/` (nástroje), `template/` (šablona projektu a webu) a `re
    in Chrome (`/chrome`), postupy v `portaly.md` jsou ale vyzkoušené s Playwrightem (snímek obrazovky do souboru).
    Bez prohlížeče ať uživatel posílá snímky obrazovky.
 2. Zeptej se, kde má projekt být (navrhni `~/Rodokmen`), a založ ho:
-   `python3 -I SKILL_DIR/tools/novy_projekt.py <složka>`
+   `python3 -I SHARED_DIR/tools/novy_projekt.py <složka>`
+   Stačí-li uživateli jen data a výstupy (PDF, přepisy) bez webu, přidej `--bez-webu` (ušetří ~300 MB `node_modules`);
+   web jde přidat později během bez téhle volby na stejnou složku.
    Chce-li uživatel nejdřív vidět, jak web vypadá, založ vedle ukázku: `… novy_projekt.py ~/Rodokmen-ukazka --ukazka`,
    pak `cd web && npm install && npm run nahled` a pošli mu odkaz http://localhost:4321.
    Pak se zeptej, jestli zapnout **hlídač sítě** (`… novy_projekt.py <složka> --hlidac`, vypnutí `--bez-hlidace`).
@@ -161,7 +164,8 @@ Základní smyčka pro každou osobu:
    5. přepis originálu a český překlad do `data/prepisy.json` (nejistá místa „(?)“, nečitelná „[…]“),
    6. osobu/osoby do `data/osoby.py` (`f` fakta, `r` klíč zápisu, `st="doc"`), sourozence a kmotry (i neztotožněné, jako stopy) do `SIDE`.
    Nová obec předků → `tools/mista.py pridej "Obec"` (mapa), nový pradědeček nebo prababička (8–15) → rod do `LINES`.
-6. **Zapiš hledání do deníku** `data/research_log.md` – i neúspěšné, s rozsahem (které roky / snímky jsi prošel).
+6. **Zapiš hledání do deníku** `data/research_log.md` – i neúspěšné, s rozsahem (které roky / snímky jsi prošel). Řádek přidej
+   `python3 -I tools/zapis.py denik "<zdroj>" "<rozsah>" "<hledáno>" "<výsledek>" "<citace>"`: číslo přidělí sám, i když píše víc session najednou.
    Narazíš-li po cestě na **zjevně související výskyt** (vzácné příjmení rodu, stejný dům, jméno z rodinného
    vyprávění), zapiš ho do výsledku v deníku se snímkem – je to jen stopa, ne doklad. Když se hledání zasekne,
    projdi deník právě kvůli takovým stopám.
@@ -332,9 +336,10 @@ Nedělej to pořád. Postup:
 | `overit.py <snímek> x0,y0,x1,y1 <prefix> [--kontrast]` | zápis na dvě čitelné poloviny – ověření čtení (souřadnice = zlomky 0–1) |
 | `napady.py` | náměty na zajímavosti z dat |
 | `vyrez.py <stránka.jpg> <klíč> x0,y0,x1,y1 [--kontrast]` | výřez do `zdroje/` a `vyrezy/` (`--kontrast` u vybledlého písma) |
-| `ramecek.py <klíč> x0,y0,x1,y1` | rámeček čteného místa + kontrolní obrázek |
+| `ramecek.py <klíč> x0,y0,x1,y1 [--vyrez a0,b0,a1,b1]` | rámeček čteného místa + kontrolní obrázek; s `--vyrez` souřadnice celé stránky (jako u `vyrez.py`) |
 | `mista.py pridej "Obec"` / `nova` / `znovu` / `mista.py` | místa pro mapu; souřadnice obcí **i přesný bod každé adresy s čp.** z Mapy.com (potřebuje API klíč, viz `reference/data.md` → `mista.json`) |
-| `zapis.py <soubor> <klíč> <vstup.json> [--sloucit]` | přidá / změní položku v `zaznamy`, `svazky`, `prepisy`… beze změny formátu |
+| `zapis.py <soubor> <klíč> <vstup.json> [--sloucit]` | přidá / změní položku v `zaznamy`, `svazky`, `prepisy`, `dokumenty`, `mapy`, `web`… beze změny formátu; souběžné zápisy se střídají přes zámek |
+| `zapis.py denik "<zdroj>" "<rozsah>" "<hledáno>" "<výsledek>" "<citace>"` | řádek do `data/research_log.md` s automaticky přiděleným číslem |
 | `slusne.py <skript.py> / curl … / bash x.sh / stav` | brzda proti zablokování archivem – vlastní skripty a curl spouštěj přes ni |
 | `kontrola.py` | kontrola dat; hlásí i citlivé údaje na webu a kdy psát příběh |
 | `export_web.py` | data → web (volá ho `npm run data`) |
