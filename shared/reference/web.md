@@ -5,6 +5,22 @@ Stránky: úvod (lákadlo, statistiky, zajímavosti, mapa, rody, vějíř), př�
 mapa (OpenStreetMap), vějíř přes celou obrazovku s hledáním, seznam předků, zápisy (s výřezem, rámečkem, přepisem
 a překladem), stránka osoby, rodiny, „Co hledáme“, výzkumný deník, hledání.
 
+## Dům, obec a staré mapy (skill `rodokmen:dum`)
+
+Je-li v projektu `data/domy.py`, přibydou k stránkám výš tyto (bez něj se nevytvoří, jen prázdné nelinkované `/domy/` a `/obec/`):
+
+| stránka | co ukazuje | z čeho |
+|---|---|---|
+| `/obec/` | dějiny obce, mapa všech míst, odkaz na příběh obce | `OBEC`, `OBEC_UDALOSTI`, `mista.json` |
+| `/domy/` | seznam domů | `D` v `domy.py` |
+| `/dum/<číslo>/` | události, držitelé, obyvatelé, doklady; mapa, má-li dům `lat`/`lon`; vazba na osobu přes pole `os` | `domy.py`, `zaznamy.json` |
+| `/mapy/` | staré mapy a letecké snímky, porovnání vedle sebe, prolnutí jen u map s ověřeně stejným výřezem (`ramecek.py --vyrez`) | `data/mapy.json` |
+| `/pribehy/<slug>/` | další příběhy; slug `cp<adresa>` přidá tlačítko na stránku domu, `obec` na stránku obce | `data/pribeh_<slug>.md` |
+
+Obrázky z portálů, které bez souhlasu nedovolují zveřejnění (`podminky.posoud_obrazek`), export na veřejný web nedá; kontrola
+v `kontrola.py` na to upozorní. Mapa domů bere místa z celého `mista.json`, takže v projektu s rodokmenem se objeví i místa předků
+jako „Další místa“. Vzhled mapy a prolínání map zatím není ověřený v prohlížeči (Leaflet běží až v něm).
+
 ## Příkazy (ve složce `web/`)
 | příkaz | co dělá |
 |---|---|

@@ -80,7 +80,7 @@ Rozdíly pro dům:
   případně událost obce. Klíč zápisu `obec_druh_cp_kdo_rok`, např. `lhota_scitani_cp12_1890`.
 - **`kontrola.py` `domy.py` čte** (stavy, citované zápisy, poloha, `od` před `do`, pole `os` musí ukazovat na osobu
   v `osoby.py`), `napady.py` z něj vypisuje náměty. `export_web.py` ho na web vyexportuje
-  (stránky `obec`, `domy`, `dum/[slug]`; mapa domu a stránka starých map ještě chybí). Po každém zápisu pusť `python3 -I tools/kontrola.py`.
+  (stránky `obec`, `domy`, `dum/[slug]` s mapou domu, `mapy` se starými mapami a další příběhy `pribehy/[slug]`). Po každém zápisu pusť `python3 -I tools/kontrola.py`.
 - **`doc` jen to, co jsi četl přímo na snímku.** Literatura je `lit` (i dobrá vlastivěda se plete). Shoda bez dokladu je `prob`.
 - **Celé domácnosti:** ze sčítání zapiš všechny obyvatele domu, i čeleď a výměnkáře. Jsou to taky dějiny domu.
 - **Čti celý zápis včetně okrajů:** v gruntovních knihách jsou dodatky o splátkách a dalším prodeji.
@@ -107,7 +107,7 @@ pak `data/pribeh.md` a `web.json`. Víc příběhů (dům, obec, výměnek) jde 
 
 ## Fáze 6 – Web a zveřejnění
 Šablona webu má stránky `obec`, `domy` a `dum/[slug]` (zapnou se, když je `data/domy.py`); `npm run data` a `npm run build`
-jako u rodokmenu, postup v `reference/web.md` (o stránkách domu tam zatím nic není). Mapa domu a staré mapy zatím chybí. Před zveřejněním projdi `reference/soukromi.md` (dnešní majitelé, žijící lidé,
+jako u rodokmenu, postup a přehled stránek domu v `reference/web.md` (*Dům, obec a staré mapy*). Mapa domu se ukáže u domu s `lat`/`lon`, stránka `mapy` jen když je `data/mapy.json`. Před zveřejněním projdi `reference/soukromi.md` (dnešní majitelé, žijící lidé,
 fotky sousedů). **Nic nezveřejňuj bez výslovného souhlasu uživatele.**
 
 ## Co nikdy (jen o domě)
