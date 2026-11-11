@@ -10,7 +10,7 @@ import glob, os, shutil, subprocess, sys, tempfile, time, traceback
 
 SKILL = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else "shared")
 RADKY = [f"radek {i}" for i in range(1, 21)]
-POCET = 21   # počet případů v pripady()
+POCET = 22   # počet případů v pripady()
 PRESKOCENO = "přeskočeno: "   # případ, který tu nejde vyzkoušet (počítá se zvlášť)
 
 
@@ -44,6 +44,7 @@ def falesny_skill(koren):
     zapis(os.path.join(s, "tools", "skript.sh"), "#!/bin/sh\necho ahoj\n", nl="\r\n")   # skill z Windows s CRLF
     zapis(os.path.join(s, "template", "web", "src", "styl.css"), text(RADKY))
     zapis(os.path.join(s, "tools", "stary.py"), "print('zrusim')\n")
+    zapis(os.path.join(s, "tools", "podminky.json"), '{"portaly": {}}\n')
     for n in ("index.astro", "uvod.astro", "zrus.astro", "mapa.astro", os.path.join("slozka", "x.astro")):
         zapis(os.path.join(s, "template", "web", "src", n), text(RADKY))
     zapis(os.path.join(s, "template", "web", "node_modules", "x.js"), "nekopirovat\n")
@@ -361,6 +362,13 @@ def pripady(koren):
             yield ".claude/ bez zápisu: skript dokončí tools/ a .skill_verze a vypíše, co chybí"
     finally:
         os.chmod(os.path.join(p2, ".claude"), 0o755)
+
+    # 22. datový soubor nástrojů (tools/podminky.json) se kopíruje i při založení; bez něj podminky.py zastaví stahování
+    p3 = os.path.join(koren, "projekt_json")
+    spust(s, p3)
+    assert cti(os.path.join(p3, "tools", "podminky.json")) == '{"portaly": {}}\n', "podminky.json se nezkopíroval"
+    assert os.path.isfile(os.path.join(p3, ".skill_sablona", "tools", "podminky.json")), "chybí v .skill_sablona"
+    yield "tools/podminky.json se kopíruje do projektu (i do .skill_sablona)"
 
 
 def main():

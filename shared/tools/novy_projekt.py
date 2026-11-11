@@ -40,6 +40,8 @@ for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8 (
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
 
+# Datové soubory, které nástroje v tools/ čtou vedle sebe (bez nich podminky.py zastaví každé stahování).
+DATA_NASTROJU = ("podminky.json",)
 SKILL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -295,7 +297,7 @@ def vyresit(dst, cesta):
     if cast == "web":
         v_sablone = os.path.isfile(new) and not set(zbytek.split("/")) & set(SKIP)
     else:
-        v_sablone = os.path.isfile(new) and "/" not in zbytek and zbytek.endswith((".py", ".sh")) and zbytek != "novy_projekt.py"
+        v_sablone = os.path.isfile(new) and "/" not in zbytek and (zbytek.endswith((".py", ".sh")) or zbytek in DATA_NASTROJU) and zbytek != "novy_projekt.py"
     cek = nacti_cekajici(dst)
     zaznam = cek.get(rel)
     if isinstance(zaznam, dict):
@@ -440,7 +442,7 @@ def main():
     tools = os.path.join(dst, "tools")
     os.makedirs(tools, exist_ok=True)
     nastroje = sorted(f for f in os.listdir(os.path.join(SKILL, "tools"))
-                      if f.endswith((".py", ".sh")) and f != "novy_projekt.py")
+                      if (f.endswith((".py", ".sh")) or f in DATA_NASTROJU) and f != "novy_projekt.py")
     aktualizuj(os.path.join(SKILL, "tools"), dst, "tools", nastroje, zaloha, vysl, stary, cek)
     uloz_cekajici(dst, cek)
     for f in nastroje:   # i ponechaný vlastní .sh s CRLF: Git Bash by skript nespustil
