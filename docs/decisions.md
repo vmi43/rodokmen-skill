@@ -185,3 +185,9 @@ Porovnáno proti `32bef07` (upstream je `vzoha/dejiny-domu-skill`; `sarsonj` je 
 - **`prameny.md`:** řádky Street View, NCAP, Fortepan, `pamatky.py uan` v řádku AMČR a odstavec o reliéfu. **`portaly.md`:** sekce Street View, NCAP, Fortepan (beze změn, s původem v hlavičce); ostatní domovní portály z upstreamového `portaly.md` (veduty, Ostrava, Europeana…) se nepřebírají, jejich přehled drží `prameny.md`.
 - **Už bylo hotové:** `data.md` (věta o `zapis.py denik`), `SKILL.md` tabulka u `zapis.py denik`, `podminky.md` řádek reliéfu.
 - Testy: `test_mista.py` (2), `ReliefTest` v `test_cuzk_archiv.py` (6 celkem), `--bez-webu` ve `test_novy_projekt_dum.py` (12 z 12); aktualizace, kontrola, export domů a ostatní `tests/podminky` rc=0.
+
+## Přebírání upstreamu, krok (f): `slusne.py` a SOA Praha (2026-11-11)
+
+- **Rozdíl upstreamu:** `slusne.py` se mezi `bda6028` a `e1cd204` změnil jediným řádkem (`LIMITY["kramerius.vkol.cz"] = (5.0, 0.5)`, VKOL dal 403 po 4 rychlých dotazech na OCR). **Nepřebráno:** naše nástroje na `kramerius.vkol.cz` přímo nesmí (`podminky.json`, VKOL jde jen přes Českou digitální knihovnu v `kramerius.py`), takže limit pro tento web by se nikdy neuplatnil. Soubor zůstává bez změny a bez hlavičky původu.
+- **SOA Praha ověřeno 2026-11-11:** `https://ebadatelna.soapraha.cz/robots.txt` (HTTP 200) dál obsahuje `User-agent: rodokmen` / `Disallow: /` (vedle ClaudeBot, GPTBot, Amazonbot; ostatní roboty mají zakázané jen `/d/` a `/a/`). Upstreamové tvrzení, že zakázán je jen ClaudeBot, se našeho nástroje netýká, protože se představuje jako `rodokmen`. **`ZAKAZ["soapraha.cz"]` v `slusne.py` i řádek v `podminky.json` zůstávají beze změny**, `ebadatelna.py` dál stojí; stahuje jen prohlížeč uživatele.
+- Ověřilo se jedním `curl` na `robots.txt` a stažením dvou verzí upstreamového `slusne.py` ze `raw.githubusercontent.com`; žádný dotaz na eBadatelnu mimo `robots.txt`.
