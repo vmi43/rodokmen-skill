@@ -218,3 +218,10 @@ Základ `bc6cd33` (0.8.2), upstream `0fb0c03` (0.10.0), 64 souborů. Rozhodnuto 
 - **`SKILL.md` zeštíhlit**: Fáze 0 do `instalace.md`, import stromu do `data.md`; naše přidané pasáže (`zarad.py`, `pomucka.py`, brzda, dům) zůstanou.
 - **Číslo vydání 0.9.1** (uživatel zvolil proti doporučení 0.10.0): plynulá řada našich verzí; upstreamová čísla 0.9.0 a 0.10.0 mají jiný obsah, v `CHANGELOG.md` uvést, které upstreamové verze obsahuje.
 - **Ostrý výřez indikační skici v `portaly.md` nepřebírat** (upstream ho stahuje přes `fetch` ve stránce, mimo brzdu); odkázat na `cuzk_archiv.py`. Opravu čtení barev čísel převzít (rozpor `portaly.md:555` × `prameny.md:191`).
+
+### Krok 2 přebírání: `verze.py` a pojistka verze (2026-11-11)
+
+- **`shared/tools/verze.py` převzat a zjednodušen.** Dotazuje se na `vmi43/rodokmen-skill`, hledá plugin `rodokmen@rodokmen` a jeho složku `shared/`. **Větev „ručně nakopírovaný skill v `~/.claude/skills/rodokmen`“ je vypuštěna**: po přesunu do `shared/` takto nainstalovaný skill nefunguje (viz README, varianta B), takže nová verze se vždy radí přes `claude plugin update rodokmen@rodokmen`. Stopa: upstream tuto větev a test k ní má.
+- **`novy_projekt.py`**: `_python_windows()` vrací vždy `sys.executable`; `nastaveni()` čte JSON s BOM (`utf-8-sig`); `zkontroluj_verzi()` odmítne aktualizovat projekt novější než skill.
+- **Testy**: `tests/verze/test_verze.py` (20/20, bez případu ručního skillu), `test_hlidac.py` 83/83 po sloučení upstreamových případů (`git merge-file`), `test_hook_windows.py` 3/3.
+- **`SKILL.md` ještě `verze.py` nevolá** – přijde v kroku 5 (zeštíhlení), spolu s textem, kdy ho Claude spouští na začátku konverzace.
