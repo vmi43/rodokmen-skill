@@ -34,7 +34,7 @@ API klíč Mapy.com (zdarma, základní tarif 250 000 kreditů měsíčně, jedn
 na https://developer.mapy.com/portal-muj-ucet/ a vytvoř klíč. Dej ho do proměnné prostředí MAPY_API_KEY nebo do souboru
 pracovni/.mapy_klic (složka pracovni/ je v .gitignore). Klíč nikdy nepiš do chatu, kódu ani commitu.
 """
-import json, math, os, re, statistics, sys, time, urllib.parse, urllib.request
+import http.client, json, math, os, re, statistics, sys, time, urllib.parse, urllib.request
 import os as _os, sys as _sys; _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__))); import slusne  # noqa: E402 – brzda proti zablokování archivem (tools/slusne.py)
 for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8 (cp1250 neumí třeba „→“)
     if hasattr(_s, "reconfigure"):
@@ -163,11 +163,20 @@ def sjtsk(lat, lon):
     return p["x"], p["y"]
 
 
-def ruian_q(vrstva, where, pole, geo=False):
-    q = urllib.parse.urlencode({"where": where, "outFields": pole, "returnGeometry": str(geo).lower(),
-                                "outSR": 4326, "f": "json"})
-    with urllib.request.urlopen(f"{RUIAN}/{vrstva}/query?{q}", timeout=60) as r:
-        return json.load(r).get("features", [])
+def ruian_q(vrstva, where, pole, geo=False, limit=None):
+    """Dotaz na vrstvu RÚIAN. „limit“ omezí počet vrácených záznamů na straně služby (jinak vrací vše, i stovky kB);
+    přerušenou odpověď (IncompleteRead) zkusí jednou znovu."""
+    par = {"where": where, "outFields": pole, "returnGeometry": str(geo).lower(), "outSR": 4326, "f": "json"}
+    if limit:
+        par["resultRecordCount"] = limit
+    url = f"{RUIAN}/{vrstva}/query?{urllib.parse.urlencode(par)}"
+    for pokus in (1, 2):
+        try:
+            with urllib.request.urlopen(url, timeout=60) as r:
+                return json.load(r).get("features", [])
+        except http.client.IncompleteRead:
+            if pokus == 2:
+                raise
 
 
 def adresni_mista(dotaz, pole, obec=""):

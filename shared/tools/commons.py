@@ -17,7 +17,7 @@ Commons přijímá jen volné licence: obrázek smí i do placeného výstupu, u
 Větší města mají stovky kategorií: nástroj jich projde 60 (asi minuta), víc --kategorii.
 
 Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/tools/commons.py), commit 32bef07; úprava: slusne.py se u nás zapíná importem (bez instaluj())."""
-import argparse, html, json, os, re, sys, urllib.parse, urllib.request
+import argparse, html, http.client, json, os, re, sys, time, urllib.parse, urllib.request
 for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
@@ -50,14 +50,20 @@ def _verze():
 
 # Wikimedia chce od klientů API identifikaci s kontaktem (policy „User-Agent“); bez ní vrací 403. Kontakt je adresa
 # repozitáře, ne osobní e-mail. Platí jen pro Wikimedii (ostatní portály se představují přes slusne.UA).
-UA_WIKIMEDIA = f"rodokmen-skill/{_verze()} (https://github.com/vmi43/rodokmen-skill; genealogický nástroj, brzděný)"
+UA_WIKIMEDIA = f"rodokmen-skill/{_verze()} (https://github.com/vmi43/rodokmen-skill; genealogical tool, rate-limited)"
 
 
 def api(adresa, **parametry):
     parametry.update(format="json", formatversion=2)
     req = urllib.request.Request(f"{adresa}?{urllib.parse.urlencode(parametry)}", headers={"User-Agent": UA_WIKIMEDIA})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        return json.load(r)
+    for pokus in (1, 2):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                return json.load(r)
+        except (http.client.RemoteDisconnected, http.client.IncompleteRead):
+            if pokus == 2:   # Wikimedie občas zavře spojení; jeden pokus znovu (zpomalení hlídá slusne), pak ať chyba vyjde
+                raise
+            time.sleep(5)
 
 
 ZKRATKY = ((re.compile(r"\bnám\.?(?=\s|$)", re.I), "náměstí"), (re.compile(r"\btř\.?(?=\s|$)", re.I), "třída"))
