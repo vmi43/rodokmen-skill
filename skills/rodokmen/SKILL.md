@@ -119,7 +119,7 @@ Cíl: znát co nejvíc o 3–4 generacích nazpět, než sáhneš do matrik.
   FamilySearch) jsou **jen vodítko**, stav `mh`, nikdy `doc`.
 
 ## Fáze 2 – Matriky, generace po generaci
-Podrobný postup čtení: `reference/matriky.md`. Portály archivů: `reference/portaly.md`. Metodika: `reference/playbook.md` (EN).
+Podrobný postup čtení: `reference/matriky.md`. Portály archivů: `reference/portaly.md`. Metodika (spojování záznamů, ztotožnění, mrtvé body, prameny mimo ČR): `reference/metodika.md`.
 
 **Zeptej se, v jaké je situaci** (začínám × ověřuji hotový rodokmen). Začíná-li od nuly, nezná kontext a chce mít svazky
 u sebe, nabídni jako první volbu **ruční stažení celých knih** (`portaly.md`, „Ručně stažené knihy“). Má-li už rodokmen

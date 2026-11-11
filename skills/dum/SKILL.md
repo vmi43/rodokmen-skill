@@ -32,7 +32,7 @@ Co je jen o domě, je níže. Kde se obě pravidla liší, platí tento skill pr
 ## Návody (`SHARED_DIR/reference/`)
 - `data.md` – formát dat, `web.md` – web, `pribehy.md` – zajímavosti a příběh, `soukromi.md` – soukromí
 - `matriky.md` – jak číst matriky (písmo, latina/němčina, lhůty), `portaly.md` – portály archivů a nástroje na snímky
-- `playbook.md` – profesionální metodika (EN, čti jen potřebnou kapitolu)
+- `metodika.md` – spojování záznamů, ztotožnění, mrtvé body, prameny mimo ČR (čti jen potřebnou kapitolu)
 
 ## Na začátku každé konverzace
 1. Jsi ve složce projektu (existuje `data/STAV.md`)? Přečti `data/STAV.md`, konec `data/research_log.md`

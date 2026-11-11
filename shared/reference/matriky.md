@@ -10,7 +10,7 @@
 
 Další prameny: sčítání lidu (1857–1921; domácnosti s daty narození), soupis poddaných 1651 (celé rodiny s věkem),
 berní rula 1654 (jen hospodáři), gruntovní/pozemkové knihy (kdo vlastnil který dům – propojí generace přes dům),
-vojenské záznamy, domovské listy, parte. Viz `portaly.md` a `playbook.md` §2.
+vojenské záznamy, domovské listy, parte. Viz `portaly.md` a `metodika.md` (Prameny mimo ČR).
 
 ## Lhůty (zákon 301/2000 Sb.)
 Do archivu (a tedy online) jde svazek, až od jeho **posledního** zápisu uplyne: narození **100 let**, sňatky **75**, úmrtí **30**.
@@ -184,7 +184,7 @@ vsi a sňatek byl v oddílu městyse; ves měla oddíl až na snímcích 380–4
   U sporné číslice (80 × 86, 1885 × 1888) stáhni celý snímek a vyřízni jen řádek: výřezy 825 px na číslice nestačí.
 - Index nenašel ≠ zápis neexistuje. Zapiš, co přesně jsi prošel.
 - Oddací zápis uvádí „narozen dle mat. IV f. 149“ – podle folia najdeš křest jedním stažením (folio ≈ snímek − posun knihy).
-- Pomocníci (subagenti) a OCR/AI čtou historické písmo chybně – vždy ověř sám (viz `playbook.md` §1 bod 10).
+- Pomocníci (subagenti) a OCR/AI čtou historické písmo chybně – vždy ověř sám.
 
 ## Technické pasti (macOS, zsh) – napiš je i pomocníkům do zadání
 - Síť: jen přes brzdu `tools/slusne.py`; po hlášce „zastavený“ (kód 3) skončit, nic neopakovat ani neobcházet a říct to

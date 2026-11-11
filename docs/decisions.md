@@ -232,3 +232,9 @@ Základ `bc6cd33` (0.8.2), upstream `0fb0c03` (0.10.0), 64 souborů. Rozhodnuto 
 - **Nginx: upstreamové soubory se nepřebraly** (`Dockerfile`, `nginx.sablona.conf` do `conf.d`), **jediná oprava ano**: do naší šablony `map_hash_bucket_size 128;`. Ověřeno v `ubi9/nginx-126` přes Podman: bez řádku `nginx -t` selže („could not build map_hash“ u 64znakového otisku), s ním projde. Chyba tedy v kontejneru s ochranou odpovědí existovala. `tests/web/test_nginx.py` převeden na Podman/UBI (10/10).
 - **Nalezená vlastní chyba vydání 0.9.0:** `novy_projekt.py` kopíroval do `tools/` jen `.py` a `.sh`, takže `podminky.json` v projektu chyběl a `podminky.py` (a tím `slusne.pockej`) zastavil každé stahování a export otevřeného webu s „Tabulka podmínek chybí“. Opraveno seznamem `DATA_NASTROJU`; nový případ 22 v `test_aktualizace.py` (22/22). Existující projekty se opraví aktualizací (`novy_projekt.py` na stejnou složku). Patří do `CHANGELOG.md` 0.9.1 jako oprava.
 - **Neověřeno:** skutečné nasazení na účet Cloudflare (potřebuje přihlášení uživatele), vzhled webu v prohlížeči.
+
+### Krok 4 přebírání sarsonj/rodokmen-skill: `playbook.md` → `metodika.md` (2026-11-11)
+
+- **`shared/reference/playbook.md` smazán, nahradila ho česká `shared/reference/metodika.md`** převzatá beze změny z `upstream/HEAD` (`0fb0c03`, MIT). Zmizela výjimka z licence v `LICENSE` a v `README.md` (strom souborů, odstavec Licence).
+- **Stopa:** playbook byl anglická rešeršní zpráva bez uvedeného autora (stav 2026-10-09), vědomě se nepřebíral ani neudržoval dál; vrátit by se mohl omylem z upstreamu `dejiny-domu-skill`, který ho ještě má.
+- **Odkazy převedeny ručně, ne slepě:** `portaly.md` a `matriky.md` (§2 → kapitola Prameny mimo ČR), `skills/rodokmen/SKILL.md`, `skills/dum/SKILL.md`. Věta v `matriky.md` „Pomocníci a OCR/AI čtou písmo chybně (`playbook.md` §1 bod 10)“ zůstala bez odkazu, protože `metodika.md` to netvrdí.

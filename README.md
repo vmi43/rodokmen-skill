@@ -151,7 +151,7 @@ skills/dum/
 shared/              společné soubory skillů
   VERZE              číslo verze (podle něj Claude pozná, že má aktualizovat projekt)
   reference/         podrobné návody: čtení matrik, portály archivů, formát dat, web, soukromí,
-                     metodická příručka (playbook, anglicky)
+                     metodika (spojování záznamů, mrtvé body, prameny mimo ČR)
   tools/             nástroje v Pythonu (ARON, výřezy, rámečky, mapa, kontrola dat, export do webu, vějíř)
   template/          šablona projektu: prázdná data, ukázková rodina, web (Astro)
 .claude-plugin/      instalace jako plugin
@@ -227,5 +227,3 @@ tady v repozitáři.
 
 ## Licence
 Skill je pod licencí [MIT](LICENSE): smíte ho volně používat, upravovat a šířit dál, jen zachovejte uvedení autora (Jindřich Šaršon).
-Výjimkou je metodická příručka `shared/reference/playbook.md`. Je to převzatá rešeršní zpráva bez uvedeného
-autora, licence MIT se na ni nevztahuje (podrobnosti na začátku souboru).
