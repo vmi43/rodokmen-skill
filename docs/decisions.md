@@ -238,3 +238,11 @@ Základ `bc6cd33` (0.8.2), upstream `0fb0c03` (0.10.0), 64 souborů. Rozhodnuto 
 - **`shared/reference/playbook.md` smazán, nahradila ho česká `shared/reference/metodika.md`** převzatá beze změny z `upstream/HEAD` (`0fb0c03`, MIT). Zmizela výjimka z licence v `LICENSE` a v `README.md` (strom souborů, odstavec Licence).
 - **Stopa:** playbook byl anglická rešeršní zpráva bez uvedeného autora (stav 2026-10-09), vědomě se nepřebíral ani neudržoval dál; vrátit by se mohl omylem z upstreamu `dejiny-domu-skill`, který ho ještě má.
 - **Odkazy převedeny ručně, ne slepě:** `portaly.md` a `matriky.md` (§2 → kapitola Prameny mimo ČR), `skills/rodokmen/SKILL.md`, `skills/dum/SKILL.md`. Věta v `matriky.md` „Pomocníci a OCR/AI čtou písmo chybně (`playbook.md` §1 bod 10)“ zůstala bez odkazu, protože `metodika.md` to netvrdí.
+
+### Krok 5 přebírání sarsonj/rodokmen-skill: zeštíhlení `SKILL.md` (2026-11-11)
+
+- **Fáze 0 přesunuta do `shared/reference/instalace.md`** (základ upstream `0fb0c03`, `SKILL_DIR` → `SHARED_DIR`). Naše doplňky zůstaly v návodu: `--bez-webu`, výpis „NEZAPSÁNO“ při sandboxu a pravidlo, že `git` v sandboxu nesmí do `.git`. V `SKILL.md` zbyl odstavec s odkazem a zkratkou pro Windows.
+- **Import rodinného stromu přesunut do `data.md`** (nová sekce „Import rodinného stromu (Fáze 1)“, text upstreamu); ve Fázi 1 zůstal jen odkaz.
+- **Na začátku konverzace se volá `verze.py`** (dosud ho `SKILL.md` nevolal): výsledky `NOVA_VERZE_SKILLU`, `PROJEKT_NOVEJSI`, `SKILL_NEZJISTEN`, `AKTUALIZUJ_PROJEKT`; náš text o `--bez-webu` a hlídači zůstal. Záložní cesta přes `slusne.py`, když hlídač kontrolu zamítne.
+- **Výsledná velikost `SKILL.md` je 34 KB** (bylo 39,8 KB, upstream 23 KB). Dál se nezkracuje: zbytek jsou naše pasáže (`zarad.py`, `pomucka.py`, brzda, pomocníci, dům), které upstream nemá.
+- **Neověřeno:** že Claude podle zkráceného `SKILL.md` opravdu otevře `instalace.md` při zakládání projektu (chce zkoušku v živé session).
