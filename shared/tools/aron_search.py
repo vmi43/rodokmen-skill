@@ -8,6 +8,8 @@ Vypíše: apu_id | signatura, druh a roky | popis (obce, které svazek pokrývá
 Vypisuje i svazky bez snímků (hlavně 20. století, ale i oddací kniha z roku 1939 může být jen v badatelně: lhůta 75 let
 ještě neznamená online) – jestli je svazek online, ukáže --sken nebo `aron_img.py <apu_id> info` (scans: 0 = není)."""
 import json, re, sys, time, urllib.request
+if len(sys.argv) < 2 or sys.argv[1] in ("-h", "--help"):   # nápověda místo pádu
+    sys.exit(__doc__.strip())
 import os as _os, sys as _sys; _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__))); import slusne  # noqa: E402 – brzda proti zablokování archivem (společný limit dotazů, tools/slusne.py)
 for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8 (cp1250 neumí třeba „→“)
     if hasattr(_s, "reconfigure"):
