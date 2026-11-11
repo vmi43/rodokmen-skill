@@ -122,7 +122,8 @@ Základní smyčka pro každou osobu:
    3. výřez: `python3 -I tools/vyrez.py pracovni/<stránka>.jpg <klíč> x0,y0,x1,y1` (velkoryse – celý zápis s hlavičkou sloupců a okrajovými poznámkami),
    4. rámeček čteného místa: `python3 -I tools/ramecek.py <klíč> x0,y0,x1,y1` a **prohlédni si** `pracovni/ramecek_<klíč>.jpg`,
    5. přepis originálu a český překlad do `data/prepisy.json` (nejistá místa „(?)“, nečitelná „[…]“),
-   6. osobu/osoby do `data/osoby.py` (`f` fakta, `r` klíč zápisu, `st="doc"`), sourozence a kmotry (i neztotožněné, jako stopy) do `SIDE`.
+   6. osobu/osoby do `data/osoby.py` (`f` fakta, `r` klíč zápisu, `st="doc"`), sourozence a kmotry (i neztotožněné, jako stopy) do `SIDE`;
+      klíč zápisu k už existující osobě přidej `python3 -I tools/zapis.py odkaz <číslo osoby | část jména z SIDE> <klíč>`.
    Nová obec předků → `tools/mista.py pridej "Obec"` (mapa), nový pradědeček nebo prababička (8–15) → rod do `LINES`.
 6. **Zapiš hledání do deníku** `data/research_log.md` – i neúspěšné, s rozsahem (které roky / snímky jsi prošel). Řádek přidej
    `python3 -I tools/zapis.py denik "<zdroj>" "<rozsah>" "<hledáno>" "<výsledek>" "<citace>"`: číslo přidělí sám, i když píše víc session najednou.
@@ -137,7 +138,8 @@ Pravidla, která chrání kvalitu (naučená na skutečném projektu):
 - **Než něco ohlásíš jako nové, prohledej** `data/osoby.py`, `data/zaznamy.json` a `data/research_log.md`
   (jméno, místo, rok). Snadno „objevíš“ něco, co už v datech je.
 - **Zápis do dat:** `zaznamy`, `svazky`, `prepisy`, `dokumenty` přes `python3 -I tools/zapis.py <soubor> <klíč> pracovni/x.json`
-  (objekt napiš do `pracovni/x.json`, nástroj změní jen tu položku), `osoby.py` a markdown nástrojem pro úpravu souborů.
+  (objekt napiš do `pracovni/x.json`, nástroj změní jen tu položku; `--sloucit` změní jen uvedená pole); odkaz na zápis u osoby v `osoby.py` přes
+  `tools/zapis.py odkaz` (ohlídá uvozovky a čárky), ostatní úpravy `osoby.py` a markdown nástrojem pro úpravu souborů.
   Nikdy `sed -i` ani skript, který soubor přepíše celý – rozbije formát a v historii je pak změněný celý soubor.
 - **`doc` jen to, co jsi četl přímo na snímku.** Shoda jména a doby bez přímého dokladu = `prob` + poznámka proč.
 - **Nic nedomýšlej.** Nejisté čtení „(?)“, rozpory zapiš do `ISSUES`. Písaři se pletli (jména sourozenců, věk, Anna/Františka).
@@ -322,6 +324,7 @@ Nedělej to pořád. Postup:
 | `ramecek.py <klíč> x0,y0,x1,y1 [--vyrez a0,b0,a1,b1]` | rámeček čteného místa + kontrolní obrázek; s `--vyrez` souřadnice celé stránky (jako u `vyrez.py`) |
 | `mista.py pridej "Obec"` / `nova` / `znovu` / `mista.py` | místa pro mapu; souřadnice obcí **i přesný bod každé adresy s čp.** z Mapy.com (potřebuje API klíč, viz `reference/data.md` → `mista.json`) |
 | `zapis.py <soubor> <klíč> <vstup.json> [--sloucit]` | přidá / změní položku v `zaznamy`, `svazky`, `prepisy`, `dokumenty`, `mapy`, `web`… beze změny formátu; souběžné zápisy se střídají přes zámek |
+| `zapis.py odkaz <číslo osoby \| část jména z SIDE> <klíč> […]` | přidá klíč zápisu do `r` u osoby v `osoby.py`; zbytek souboru zůstane doslova, klíč musí být v `zaznamy.json` |
 | `zapis.py denik "<zdroj>" "<rozsah>" "<hledáno>" "<výsledek>" "<citace>"` | řádek do `data/research_log.md` s automaticky přiděleným číslem |
 | `slusne.py <skript.py> / curl … / bash x.sh / stav` | brzda proti zablokování archivem – vlastní skripty a curl spouštěj přes ni |
 | `kontrola.py` | kontrola dat; hlásí i citlivé údaje na webu a kdy psát příběh |

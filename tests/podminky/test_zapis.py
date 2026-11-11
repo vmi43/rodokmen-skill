@@ -230,5 +230,57 @@ class TestSoubeh(Projekt):
         self.assertEqual(self.text("data", "svazky.json"), pred)
 
 
+class TestOdkaz(Projekt):
+    """zapis.py odkaz: klíč zápisu do seznamu r u osoby (P) nebo bočního příbuzného (SIDE), zbytek souboru doslova.
+    Původ podpříkazu: sarsonj/rodokmen-skill (commit 0fb0c03); testy jsou naše."""
+
+    OSOBY = ('P = {\n 1: dict(n="Jan Novák", y="* 1980", st="doc", f=[], r=[]),\n'
+             ' 2: dict(n="Josef Novák", y="1950–2010", st="doc", f=["* 1950 Lhota"], r=["a"]),\n}\n'
+             'LINES = {}\nISSUES = []\nHYPOTEZY = []\nSAME = {}\n'
+             'SIDE = [dict(n="Anna Dvořáková", t="sestra", st="fam"), dict(n="Anna Horáková", t="teta", st="fam")]\n')
+
+    def priprav(self):
+        with open(self.path("data", "osoby.py"), "w", encoding="utf-8") as f:
+            f.write(self.OSOBY)
+        for k in ("a", "b"):
+            self.assertEqual(self.zapis("zaznamy", k, {**ZAZNAM, "klic": k}).returncode, 0)
+
+    def osoby(self):
+        return open(self.path("data", "osoby.py"), encoding="utf-8").read()
+
+    def test_osoba_p_pridat_a_nic_jineho_nezmenit(self):
+        self.priprav()
+        pred = self.osoby()
+        p = self.nastroj("zapis.py", "odkaz", "2", "b")
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        self.assertEqual(self.osoby(), pred.replace('r=["a"]', 'r=["a", "b"]'))
+
+    def test_prazdny_seznam_a_opakovani(self):
+        self.priprav()
+        self.assertEqual(self.nastroj("zapis.py", "odkaz", "1", "a").returncode, 0)
+        self.assertIn('r=["a"]', self.osoby())
+        po = self.osoby()
+        p = self.nastroj("zapis.py", "odkaz", "1", "a")
+        self.assertEqual(p.returncode, 0)
+        self.assertIn("nic neměním", p.stdout)
+        self.assertEqual(self.osoby(), po)
+
+    def test_boci_pribuzny_podle_casti_jmena(self):
+        self.priprav()
+        p = self.nastroj("zapis.py", "odkaz", "Horák", "a")
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        self.assertIn('dict(n="Anna Horáková", t="teta", st="fam", r=["a"])', self.osoby())
+        self.assertNotIn('Dvořáková", t="sestra", st="fam", r=', self.osoby())
+
+    def test_odmitnuti_beze_zmeny(self):
+        self.priprav()
+        pred = self.osoby()
+        for args, text in ((("2", "neexistuje"), "není"), (("99", "a"), "není"), (("Anna", "a"), "je víc")):
+            p = self.nastroj("zapis.py", "odkaz", *args)
+            self.assertNotEqual(p.returncode, 0, args)
+            self.assertIn(text, p.stdout + p.stderr)
+            self.assertEqual(self.osoby(), pred)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -6,6 +6,8 @@ Vypíše CHYBY (rozbijí web nebo jsou věcně špatně) a UPOZORNĚNÍ (něco c
 Návratový kód 1, pokud jsou chyby.
 """
 import datetime, json, os, re, sys, unicodedata
+if sys.argv[1:2] in (["-h"], ["--help"]):   # nápověda místo pádu
+    sys.exit(__doc__.strip())
 try:
     import podminky   # podmínky portálů; bez něj se výřezy neposuzují
 except ImportError:
@@ -20,7 +22,7 @@ DATA = os.path.join(ROOT, "data")
 
 def jload(name, default):
     p = os.path.join(DATA, name)
-    return json.load(open(p, encoding="utf-8")) if os.path.exists(p) else default
+    return json.load(open(p, encoding="utf-8-sig")) if os.path.exists(p) else default
 
 
 _SLOVO = "[A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽÄÖÜ][a-záčďéěíňóřšťúůýžäöüß]+"
@@ -117,7 +119,7 @@ def main():
     jen_dum = not os.path.exists(os.path.join(DATA, "osoby.py")) and os.path.exists(os.path.join(DATA, "domy.py"))
     try:
         if not jen_dum:   # projekt jen s dějinami domu (bez rodokmenu) osoby.py mít nemusí
-            exec(open(os.path.join(DATA, "osoby.py"), encoding="utf-8").read(), ns)
+            exec(open(os.path.join(DATA, "osoby.py"), encoding="utf-8-sig").read(), ns)
     except Exception as e:  # noqa: BLE001
         sys.exit(f"CHYBA: data/osoby.py nejde načíst: {e}")
     if os.path.exists(os.path.join(DATA, "domy.py")):
@@ -161,12 +163,26 @@ def main():
         for r in s.get("r", []):
             if r not in keys:
                 err.append(f"boční příbuzný '{s.get('n')}' cituje neexistující zápis '{r}'")
+        if not (s.get("t") or "").strip():
+            warn.append(f"boční příbuzný '{s.get('n')}' nemá text (t) – na webu bude jen jméno")
     for a, c in SAME.items():
         if c not in P:
             err.append(f"SAME: {a} -> {c}, ale osoba {c} neexistuje")
+        elif not P[c].get("n") or P[c]["n"] in ("?",) or P[c]["n"].startswith(("otec neuveden", "matka neuvedena")):
+            err.append(f"SAME: {a} -> {c}, ale osoba {c} je zástupná (bez jména) – alias musí ukazovat na skutečnou osobu")
     for k in LINES:
         if k not in range(8, 16):
             err.append(f"LINES: rod {k} – rody mají čísla 8 až 15 (pradědečci a prababičky)")
+    nazvy = {}
+    for k, v in sorted(LINES.items()):
+        nazvy.setdefault(str(v[0]).strip().lower(), []).append(k)
+    for n, ks in nazvy.items():
+        if len(ks) > 1:
+            err.append(f"LINES: rody {', '.join(map(str, ks))} mají stejný název „{LINES[ks[0]][0]}“ – rozliš je "
+                       "(např. „Novákové z Holic“ a „Novákové z Chrudimi“), web by je jinak nerozlišil")
+    for d in jload("dokumenty.json", []):
+        if isinstance(d, dict) and not (d.get("popis") or "").strip():
+            warn.append(f"dokument {d.get('img')} nemá popis – na webu bude bez popisku")
 
     cited = (cited_domy | {r for p in P.values() for r in p.get("r", [])} | {r for s in SIDE for r in s.get("r", [])}
              | {r for h in ns.get("HYPOTEZY", []) if isinstance(h, dict) for r in h.get("zaznamy", [])})
@@ -346,7 +362,7 @@ def main():
     texty += [(f"boční příbuzný {s.get('n')}", s.get("n", "") + " " + s.get("t", "")) for s in SIDE]
     for f in ("zajimavosti.md", "pribeh.md"):
         if os.path.exists(os.path.join(DATA, f)):
-            obsah = open(os.path.join(DATA, f), encoding="utf-8").read()
+            obsah = open(os.path.join(DATA, f), encoding="utf-8-sig").read()
             texty += [(f, odst) for odst in re.split(r"\n\s*\n|\n(?=#)", obsah)]   # odstavce i oddíly „## …“
     for kde, text in texty:
         if not recent(text):
@@ -369,7 +385,7 @@ def main():
                         f"(data/pribeh.md, reference/pribehy.md); koncept nejdřív ukaž uživateli v chatu")
 
     log = os.path.join(DATA, "research_log.md")
-    rows = sum(1 for l in open(log, encoding="utf-8") if re.match(r"^\| \d+ \|", l)) if os.path.exists(log) else 0
+    rows = sum(1 for l in open(log, encoding="utf-8-sig") if re.match(r"^\| \d+ \|", l)) if os.path.exists(log) else 0
     print((f"{len(domy.get('D', {}))} domů, " if domy else "") + f"{len(P)} osob, {len(zaz)} zápisů, {len(svazky)} svazků, {rows} řádků deníku")
     for e in err:
         print("CHYBA:", e)
