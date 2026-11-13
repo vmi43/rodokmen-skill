@@ -280,3 +280,9 @@ Základ `bc6cd33` (0.8.2), upstream `0fb0c03` (0.10.0), 64 souborů. Rozhodnuto 
 - **Proč čtení stačí:** ušetří listování knihou a nic neodchází. Rizika jsou jiná: závislost na dvou cizích službách bez záruky provozu (nástroj při výpadku řekne chybu a postup jde dál) a kvalita indexu (většinu přečetl jazykový model, proto je zápis vodítko, ne doklad a do dat jde jen to, co uživatel přečte sám).
 - **Vrátit se k odesílání:** jen na výslovný pokyn a s rozborem soukromí; původní kód je v upstreamu (`skills/dejiny-domu/tools/sdileni.py`, commit 5c1715b).
 - **Živě ověřeno 13. 11. 2026 (jeden dotaz):** `sdileni.py najdi Kozlany 1905 Z` vrátil knihu Kožlany 22, poznámky ke stránkování a 2 přečtené zápisy v indexu. První běh spadl na přerušeném čtení `knihy.json` (`IncompleteRead`), opraveno a pokryto testem. **Neověřeno:** příkaz `kniha` naživo; licence indexu CC BY 4.0 je podle návodu upstreamu, na stránce indexu jsem ji nekontroloval; tvar JSON mapy (`obce/<slug>.json`, `svazky/…`) je převzatý z upstreamového kódu.
+
+### Dávkové stahování s frontou: zahozeno (2026-11-13)
+
+- **Rozhodnutí uživatele:** nedělat. Byla to položka C z poznámek uživatele (fronta svazků, rozpočet MB, přeskakování hotového, zastavení při 429/503, časový limit na snímek).
+- **Proč:** strojové stahování z ARON a eBadatelny může být blokované (poznámka 2026-11-05, neověřeno) a nástroj by musel zachovat brzdu, takže by přinesl málo; ruční stahování zůstává výchozí a `zarad.py` zařadí ručně stažené snímky. Část potřeby už kryje `aron_img.py … rozsah` (stáhne jen část svazku a přeskočí hotové).
+- **Vrátit se k tomu:** jen na nový pokyn; zadání je v poznámkách `~/osobni/aplikace/rodokmen/poznamky_pro_skill.md` (2026-10-28 a 2026-11-03).
