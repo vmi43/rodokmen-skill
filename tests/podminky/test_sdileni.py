@@ -85,6 +85,26 @@ class SdileniTest(unittest.TestCase):
             sdileni.CACHE, sdileni.urllib.request.urlopen = stara_cache, stary_open
         self.assertIn("neodpovídá", err.getvalue())
 
+    def test_nepsatelna_mezipamet_nepada(self):
+        import io as _io
+        stara = (sdileni.CACHE, sdileni.urllib.request.urlopen, sdileni.brzda)
+        soubor = tempfile.NamedTemporaryFile(prefix="sdileni_cache_")
+        sdileni.CACHE = os.path.join(soubor.name, "podadresar")   # pod souborem nejde složku založit
+
+        class Odpoved(_io.BytesIO):
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+        sdileni.urllib.request.urlopen = lambda *a, **k: Odpoved("ok".encode())
+        sdileni.brzda = lambda url: None
+        try:
+            err = io.StringIO()
+            with contextlib.redirect_stderr(err):
+                self.assertEqual(sdileni.stahni("https://pe-pan.github.io/matriky-index/data/knihy.json"), "ok")
+        finally:
+            sdileni.CACHE, sdileni.urllib.request.urlopen, sdileni.brzda = stara
+            soubor.close()
+        self.assertIn("bez ní", err.getvalue())
+
     def test_nic_se_neodesila(self):
         for jmeno in ("odeslat", "bod", "souhlas", "navrh", "gh", "odeslat_schrankou"):
             self.assertFalse(hasattr(sdileni, jmeno), jmeno)

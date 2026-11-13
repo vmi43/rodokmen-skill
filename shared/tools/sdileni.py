@@ -30,7 +30,10 @@ DATA = os.path.join(ROOT, "data")
 
 def stahni(url, max_stari=DEN):
     """Text z url; uloží se na den. Bez sítě vrátí starší uloženou kopii, jinak None (404 = None)."""
-    os.makedirs(CACHE, exist_ok=True)
+    try:
+        os.makedirs(CACHE, exist_ok=True)
+    except OSError as e:   # nepsatelná mezipaměť (sandbox, jen čtení) nesmí shodit dotaz: jede se bez ní
+        print(f"sdileni: mezipaměť {CACHE} není k dispozici ({e.strerror}), jede se bez ní", file=sys.stderr)
     path = os.path.join(CACHE, re.sub(r"[^A-Za-z0-9._-]+", "_", url.split("://", 1)[-1])[-180:])
     if os.path.exists(path) and time.time() - os.path.getmtime(path) < max_stari:
         return open(path, encoding="utf-8").read()
@@ -46,8 +49,11 @@ def stahni(url, max_stari=DEN):
     except (OSError, http.client.HTTPException, UnicodeDecodeError) as e:   # i přerušené čtení (IncompleteRead)
         print(f"sdileni: {url} neodpovídá ({e!r})", file=sys.stderr)
         return open(path, encoding="utf-8").read() if os.path.exists(path) else None
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(text)
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(text)
+    except OSError:
+        pass   # bez mezipaměti; odpověď je v paměti
     return text
 
 
