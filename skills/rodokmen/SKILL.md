@@ -79,7 +79,7 @@ Obojí respektuje brzdu a omezení strojového přístupu.
 
 Základní smyčka pro každou osobu:
 1. **Vyber cíl a začni od nejmladšího zápisu.** Vezmi nejmladšího předka bez dokladu a hledej jeho **nejmladší
-   známou událost**: úmrtí (online po 30 letech; ve 20. století uvádí datum a místo narození i rodiče), pak sňatek
+   známou událost**: úmrtí (zápis starší 30 let vydá komukoli matriční úřad, v archivu je kniha po 75 letech; ve 20. století uvádí datum a místo narození i rodiče), pak sňatek
    (uvádí rodiče a bydliště obou snoubenců, otevírá další generaci), a teprve z nich křest. **Nikdy nehledej křest
    naslepo** po stovkách snímků bez rejstříku, když je známé úmrtí nebo sňatek. (Skutečná chyba: křest ve velkoměstě
    hledaný naslepo, přitom datum a místo úmrtí byly známé.)
@@ -107,7 +107,7 @@ Základní smyčka pro každou osobu:
    - **Rejstřík:** objeví-li se v rejstříku další možné shody (jméno, rodiče, dům), pokračuj i na ně, i když
      v daném směru už uplynulo 5 let bez nálezu.
 2. **Ověř přístupnost**: matriky jsou v archivu až po uplynutí lhůty od *posledního* zápisu ve svazku
-   (narození 100 let, sňatky 75, úmrtí 30). Mladší údaje jsou na matričním úřadě (žádost s doložením příbuzenství) –
+   (narození 100 let, sňatky 75, úmrtí 75). Mladší údaje jsou na matričním úřadě (rodině výpis s doložením příbuzenství, zápis starší 100 / 75 / 30 let i komukoli, viz `matriky.md`) –
    zapiš do `data/archivni_dotazy.md` a jdi dál.
 3. **Najdi svazek**: podle obce → farnost → archiv. ARON: `python3 -I tools/aron_search.py "Obec"`, SOA Plzeň:
    `python3 -I tools/portafontium.py obec "Obec"`, Praha: `tools/ahmp_search.sh`;

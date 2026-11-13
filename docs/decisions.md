@@ -255,3 +255,11 @@ Základ `bc6cd33` (0.8.2), upstream `0fb0c03` (0.10.0), 64 souborů. Rozhodnuto 
 - **`portaly.md`:** převzaty `zapis.py svazky` místo „ručně“, MZA (403 po 45–60 snímcích, vestavěný prohlížeč Claude desktop nepoužívat, 410 = vypršel token), pozemkové knihy Třeboň a Opava, pauza 5 s a zákaz smyček na pozadí, oprava čtení barev indikační skici. **Nepřevzat ostrý výřez skici** (`fetch` ve stránce mimo brzdu): odkaz na `cuzk_archiv.py export`. Z věty o skice vypadlo „stahování je placené“: nešlo ověřit a odporovalo `cuzk_archiv.py`, který listy stahuje.
 - **`README.md`:** Cloudflare jako výchozí zveřejnění (4 místa) a strom `reference/`. **Číslo verze zůstalo 0.9.0 až do kroku 7.**
 - **Neověřeno:** `tests/web/test_overit.py` se nespouštěl (měnil se v kroku 3); tvrzení o MZA (403, pozemkové knihy Třeboň a Opava) jsou z upstreamu, neověřeno na živých archivech.
+
+## Krok 7 přebírání upstreamu: ověření právních tvrzení (2026-11-13)
+
+- **§ 25b zákona 301/2000 Sb. doložen** čtením textu na zakonyprolidi.cz/cs/2000-301 (znění k 1. 1. 2025): zápis starší 100 / 75 / 30 let vydá úřad fyzické osobě, rodina je definována v § 8a odst. 6, mladší zápisy podle § 25 odst. 1. Převzato do `matriky.md` včetně rodiny a doslovného výpisu.
+- **Chyba v upstreamu i v našem textu opravena:** do archivu jde kniha úmrtí po 75 letech od posledního zápisu (§ 23), ne po 30. „30“ je lhůta přístupu u úřadu (§ 25b). Opraveno v `matriky.md`, `SKILL.md`, `README.md`, `ged_import.py`. Upstream to dál tvrdí chybně.
+- **„Lhůta běží u každého zápisu zvlášť“** zákon výslovně neříká; plyne z formulace „od provedení dotčeného zápisu“ (úsudek, ne citace).
+- **Zahraniční lhůty (SK, AT, DE, PL, HU) neověřeny** primárními zdroji; v `metodika.md` označeno. Důvod: mimo hlavní oblast skillu, ověření pěti zákonů by bylo samostatná práce. Ověřit, až je někdo bude potřebovat.
+- Tvrzení o MZA a pozemkových knihách Třeboně a Opavy v `portaly.md` zůstávají z upstreamu neověřená.

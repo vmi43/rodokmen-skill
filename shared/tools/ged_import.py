@@ -222,7 +222,7 @@ def main():
     if as_py:
         print("}")
         return
-    print("\nFRONTA ZÁPISŮ (nejmladší známá událost s místem; lhůty pro archiv: narození 100, sňatky 75, úmrtí 30 let):")
+    print("\nFRONTA ZÁPISŮ (nejmladší známá událost s místem; lhůty pro archiv: narození 100, sňatky 75, úmrtí 75 let od posledního zápisu v knize):")
     now = datetime.date.today().year
     for k, n, what, d, p in queue:
         y = year(d)

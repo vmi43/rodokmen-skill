@@ -20,7 +20,7 @@ projektu [vzoha/dejiny-domu-skill](https://github.com/vzoha/dejiny-domu-skill) a
 
 **Autor a správce původního projektu:** Jindřich Šaršon ([sarsonj@gmail.com](mailto:sarsonj@gmail.com), [GitHub](https://github.com/sarsonj))
 
-**Aktuální verze: 0.9.0 (vydána 11. 11. 2026).** Skill se průběžně vyvíjí – opravuji chyby a doplňuji postupy pro další archivy
+**Aktuální verze: 0.9.1 (vydána 13. 11. 2026).** Skill se průběžně vyvíjí – opravuji chyby a doplňuji postupy pro další archivy
 podle toho, na co narazíte vy. Jak aktualizovat, najdete v části [Instalace](#instalace), přehled změn
 po verzích v [CHANGELOG.md](CHANGELOG.md).
 
@@ -75,7 +75,7 @@ s přepisem a překladem, „Co hledáme“ a deník hledání. **[Podívejte se
 AI se vyvíjí rychle a za pár měsíců může skill dávat lepší, nebo jen jiné výsledky. Proto je tu uvedeno, s čím byl
 vyzkoušený.
 
-- **Stav k 11. 11. 2026 (verze 0.9.0):** Claude Code s hlavním modelem **Claude Opus 5.5**. Pomocníci, kteří hledají
+- **Stav k 13. 11. 2026 (verze 0.9.1):** Claude Code s hlavním modelem **Claude Opus 5.5**. Pomocníci, kteří hledají
   a čtou matriky jako první, běží na **Claude Sonnet 5.5**. Každý jejich nález pak hlavní model ověřuje na snímku.
 - Vyzkoušeno na několika skutečných rodokmenech (největší má 243 předků v 11 generacích a 192 matričních zápisů).
   Výsledek se porovnával s větví, kterou jsme léta dělali ručně.
@@ -139,8 +139,8 @@ s vymyšlenou rodinou a spustí náhled.
 | 4. Web | díváte se a říkáte, co upravit | staví web a ukazuje náhled |
 | 5. Zveřejnění | založíte účet na Cloudflare (nebo Netlify), schválíte obsah | nasadí web s přihlášením rodinnou otázkou |
 
-Matriky jsou online jen do určitého data: narození starší než 100 let, sňatky 75 a úmrtí 30 let.
-O mladší údaje se žádá na matričním úřadě. Claude vám řekne, kdy to je potřeba.
+Matriky jsou online jen do určitého data: knihy narození po 100 letech, knihy sňatků a úmrtí po 75 letech od posledního zápisu.
+Matriční úřad ale vydá komukoli i zápis ze starší knihy, který je jeho: narození starší 100 let, sňatek 75, úmrtí 30. Jinak se o údaje žádá na matričním úřadě. Claude vám řekne, kdy to je potřeba.
 
 ## Co je v repozitáři
 ```

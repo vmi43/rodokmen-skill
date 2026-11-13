@@ -13,9 +13,15 @@ berní rula 1654 (jen hospodáři), gruntovní/pozemkové knihy (kdo vlastnil kt
 vojenské záznamy, domovské listy, parte. Viz `portaly.md` a `metodika.md` (Prameny mimo ČR).
 
 ## Lhůty (zákon 301/2000 Sb.)
-Do archivu (a tedy online) jde svazek, až od jeho **posledního** zápisu uplyne: narození **100 let**, sňatky **75**, úmrtí **30**.
-Mladší knihy jsou na matričním úřadě obce s rozšířenou působností / pověřeném úřadě – výpis dostane přímý příbuzný
-(žádost + doklady o příbuzenství). Zapiš do `archivni_dotazy.md`.
+Do archivu (a tedy online) jde svazek, až od jeho **posledního** zápisu uplyne: narození **100 let**, sňatky **75**, úmrtí **75**
+(§ 23 zákona 301/2000 Sb.).
+Mladší knihy jsou na matričním úřadě. **Úřad ale počítá lhůtu u každého zápisu zvlášť** (§ 25b): zápis starší
+100 / 75 / 30 let (narození / sňatek / úmrtí) vydá **komukoli** i ze svazku, který je ještě na úřadě, a dovolí do knihy
+nahlédnout. Mladší zápis dostane osoba, které se týká, nebo člen rodiny (manžel, partner, rodiče, děti, sourozenci,
+prarodiče, vnuci, pravnuci) s doložením příbuzenství. Žádej o **doslovný výpis** – na rozdíl od rodného či oddacího
+listu obsahuje i okrajové poznámky. Stejné lhůty platí pro druhopisy a sbírku listin do roku 1958. Slovensko má jiná
+pravidla (`metodika.md`, Prameny mimo ČR). Zapiš do `archivni_dotazy.md`.
+(Ověřeno 2026-11-13 v úplném znění k 1. 1. 2025, zakonyprolidi.cz/cs/2000-301.)
 Katalogy archivů uvádějí **i svazky, které jsou ještě na úřadě**: v detailu „Technická poznámka: MATRIKA JE DOSUD
 ULOŽENA NA MATRIČNÍM ÚŘADĚ“, „Místo uložení: Obecní úřad X“ a 0 příloh (snímků). Tu poznámku přečti dřív, než hledáš
 snímky; svazek rovnou zapiš do `archivni_dotazy.md` i s místem uložení (tam se píše o výpis). Zkus **samostatný rejstřík**

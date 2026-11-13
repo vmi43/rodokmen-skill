@@ -166,6 +166,7 @@ Ostatní archivy jsou většinou jen na písemnou žádost – zapiš do `archiv
 | **Polsko** | 100 / 80 / 80 | uzavření knihy | do státního archivu do 2 let po lhůtě – online dostupnost se zpožďuje |
 | **Maďarsko** | 110 / 86 / 30 | roku po založení registru | starší stránky archivů MNL uvádějí neplatné lhůty z 2014; zvláštní údaje (náboženství, nemanželský původ, příčina smrti) až 60 let po smrti |
 
+**Stav ověření:** lhůty v této tabulce jsou převzaté z upstreamu a primárním zdrojem (zákon dané země) neověřené, k 2026-11-13; před žádostí je potvrď u úřadu nebo archivu. České lhůty ověřené jsou (`matriky.md`).
 Lhůty počítané od roku registru nebo uzavření knihy (DE, PL) se posouvají jednou ročně. Citlivé údaje (náboženství,
 nemanželský původ, příčina smrti) u nedávno zemřelých nezveřejňuj – viz `soukromi.md`.
 
