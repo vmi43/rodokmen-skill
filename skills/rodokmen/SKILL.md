@@ -12,7 +12,7 @@ uživatel dodává znalost rodiny, rozhoduje sporná místa a schvaluje, co jde 
 **Sdílená složka** (dále `SHARED_DIR`) leží v kořeni pluginu: `${CLAUDE_PLUGIN_ROOT}/shared`, tedy dvě úrovně nad složkou,
 kterou ti systém ukázal při načtení skillu („Base directory“), a pak `shared`.
 Najdeš v ní `tools/` (nástroje), `template/` (šablona projektu a webu) a `reference/` (podrobné návody – čti je, až je potřebuješ):
-`instalace.md` (příprava počítače, Windows), `matriky.md` (čtení matrik, pasti), `portaly.md` (archivy), `metodika.md`
+`instalace.md` (příprava počítače, Windows), `matriky.md` (čtení matrik, pasti), `portaly.md` (archivy), `sdileni.md` (co už někdo přečetl), `metodika.md`
 (spojování záznamů, ztotožnění, mrtvé body, prameny mimo ČR), `data.md` (formát dat, import stromu), `pribehy.md`,
 `web.md`, `soukromi.md`.
 
@@ -307,6 +307,7 @@ Nedělej to pořád. Postup:
 | `aron_img.py <apu> info / <snímek> 1 pracovni/x.jpg / rozsah <od-do> / link <n> / svazek` | stáhne snímek nebo rozsah po jednom (log OK/SELHALO), dá odkaz, zapíše svazek |
 | `zarad.py [složka] [--proved]` | zařadí ručně stažené knihy (složka s `obsah.txt`): náhled, pak přejmenování, `svazky.json`, `obsah.md` (`portaly.md`) |
 | `pomucka.py rozbor <pdf>`, `pomucka.py hledej <obec> [N\|O\|Z] [rok] [--vse]` | rozebere Archivní pomůcku NAD 190 (východočeské matriky, PDF stažené ručně; potřebuje `qpdf` a `pdftotext`) a najde knihy s odkazy na ARON a ZIP (`portaly.md`) |
+| `sdileni.py najdi "Obec" [rok] [N\|O\|Z]`, `sdileni.py kniha <svazek>` | před otevřením knihy se podívá do komunitní Mapy matrik a indexu matrik: odhad snímku, poznámky ke knize, už přečtené zápisy (jen čtení, nic neodesílá; zápis z indexu je vodítko, ne doklad; `sdileni.md`) |
 | `portafontium.py obec / fara / info / snimek / link / svazek` | matriky SOA Plzeň (západní Čechy, Porta fontium) bez prohlížeče (`obec` = knihy obce podle far) |
 | `ebadatelna.py link / a-link`, `snimek / a-snimek` | trvalý odkaz; náhled a výřez ze snímku uloženého z prohlížeče – stahovat nástroj nesmí (archiv od 2. 11. 2026 zakazuje), postup v `portaly.md` |
 | `cache.py stav / najdi <adresa> / uloz <soubor.json>`, `--nahled x.jpg` | sdílená mezipaměť obrázků (ukládá ji brzda sama); uložení snímku eBadatelny z prohlížeče, rovnou s náhledem 1600 px |

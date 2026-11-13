@@ -441,6 +441,16 @@
       "nazev": "Śląska Biblioteka Cyfrowa", "dotazy": false, "obrazky": false, "vyrez": "souhlas",
       "proc": "výsledky hledání vykresluje JavaScript, nástroj by je nepřečetl; robots.txt zakazuje jen stahování ZIP (10. 11. 2026)",
       "jinak": "Hledá uživatel v prohlížeči (Teschen, Troppau, polský název). Obrázek do výstupu podle licence u objektu."
+    },
+    "ondrnovy.github.io": {
+      "nazev": "Mapa matrik (komunitní)", "dotazy": true, "obrazky": false, "vyrez": "ne",
+      "proc": "veřejná data na GitHub Pages bez snímků a jmen (orientační body knih), cizí projekt bez záruky provozu (13. 11. 2026)",
+      "jinak": "Jen čtení nástrojem sdileni.py najdi a kniha; odhad snímku může být o pár snímků vedle. Nic se do mapy neodesílá."
+    },
+    "pe-pan.github.io": {
+      "nazev": "Index matrik (komunitní)", "dotazy": true, "obrazky": false, "vyrez": "ne",
+      "proc": "veřejné přepisy zápisů z GitHub Pages, licence CC BY 4.0 podle návodu upstreamu (neověřeno na stránce indexu), většinu přečetl jazykový model (13. 11. 2026)",
+      "jinak": "Jen čtení nástrojem sdileni.py kniha; zápis je vodítko, ne doklad. Do dat jde jen to, co přečteš sám na snímku. Nic se do indexu neodesílá."
     }
   }
 }

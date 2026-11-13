@@ -189,6 +189,12 @@ Adresy u nevyzkoušených portálů ověř při prvním použití (portály se m
   limit hlídej ručně (po jedné, odstup aspoň 2,5 s) a hromadně jen se souhlasem uživatele. `javascript_tool` má timeout
   45 s, delší smyčka musí běžet v kartě na pozadí (`window.__x`) a číst se po částech.
 
+## Mapa matrik a index matrik – `tools/sdileni.py` (jen čtení)
+
+Před otevřením knihy z SOA Plzeň, SOA Praha nebo AHMP se podívej, co už někdo našel: `python3 -I tools/sdileni.py najdi "Obec" rok N|O|Z`
+(odhad snímku, kde kniha začíná, poznámky) a `sdileni.py kniha <svazek>` (přečtené zápisy). Zápis z indexu je vodítko, ne doklad,
+ověř ho na snímku. Podrobně `sdileni.md`.
+
 ## AHMP Praha – `tools/ahmp_search.sh`, `tools/ahmp_scan.py`
 - `bash tools/ahmp_search.sh "Smíchov"` → svazky Sbírky matrik: popis | farnost | (XID, id, počet snímků).
 - `python3 -I tools/ahmp_scan.py <XID> <snímek> pracovni/x.jpg [1] [x0,y0,x1,y1]` → snímek (1 = poloviční rozlišení).
