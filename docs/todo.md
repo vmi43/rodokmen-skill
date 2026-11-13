@@ -59,7 +59,6 @@ Rešerše: stažen a přečten celý upstream `dejiny-domu-skill` (0.5.0, větev
 7. **Krok (f): vazba osoba ↔ dům v datech** – hotovo v `kontrola.py` a `napady.py` (2026-11-10); `export_web.py` zbývá s webem domu (položka 3).
 8. **Krok (g): v hlavičce každého převzatého souboru odkaz na původ a commit.** Hotovo u `podminky.py`, `podminky.json`, `cuzk_archiv.py`, `zdravi.py`, bloku RÚIAN v `mista.py`, `prameny.md`, `texty.md`, `podminky.md`; u dalších převzatých souborů (web) doplnit při přebírání.
 9. ~~**Krok (h): vydání**~~ – hotovo 2026-11-11: 0.9.0, `1ebbc7d`, PR #1 (`937dd9b`), tag a vydání `v0.9.0` na GitHubu.
-10. **Parkované:** `reference/texty.md` a `zdravi.py` by se hodily i do skillu `rodokmen`; po zavedení `shared/` jde jen o to, zda je zmínit v `SKILL.md` `rodokmen`. Rozhodnout po `dum`.
 11. **Přebírání změn upstreamu, rozhodnuto 2026-11-10: postupně všechno** (`python3 -I scripts/upstream.py` ukáže aktuální rozdíl; upstream `e1cd204`, náš základ `bda6028`, 6 commitů). Každý krok zvlášť, s testem a se zvednutím commitu v hlavičce „Původ“ jen u souborů, které se opravdu přebraly. Pořadí:
     - **(a) Prázdný obrázek spojené vrstvy** v `shared/tools/cuzk_archiv.py` (funkce `prazdny` s volitelným Pillow, v `mapa` neuloží bílý obrázek a vypíše postup `listy` → `rastry` → `prehled` → `export`) a odpovídající odstavec v `shared/reference/prameny.md` (bílé vrstvy u měst). Hotovo 2026-11-10 (commit `dd8ebbb`): `prazdny` a odstavec v `prameny.md`, test `tests/podminky/test_cuzk_archiv.py` 5/5; vrstva `relief` z téhož souboru zůstává na (e). Test: bílý JPEG se pozná, bez Pillow vrátí False. Upstream rozdíl: `skills__dejiny-domu__tools__cuzk_archiv.py.diff` ve složce, kterou skript vypíše.
     - **(b) `elipsa.py`** – hotovo 2026-11-10 (commit `dd8ebbb`, test 2/2, ruční běh v dočasném projektu rc=0) (nový nástroj: označení domu elipsou na mapě, `elipsa.py <mapa.jpg> <klíč> cx,cy,a,b,úhel --popisek …`, pak věta v `prameny.md` a `tests/test_elipsa.py`). Nejdřív přečíst upstream a zjistit, jak zapadá do `mapy.json` a webu domu.
@@ -85,4 +84,4 @@ Rešerše: stažen a přečten celý upstream `dejiny-domu-skill` (0.5.0, větev
 
 ## Parkované v session
 
-- `reference/texty.md` (psaní textů na web) a `zdravi.py` (kontrola nástrojů proti živým portálům) z upstreamu by se hodily i do skillu `rodokmen`, ne jen do `dum` (do `dum` jdou v první verzi). Po zavedení `shared/` se otázka zjednoduší: soubory budou sdílené, jde jen o to, zda je zmínit v `SKILL.md` `rodokmen`. Rozhodnout po `dum`.
+- (nic)
