@@ -10,12 +10,18 @@
 
 Další prameny: sčítání lidu (1857–1921; domácnosti s daty narození), soupis poddaných 1651 (celé rodiny s věkem),
 berní rula 1654 (jen hospodáři), gruntovní/pozemkové knihy (kdo vlastnil který dům – propojí generace přes dům),
-vojenské záznamy, domovské listy, parte. Viz `portaly.md` a `playbook.md` §2.
+vojenské záznamy, domovské listy, parte. Viz `portaly.md` a `metodika.md` (Prameny mimo ČR).
 
 ## Lhůty (zákon 301/2000 Sb.)
-Do archivu (a tedy online) jde svazek, až od jeho **posledního** zápisu uplyne: narození **100 let**, sňatky **75**, úmrtí **30**.
-Mladší knihy jsou na matričním úřadě obce s rozšířenou působností / pověřeném úřadě – výpis dostane přímý příbuzný
-(žádost + doklady o příbuzenství). Zapiš do `archivni_dotazy.md`.
+Do archivu (a tedy online) jde svazek, až od jeho **posledního** zápisu uplyne: narození **100 let**, sňatky **75**, úmrtí **75**
+(§ 23 zákona 301/2000 Sb.).
+Mladší knihy jsou na matričním úřadě. **Úřad ale počítá lhůtu u každého zápisu zvlášť** (§ 25b): zápis starší
+100 / 75 / 30 let (narození / sňatek / úmrtí) vydá **komukoli** i ze svazku, který je ještě na úřadě, a dovolí do knihy
+nahlédnout. Mladší zápis dostane osoba, které se týká, nebo člen rodiny (manžel, partner, rodiče, děti, sourozenci,
+prarodiče, vnuci, pravnuci) s doložením příbuzenství. Žádej o **doslovný výpis** – na rozdíl od rodného či oddacího
+listu obsahuje i okrajové poznámky. Stejné lhůty platí pro druhopisy a sbírku listin do roku 1958. Slovensko má jiná
+pravidla (`metodika.md`, Prameny mimo ČR). Zapiš do `archivni_dotazy.md`.
+(Ověřeno 2026-11-13 v úplném znění k 1. 1. 2025, zakonyprolidi.cz/cs/2000-301.)
 Katalogy archivů uvádějí **i svazky, které jsou ještě na úřadě**: v detailu „Technická poznámka: MATRIKA JE DOSUD
 ULOŽENA NA MATRIČNÍM ÚŘADĚ“, „Místo uložení: Obecní úřad X“ a 0 příloh (snímků). Tu poznámku přečti dřív, než hledáš
 snímky; svazek rovnou zapiš do `archivni_dotazy.md` i s místem uložení (tam se píše o výpis). Zkus **samostatný rejstřík**
@@ -160,9 +166,31 @@ vsi a sňatek byl v oddílu městyse; ves měla oddíl až na snímcích 380–4
 - Sňatek pár měsíců před porodem nebo po něm – není chyba, jen „svatba na poslední chvíli“; zajímavost pro web.
 - Nemanželské dítě nese příjmení matky; otec chybí nebo je dopsán později (legitimace na okraji).
 - Stejný předek dvakrát v rodokmenu (vzdálení příbuzní se vzali) – v datech `SAME`.
+- **Sňatek sourozenců:** rejstřík oddaných podle ženicha najde sňatek sourozenců jen po mužské linii; sestřin sňatek hledej
+  pod příjmením ženicha (okraj jejího křtu „odd. za …“ ho prozradí). Do knihy oddaných se trefíš na 1.–2. pokus, když
+  z dvou zápisů s datem odhadneš kalibraci „snímek na rok“ (typicky 2–2,5 snímku na rok).
+- **Nemanželské dítě:** poznámka „ill“ na okraji rejstříku a sloupec „Lože“ v knize narozených jsou silná stopa, že
+  příjmení dítěte je matčino rodné. Rodinné „prababička byla Němcová“ pak bývá jméno po manželovi. Past při hledání otce.
+- **Lhůta 75 let neznamená online:** svazek může být v ARON vypsaný a mít `scans: 0` (`aron_search.py … --sken`).
+- **Čtení uživatelem:** po prvním čtení ukaž uživateli výřez a nejistá místa (datum, jména, příjmení kněze) vyjmenuj. Jednou
+  opravil čtyři místa u zápisu z roku 1908 a u kurentu 1861 se shodl; uživatel čte kurent často lépe než model, jeho čtení
+  z jiného zvětšení ověř na výřezu, nezamítej ho. Jméno kněze ověř podle podpisu u sousedních zápisů téhož snímku (webem
+  se zjistit nedá). U místa čteného z kurentu se zeptej uživatele hned, nehádej („Čikví“ = Jíkev). Když čteš svědka nebo
+  datum, stáhni celou stránku snímku (ne jen výřez): opakující se svědci pomohou dočíst jméno. Výřezy pro ověření
+  pojmenuj verzí (`kmotri_v1.jpg`, `kmotri_v2.jpg`) a u každého napiš, co obsahuje; nepřepisuj soubor stejným názvem,
+  uživatel by četl starý obsah.
+- **Strojové čtení kurentu nepomáhá (zkoušeno 2026-11):** lokální HTR Kraken (modely Weil `german_handwriting`, Kurrent v3,
+  Baránkův `rec_bohemica`) trefil na českém kurentu 1799–1919 z mikrofilmu jen 2–8 % jmen, a cizí AI modely zadaného
+  výřezu si příjmení, vazby a záhlaví vymýšlely a psaly u nich „jisté“ (dvojitý kříž † vyložily jako značku negramotných).
+  Pro první polovinu 19. století je nenabízej ani jako čtení, ani jako druhý pár očí. Čtení z kurentu zůstává na modelu
+  s ověřením uživatelem.
+- Německé „ss“ v kurentu (dlouhé s + s) vypadá jako znak s tahem dolů a čte se snadno jako p/n: „Strassnov“ = Strašnov.
+- Zápis o dvoustraně (`overit.py` s celou šířkou dá levou a pravou polovinu): rámeček čtený zápis přes celou dvoustranu.
+  ImageMagick `-crop 50%x100%+50%+0` bere offset `+50%` jako 50 pixelů; pro pravou polovinu použij pixely (`W/2`).
+  U sporné číslice (80 × 86, 1885 × 1888) stáhni celý snímek a vyřízni jen řádek: výřezy 825 px na číslice nestačí.
 - Index nenašel ≠ zápis neexistuje. Zapiš, co přesně jsi prošel.
 - Oddací zápis uvádí „narozen dle mat. IV f. 149“ – podle folia najdeš křest jedním stažením (folio ≈ snímek − posun knihy).
-- Pomocníci (subagenti) a OCR/AI čtou historické písmo chybně – vždy ověř sám (viz `playbook.md` §1 bod 10).
+- Pomocníci (subagenti) a OCR/AI čtou historické písmo chybně – vždy ověř sám.
 
 ## Technické pasti (macOS, zsh) – napiš je i pomocníkům do zadání
 - Síť: jen přes brzdu `tools/slusne.py`; po hlášce „zastavený“ (kód 3) skončit, nic neopakovat ani neobcházet a říct to
@@ -176,6 +204,27 @@ vsi a sňatek byl v oddílu městyse; ves měla oddíl až na snímcích 380–4
   zmenšené na 1900 px (dvoustrana je jinak nečitelná).
 - Výřez pro web (`vyrez.py`) dělej jen na **čtený zápis** (případně s hlavičkou sloupců), ne na celou dvoustranu –
   na webu by byl nečitelně malý. Celá stránka je v `zdroje/` a na portálu přes odkaz.
+
+- Souřadnice: `vyrez.py` a `overit.py` berou zlomky **celé stránky**, `ramecek.py` zlomky **výřezu** (ne celé stránky); při
+  ověřování z výřezu proto `zvyrazneni.json` (zlomky výřezu) nepřenášej 1:1 do `overit.py`: projdi zmenšený celý snímek
+  (`magick … -resize 1800x`) a zlomky odečti z něj. `vyrez.py … x` na zkoušku vytvoří `x.jpg`, ručně ho smaž. Při ořezu
+  zápisu zkontroluj, že výřez zahrnuje i okrajovou poznámku pod posledním řádkem.
+- Úzká čtení: celý pás stránky (1500×700) je pro model málo čitelný; půlka pásu zvětšená na 160 % s doostřením
+  (`magick … -crop 55%x100% -resize 160% -sharpen 0x1`) dá čitelné i sloupce matek a kmotrů. Rychlé procházení knihy
+  zemřelých: dvě sousedící stránky `magick s78.jpg s79.jpg -resize 1300x -append m.jpg` stačí na jména a čísla domů; zápis
+  pak čti v plném rozlišení (`overit.py`).
+- Vybledlé zápisy a kurent 19. století: pomohlo zvětšení 3–4,5× s `magick … -normalize -gamma 0.55 -unsharp 0x1`;
+  `-level 20%,85%` a prosté zvětšení 1,5–1,9× slabý inkoust spíš smazaly. Pomohlo i srovnání písmen se stejnými slovy
+  téhož písaře na jiných řádcích téže strany. Čtení slabších míst nech silnějšímu modelu jednotlivě, hlavní session ověří.
+- zsh: `set -- $var` a `F="a b"; git add $F` proměnnou na slova nerozdělí (v bash ano); cesty při `git add`/`commit` piš
+  přímo. `git commit -o -m "…" -- cesty`: `-m` musí stát před `--`. `cd` v jednom příkazu Bash se přenese do dalších
+  (změní pracovní adresář celé session): piš absolutní cesty nebo `( cd … && … )`. `pgrep` v sandboxu Claude Code nefunguje,
+  běh skriptu se pozná jen podle jeho logu. Dlouhý běh pusť jako skript s vlastním logem po snímku přímo jako
+  background příkaz (`nohup caffeinate … &` uvnitř skončí hned s „started“ a nic neohlásí); po notifikaci vždy
+  zkontroluj log. Dva příkazy v jednom bloku nástrojů běží souběžně: závislé kroky dej do jednoho příkazu.
+- Sandbox Claude Code: `git init`, `git add`, `commit`, `checkout` a `merge` potřebují zápis do `.git` a `.claude/settings.json`,
+  proto je pusť mimo sandbox se souhlasem uživatele. `uv venv` a `uv pip install` selžou na zápisu do `~/.cache/uv`;
+  pomůže `UV_CACHE_DIR=<projekt>/pracovni/.uv_cache` (složka je v `.gitignore`) a povolená síť pro `pypi.org`.
 
 ## Technické pasti (Windows) – napiš je i pomocníkům do zadání
 (Nahrazují první dva body macOS sekce; body o `overit.py` a výřezu platí i tady.)

@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Hledání svazků na portálu ARON (SOA Zámrsk, fond Sbírka matrik Východočeského kraje).
-Použití: aron_search.py "<text v popisu, např. obec>" [filtr názvu fondu] [max]
+Použití: aron_search.py "<text v popisu, např. obec>" [filtr názvu fondu] [max] [--sken]
+  --sken: u každého svazku (nejvýš 40, po jednom dotazu přes brzdu) doplní počet snímků, nebo „BEZ SNÍMKŮ“
   Víc slov oddělených čárkou musí být v popisu všechna: "Vinice,Hořice" = Vinice ve farnosti Hořice
   (stejnojmenných obcí bývá víc – výsledky jsou proto seřazené podle farnosti / první obce v popisu).
 Vypíše: apu_id | signatura, druh a roky | popis (obce, které svazek pokrývá).
-Vypisuje i svazky bez snímků (hlavně 20. století) – jestli je svazek online, ukáže `aron_img.py <apu_id> info` (scans: 0 = není)."""
+Vypisuje i svazky bez snímků (hlavně 20. století, ale i oddací kniha z roku 1939 může být jen v badatelně: lhůta 75 let
+ještě neznamená online) – jestli je svazek online, ukáže --sken nebo `aron_img.py <apu_id> info` (scans: 0 = není)."""
 import json, re, sys, time, urllib.request
+if len(sys.argv) < 2 or sys.argv[1] in ("-h", "--help"):   # nápověda místo pádu
+    sys.exit(__doc__.strip())
 import os as _os, sys as _sys; _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__))); import slusne  # noqa: E402 – brzda proti zablokování archivem (společný limit dotazů, tools/slusne.py)
 for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8 (cp1250 neumí třeba „→“)
     if hasattr(_s, "reconfigure"):
@@ -48,11 +52,26 @@ def place(desc):
     return re.sub(r"^\(?(farnost|soudní okres) ", "", ", ".join(parts))
 
 if __name__ == "__main__":
-    desc = sys.argv[1]
-    name = sys.argv[2] if len(sys.argv) > 2 and sys.argv[2] else "Sbírka matrik Východočeského kraje"
-    maxn = int(sys.argv[3]) if len(sys.argv) > 3 else 500
+    SKEN = "--sken" in sys.argv
+    argv = [a for a in sys.argv if a != "--sken"]
+    if len(argv) < 2 or argv[1] in ("-h", "--help"):
+        sys.exit(__doc__)
+    desc = argv[1]
+    name = argv[2] if len(argv) > 2 and argv[2] else "Sbírka matrik Východočeského kraje"
+    maxn = int(argv[3]) if len(argv) > 3 else 500
     items, cnt = search(desc, name, maxn)
     print("count", cnt)
-    for i in sorted(items, key=lambda i: (place(i.get("description")), i["name"])):
+    if SKEN:
+        import aron_img   # volume() ukládá do mezipaměti a jde přes brzdu; jeden dotaz na svazek
+    for k, i in enumerate(sorted(items, key=lambda i: (place(i.get("description")), i["name"]))):
         n = i["name"].split(": ", 1)[-1]
-        print(i["id"], "|", n.replace("Sbírka matrik Východočeského kraje, ", ""), "|", (i.get("description") or "")[:220])
+        znacka = ""
+        if SKEN and k < 40:
+            try:
+                pocet = len(aron_img.tiles_by_order(aron_img.volume(i["id"])))
+                znacka = f" [{pocet} sn.]" if pocet else " [BEZ SNÍMKŮ]"
+            except Exception as e:   # svazek, který ARON nezveřejňuje (404), nebo výpadek: značka, ne pád
+                znacka = f" [snímky nezjištěny: {type(e).__name__}]"
+        print(i["id"], "|", n.replace("Sbírka matrik Východočeského kraje, ", "") + znacka, "|", (i.get("description") or "")[:220])
+    if SKEN and len(items) > 40:
+        print(f"(snímky zjištěny jen u prvních 40 z {len(items)}; zúži hledání)")

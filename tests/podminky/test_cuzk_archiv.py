@@ -48,6 +48,7 @@ class PrazdnyTest(unittest.TestCase):
         self.assertFalse(cuzk_archiv.prazdny(b"<html>chyba serveru</html>"))
 
     def test_bez_pillow_vrati_false(self):
+        bily = jpeg((255, 255, 255))   # před zákazem: save() si Pillow samo dohrává PIL._util
         puvodni = builtins.__import__
 
         def bez_pil(jmeno, *a, **k):
@@ -56,7 +57,7 @@ class PrazdnyTest(unittest.TestCase):
             return puvodni(jmeno, *a, **k)
         builtins.__import__ = bez_pil
         try:
-            self.assertFalse(cuzk_archiv.prazdny(jpeg((255, 255, 255))))
+            self.assertFalse(cuzk_archiv.prazdny(bily))
         finally:
             builtins.__import__ = puvodni
 

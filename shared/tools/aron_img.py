@@ -10,11 +10,15 @@ Použití:
       Když sken nejde stáhnout, vezme dlaždice (pomalejší, desítky požadavků).
   aron_img.py <apu_id> info          -> název svazku a počet snímků
   aron_img.py <apu_id> link <n>      -> trvalý odkaz na snímek n v prohlížeči ARON (pole "odkaz" v zaznamy.json)
+  aron_img.py <apu_id> rozsah <od-do> [uroven] [slozka]
+                                     -> stáhne snímky od–do po jednom do složky (výchozí pracovni/aron_<apu8>/ jako s<n>.jpg);
+                                        hotové přeskočí, soubor vzniká jako .part a přejmenuje se až po stažení, řádek
+                                        OK/SELHALO u každého snímku, po 3 selháních za sebou skončí a vypíše, co chybí
   aron_img.py <apu_id> svazek        -> zapíše svazek do data/svazky.json (klíč = prvních 8 znaků apu_id)
 
 Popis svazků se ukládá do pracovni/.cache_aron/<apu_id>.json (ve složce projektu).
 """
-import glob, json, math, os, shutil, ssl, subprocess, sys, tempfile, time, urllib.error, urllib.request
+import glob, http.client, json, math, os, re, shutil, ssl, subprocess, sys, tempfile, time, urllib.error, urllib.request
 import concurrent.futures as cf
 import xml.etree.ElementTree as ET
 import os as _os, sys as _sys; _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__))); import slusne  # noqa: E402 – brzda proti zablokování archivem (společný limit dotazů, tools/slusne.py)
@@ -59,7 +63,7 @@ def volume(apu_id):
         with open(tmp, "w", encoding="utf-8", newline="\n") as f:
             f.write(data)
         os.replace(tmp, path)  # atomic, safe when several processes fetch the same volume
-    with open(path, encoding="utf-8") as f:
+    with open(path, encoding="utf-8-sig") as f:
         return json.load(f)
 
 
@@ -168,12 +172,16 @@ def bez_snimku(vol, tiles, n):
     sys.exit(f"Snímek {n} ve svazku není – svazek má snímky {min(tiles)}–{max(tiles)} (aron_img.py <apu_id> info).")
 
 
-SIT = (urllib.error.URLError, ssl.SSLError, ConnectionError, TimeoutError)   # chyby sítě (ne místních souborů)
+SIT = (urllib.error.URLError, ssl.SSLError, ConnectionError, TimeoutError, http.client.HTTPException)   # chyby sítě (ne místních souborů)
 
 
 def chyba_archivu(e):
     """Výpadek na straně ARONu (certifikát, jiná stránka místo snímku, server neodpovídá): hláška místo tracebacku."""
     duvod = getattr(e, "reason", e)
+    if isinstance(e, http.client.HTTPException):   # IncompleteRead apod.: odpověď se utrhla uprostřed
+        sys.exit(f"ARON: odpověď se utrhla ({type(e).__name__}) – server nestíhá, zkus později a po jednom snímku. "
+                 "Opakuje-li se to hned při prvním pokusu v sandboxu Claude Code, zkus příkaz mimo sandbox "
+                 "(se souhlasem uživatele): proxy sandboxu větší odpovědi občas utrhne.")
     if isinstance(duvod, ssl.SSLError) or isinstance(e, ET.ParseError):
         sys.exit("ARON: obrázkový server má neplatný certifikát nebo místo snímku vrací jinou stránku – chyba na straně "
                  f"archivu ({type(duvod).__name__}). Zkus to později; info a link fungují dál, svazky jde plánovat. "
@@ -204,7 +212,7 @@ if __name__ == "__main__":
     if sys.argv[2] == "svazek":
         root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         path = os.path.join(root, "data", "svazky.json")
-        sv = json.load(open(path, encoding="utf-8")) if os.path.exists(path) else {}
+        sv = json.load(open(path, encoding="utf-8-sig")) if os.path.exists(path) else {}
         fond, _, rest = vol["name"].partition(": ")
         sv[apu[:8]] = dict(archiv=fond if rest else "", portal="ARON", svazek=rest or vol["name"],
                            popis=(vol.get("description") or "")[:300], snimku=len(tiles),
@@ -213,6 +221,49 @@ if __name__ == "__main__":
             json.dump(sv, f, ensure_ascii=False, indent=1)
         print(apu[:8], "->", sv[apu[:8]]["svazek"])
         sys.exit(0)
+    if sys.argv[2] == "rozsah":
+        if len(sys.argv) < 4 or not re.fullmatch(r"\d+-\d+", sys.argv[3]):
+            sys.exit("rozsah: zadej <od-do>, např. aron_img.py <apu_id> rozsah 546-578")
+        od, do = map(int, sys.argv[3].split("-"))
+        lo = int(sys.argv[4]) if len(sys.argv) > 4 else 1
+        slozka = sys.argv[5] if len(sys.argv) > 5 else os.path.join("pracovni", "aron_" + apu[:8])
+        os.makedirs(slozka, exist_ok=True)
+        chybi, za_sebou = [], 0
+        for n in range(od, do + 1):
+            cil = os.path.join(slozka, f"s{n}.jpg")
+            if os.path.exists(cil):
+                print(f"s{n}: už je, přeskakuji")
+                continue
+            if n not in tiles:
+                print(f"s{n}: SELHALO – svazek má snímky {min(tiles, default=0)}–{max(tiles, default=0)}")
+                chybi.append(n)
+                continue
+            cas, cast = time.time(), os.path.join(slozka, f"s{n}.part.jpg")
+            try:
+                v = None
+                if sken(vol, n):
+                    try:
+                        v = fetch_sken(sken(vol, n), lo, cast, None)
+                    except SIT:
+                        v = None
+                if not v:
+                    v = fetch_image(tiles[n], lo, cast, None)
+                os.replace(cast, cil)
+                za_sebou = 0
+                print(f"s{n}: OK {time.time() - cas:.0f} s")
+            except (SystemExit, Exception) as e:   # chyba jednoho snímku nesmí zahodit zbytek dávky
+                if os.path.exists(cast):
+                    os.remove(cast)
+                za_sebou += 1
+                chybi.append(n)
+                print(f"s{n}: SELHALO {type(e).__name__}: {e}")
+                if za_sebou >= 3:
+                    print("Tři selhání za sebou – server nestíhá nebo blokuje. Skončil jsem; zkus později "
+                          "(nejdřív jeden snímek).")
+                    chybi += list(range(n + 1, do + 1))
+                    break
+        print(f"hotovo {do - od + 1 - len(chybi)} z {do - od + 1}" + (f"; chybí: {chybi}" if chybi else ""))
+        sys.exit(1 if chybi else 0)
     if sys.argv[2] == "link":
         n = int(sys.argv[3])
         dao = (vol.get("digitalObjects") or [{}])[0]

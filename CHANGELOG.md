@@ -6,6 +6,27 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.9.1 – 13. 11. 2026
+
+**Nové**
+- Kontrola nové verze: `verze.py` se zeptá GitHubu, jestli nevyšla novější verze skillu, a projekt nejde aktualizovat starším skillem.
+- Nasazení webu na Cloudflare je výchozí, Netlify jen na pokyn; přibyl i návod pro nginx.
+- `zarad.py` zařadí ručně stažené snímky do projektu (náhled, nic nemaže); `pomucka.py` čte pomůcku fondu NAD 190.
+- `aron_img.py rozsah` stáhne jen část svazku, `aron_search.py --sken` ukáže počet snímků, hlídač sítě je přísnější (`slusne.py`).
+- Metodika je česky (`metodika.md` místo `playbook.md`), nový `reference/instalace.md`, zeštíhlený `SKILL.md`.
+- `sdileni.py najdi` a `kniha` ukážou, co už někdo přečetl v Mapě matrik a v indexu matrik (jen čtení, nic se neodesílá).
+- `heimatbuch.py` hledá Heimatbücher v katalogu Německé národní knihovny, `brno_encyklopedie.py` dům v encyklopedii dějin města Brna.
+
+**Opravy**
+- Do nově založených projektů se nekopíroval `tools/podminky.json`, takže stahování a export otevřeného webu končily chybou.
+- Lhůta pro předání knihy úmrtí do archivu je 75 let, ne 30. Zápis o úmrtí starší 30 let ale vydá matriční úřad komukoli.
+- Nastavení nginx (`map_hash_bucket_size`), `ged_import` (UTF-16, smyčky), export a `zapis.py`.
+
+**Návody**
+- Matriční úřad: zápis starší 100 / 75 / 30 let vydá komukoli i ze svazku, který je ještě na úřadě; mladší jen rodině (§ 25b zákona 301/2000 Sb., ověřeno v textu zákona). Zahraniční lhůty jsou označené jako neověřené.
+- Pozemkové knihy online u SOA Třeboň a ZA Opava (z upstreamu, neověřeno), popis ARON, eBadatelny a ručního stahování.
+- Čísla domů (popisná, orientační, indikační skica „N° X“), Heimatbücher a farní hranice; právní tvrzení k číslování jsou z webových shrnutí, ne z textu zákonů, a v návodu jsou tak označena.
+
 ## 0.9.0 – 11. 11. 2026
 
 **Nové**

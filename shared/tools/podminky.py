@@ -4,7 +4,7 @@
 Lidská verze s vysvětlením: reference/podminky.md. Jen veřejné zdroje, není to právní rada.
 
 Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/tools/podminky.py), commit bda6028; úprava: tabulka jen pro
-portály našich nástrojů, nástroje ji volají přes slusne.py, vyrez.py, kontrola.py a export_web.py.
+portály našich nástrojů, nástroje ji volají přes slusne.py, vyrez.py, kontrola.py a export_web.py. Z 5c1715b: čtení JSON s utf-8-sig (BOM).
 
 Použití (z kořene projektu):
   podminky.py <adresa | doména>   -> pravidla pro portál (stahování stránek, snímků, obrázky ve výstupu)
@@ -82,7 +82,7 @@ def zkontroluj_stahovani(adresa, co):
 def _jload(root, name, default):
     p = os.path.join(root, "data", name)
     try:
-        with open(p, encoding="utf-8") as f:
+        with open(p, encoding="utf-8-sig") as f:
             return json.load(f)
     except (OSError, ValueError):
         return default

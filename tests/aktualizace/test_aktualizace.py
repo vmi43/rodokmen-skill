@@ -10,7 +10,7 @@ import glob, os, shutil, subprocess, sys, tempfile, time, traceback
 
 SKILL = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else "shared")
 RADKY = [f"radek {i}" for i in range(1, 21)]
-POCET = 20   # počet případů v pripady()
+POCET = 22   # počet případů v pripady()
 PRESKOCENO = "přeskočeno: "   # případ, který tu nejde vyzkoušet (počítá se zvlášť)
 
 
@@ -44,6 +44,7 @@ def falesny_skill(koren):
     zapis(os.path.join(s, "tools", "skript.sh"), "#!/bin/sh\necho ahoj\n", nl="\r\n")   # skill z Windows s CRLF
     zapis(os.path.join(s, "template", "web", "src", "styl.css"), text(RADKY))
     zapis(os.path.join(s, "tools", "stary.py"), "print('zrusim')\n")
+    zapis(os.path.join(s, "tools", "podminky.json"), '{"portaly": {}}\n')
     for n in ("index.astro", "uvod.astro", "zrus.astro", "mapa.astro", os.path.join("slozka", "x.astro")):
         zapis(os.path.join(s, "template", "web", "src", n), text(RADKY))
     zapis(os.path.join(s, "template", "web", "node_modules", "x.js"), "nekopirovat\n")
@@ -343,6 +344,31 @@ def pripady(koren):
         yield f"cíl zálohy jako odkaz ({druh}) se odmítne"
     else:
         yield PRESKOCENO + "odkaz na místě zálohy nejde vytvořit (chybí oprávnění)"
+
+    # 21. .claude/ nejde zapsat (sandbox Claude Code): skript nespadne, .skill_verze a tools/ jsou hotové, výpis řekne,
+    #     co se nezapsalo
+    p2 = os.path.join(koren, "projekt_sandbox")
+    os.makedirs(os.path.join(p2, ".claude"))
+    os.chmod(os.path.join(p2, ".claude"), 0o555)
+    try:
+        if os.access(os.path.join(p2, ".claude"), os.W_OK):   # root nebo Windows: zákaz nejde navodit
+            yield PRESKOCENO + ".claude/ nejde zamknout (root nebo Windows)"
+        else:
+            out = spust(s, p2)
+            assert "NEZAPSÁNO: .claude/launch.json" in out, out
+            assert "NEZAPSÁNO: .claude/settings.json" in out, out
+            assert cti(os.path.join(p2, ".skill_verze")) == "9.9.9\n", out
+            assert cti(os.path.join(p2, "tools", "nastroj.py")) == cti(os.path.join(s, "tools", "nastroj.py")), out
+            yield ".claude/ bez zápisu: skript dokončí tools/ a .skill_verze a vypíše, co chybí"
+    finally:
+        os.chmod(os.path.join(p2, ".claude"), 0o755)
+
+    # 22. datový soubor nástrojů (tools/podminky.json) se kopíruje i při založení; bez něj podminky.py zastaví stahování
+    p3 = os.path.join(koren, "projekt_json")
+    spust(s, p3)
+    assert cti(os.path.join(p3, "tools", "podminky.json")) == '{"portaly": {}}\n', "podminky.json se nezkopíroval"
+    assert os.path.isfile(os.path.join(p3, ".skill_sablona", "tools", "podminky.json")), "chybí v .skill_sablona"
+    yield "tools/podminky.json se kopíruje do projektu (i do .skill_sablona)"
 
 
 def main():

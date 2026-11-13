@@ -20,7 +20,7 @@ projektu [vzoha/dejiny-domu-skill](https://github.com/vzoha/dejiny-domu-skill) a
 
 **Autor a správce původního projektu:** Jindřich Šaršon ([sarsonj@gmail.com](mailto:sarsonj@gmail.com), [GitHub](https://github.com/sarsonj))
 
-**Aktuální verze: 0.9.0 (vydána 11. 11. 2026).** Skill se průběžně vyvíjí – opravuji chyby a doplňuji postupy pro další archivy
+**Aktuální verze: 0.9.1 (vydána 13. 11. 2026).** Skill se průběžně vyvíjí – opravuji chyby a doplňuji postupy pro další archivy
 podle toho, na co narazíte vy. Jak aktualizovat, najdete v části [Instalace](#instalace), přehled změn
 po verzích v [CHANGELOG.md](CHANGELOG.md).
 
@@ -69,13 +69,13 @@ s přepisem a překladem, „Co hledáme“ a deník hledání. **[Podívejte se
   Tyto archivy stahovací nástroje nepouštějí, Claude proto čte matriky přímo v jejich prohlížeči. Instalace
   v Claude Code: `/plugin install playwright@claude-plugins-official`, pak restart. Bez něj můžete Claudovi
   posílat snímky obrazovky sami.
-- Volitelně účet na [Netlify](https://www.netlify.com) (zdarma), pokud chcete web zveřejnit pro rodinu.
+- Volitelně účet na [Cloudflare](https://www.cloudflare.com) (zdarma, založíte ho při zveřejnění), pokud chcete web zveřejnit pro rodinu.
 
 ## S jakými modely to vzniklo
 AI se vyvíjí rychle a za pár měsíců může skill dávat lepší, nebo jen jiné výsledky. Proto je tu uvedeno, s čím byl
 vyzkoušený.
 
-- **Stav k 11. 11. 2026 (verze 0.9.0):** Claude Code s hlavním modelem **Claude Opus 5.5**. Pomocníci, kteří hledají
+- **Stav k 13. 11. 2026 (verze 0.9.1):** Claude Code s hlavním modelem **Claude Opus 5.5**. Pomocníci, kteří hledají
   a čtou matriky jako první, běží na **Claude Sonnet 5.5**. Každý jejich nález pak hlavní model ověřuje na snímku.
 - Vyzkoušeno na několika skutečných rodokmenech (největší má 243 předků v 11 generacích a 192 matričních zápisů).
   Výsledek se porovnával s větví, kterou jsme léta dělali ručně.
@@ -137,10 +137,10 @@ s vymyšlenou rodinou a spustí náhled.
 | 2. Matriky | rozhodujete sporná místa | hledá svazky, stahuje a čte zápisy, dělá výřezy, přepisy a překlady, vede deník hledání |
 | 3. Příběhy | doplníte rodinné historky, schválíte texty | průběžně sbírá zajímavosti, napíše „Příběh <vašeho rodu>“ |
 | 4. Web | díváte se a říkáte, co upravit | staví web a ukazuje náhled |
-| 5. Zveřejnění | založíte účet na Netlify, schválíte obsah | nasadí web s přihlášením rodinnou otázkou |
+| 5. Zveřejnění | založíte účet na Cloudflare (nebo Netlify), schválíte obsah | nasadí web s přihlášením rodinnou otázkou |
 
-Matriky jsou online jen do určitého data: narození starší než 100 let, sňatky 75 a úmrtí 30 let.
-O mladší údaje se žádá na matričním úřadě. Claude vám řekne, kdy to je potřeba.
+Matriky jsou online jen do určitého data: knihy narození po 100 letech, knihy sňatků a úmrtí po 75 letech od posledního zápisu.
+Matriční úřad ale vydá komukoli i zápis ze starší knihy, který je jeho: narození starší 100 let, sňatek 75, úmrtí 30. Jinak se o údaje žádá na matričním úřadě. Claude vám řekne, kdy to je potřeba.
 
 ## Co je v repozitáři
 ```
@@ -150,8 +150,8 @@ skills/dum/
   SKILL.md           průvodce pro dějiny domu (rodokmen:dum)
 shared/              společné soubory skillů
   VERZE              číslo verze (podle něj Claude pozná, že má aktualizovat projekt)
-  reference/         podrobné návody: čtení matrik, portály archivů, formát dat, web, soukromí,
-                     metodická příručka (playbook, anglicky)
+  reference/         podrobné návody: příprava počítače, čtení matrik, portály archivů, metodika
+                     (spojování záznamů, mrtvé body, prameny mimo ČR), formát dat, web, soukromí
   tools/             nástroje v Pythonu (ARON, výřezy, rámečky, mapa, kontrola dat, export do webu, vějíř)
   template/          šablona projektu: prázdná data, ukázková rodina, web (Astro)
 .claude-plugin/      instalace jako plugin
@@ -215,17 +215,15 @@ tady v repozitáři.
 - **Kam skripty sahají:** zapisují do složky projektu rodokmenu (stažené snímky, mezivýsledky, web).
   Výjimkou jsou dočasné soubory systému, stav brzdy (pár malých souborů v `~/.cache/rodokmen_slusne`, na Windows
   v `%LOCALAPPDATA%`), mezipaměť stažených snímků (`~/.cache/rodokmen_snimky`, nejvýš 5 GB, lze kdykoli smazat),
-  npm při instalaci webu a přihlášení nástroje pro nasazení (Netlify, CapRover), pokud web zveřejňujete. Mimo
+  npm při instalaci webu a přihlášení nástroje pro nasazení (Cloudflare, Netlify, CapRover), pokud web zveřejňujete. Mimo
   projekt nic nemažou ani nepřepisují – kromě nejdéle nepoužitých snímků ve vlastní mezipaměti nad limitem.
 - **Na které servery chodí:** archivní portály (ARON SOA Zámrsk, SOA Třeboň, SOA Plzeň – Porta fontium, SOA Praha –
   eBadatelna, AHMP, Národní archiv, SOA Litoměřice, Matricula), noviny (ANNO, Kramerius), OpenStreetMap (mapa
   a souřadnice obcí) a při instalaci webu registr npm.
-  Na Netlify jen tehdy, když web sami zveřejníte. Nikam jinam nic neposílají, ani vaše data, ani poznámky.
+  Na Cloudflare (nebo Netlify) jen tehdy, když web sami zveřejníte. Nikam jinam nic neposílají, ani vaše data, ani poznámky.
 - **Doporučení:** nechte v Claude Code zapnuté schvalování příkazů, aspoň dokud si nezvyknete, co Claude dělá.
   Obecně instalujte skilly a pluginy jen od lidí, kterým věříte. Skill nikdo předem nekontroluje a Claude se
   jeho návodem řídí.
 
 ## Licence
 Skill je pod licencí [MIT](LICENSE): smíte ho volně používat, upravovat a šířit dál, jen zachovejte uvedení autora (Jindřich Šaršon).
-Výjimkou je metodická příručka `shared/reference/playbook.md`. Je to převzatá rešeršní zpráva bez uvedeného
-autora, licence MIT se na ni nevztahuje (podrobnosti na začátku souboru).

@@ -196,3 +196,93 @@ Porovnáno proti `32bef07` (upstream je `vzoha/dejiny-domu-skill`; `sarsonj` je 
 
 - Mimo sandbox prošly `commons.py`, `pamatky.py uan` a `geolab.py export`. V sandboxu se větší odpovědi přerušují (`IncompleteRead`), proto se živé ověření pouští mimo něj, po schválení.
 - `geolab.py` (převzatý v kroku (e)) volal `slusne.strop_dlazdic`, kterou náš přepracovaný `slusne.py` neměl; export padal na `AttributeError`. Funkce a `MAX_DLAZDIC = 3000` jsou doplněné z upstreamu (`bda6028`), beze změny našeho `ZAKAZ`, brzdy a mezipaměti. `tests/podminky/test_geolab.py` kontroluje přes `ast`, že každé volání `slusne.<jméno>` v `shared/tools/` existuje; poučení: u převzatého nástroje ověřit i funkce, které volá z našich sdílených modulů, ne jen jeho vlastní běh.
+
+## Poznámky z uživatelova projektu: co se zapracovalo a co ne (2026-11-11)
+
+**Rozhodnuto s uživatelem:** poznámky z projektu (`poznamky_pro_skill.md`) se zapracují před přebíráním upstreamu `rodokmen-skill`; pořadí: opravy kódu, návody, pak větší nástroje zvlášť. Víc než třetina poznámek už ve skillu byla (`SAME` v exportu a vějíři, `mista.py nova`, kmotři, `Containerfile` na UBI, kontrola svazku v `kontrola.py`, `ramecek.py --vyrez`, `upload: manual`, sňatek ve farnosti nevěsty).
+
+**Odchylky od návrhů v poznámkách.** (1) `--rozsah` je podpříkaz `aron_img.py <apu> rozsah <od-do>`, ne přepínač, aby seděl k ostatním podpříkazům; stejný nástroj pro `ebadatelna.py` se nedělá, protože ho archiv od 2. 11. 2026 zakazuje. (2) Počet snímků u svazků v `aron_search.py` jde jen přes `--sken` (jeden dotaz na svazek, nejvýš 40), protože výpis ARON počet skenů neobsahuje. (3) Klíč archivalií z eBadatelny je `ebad_a_<archivalieId>` (jak ho zapisuje `ebadatelna.py a-svazek`); `zarad.py` ale použije `archivalie_<id>`, je-li už ve `svazky.json` (tvar z uživatelova projektu), takže existující projekt se nerozbije. (4) Poznámka o hlídači sítě se ověřila: `hlidac_site.py` kontroluje spuštěný příkaz, text `curl` v `grep` ani v heredocu ho nezastaví; návod to jen říká. (5) Zkušenost s aliasy `.2` a `.3` v `tests/brzda/README.md` je uvedená jako zkušenost uživatele, ne jako ověřená u nás (test na `.5` jsme nepustili).
+
+**Nepřevzato:** příručka písma a úprava obrazu (uživatel ji jen zkoušel, bez výsledku); Kraken a cizí AI modely na kurent jsou v `matriky.md` jako negativní zkušenost.
+
+**`zarad.py` (2026-11-11).** Nástroj na zařazení ruční dávky (`shared/tools/zarad.py`, test `tests/podminky/test_zarad.py`, 7 případů). Náhled je výchozí, změny jen s `--proved`; nic nemaže (strojové kopie jen vypíše), rozpory (počet snímků, název × `svazky.json`, klíč ve jménu složky) složku zastaví, `--ignoruj-pocet` povolí jen rozpor v počtu. Zapisuje do `svazky.json` přes `zapis.py --sloucit`, takže stará pole záznamu zůstanou. Nevyzkoušeno na živých `obsah.txt` mimo vzorky z uživatelova projektu (eBadatelna archiválie a matrika, ARON); u ARON `obsah.txt` počet snímků neuvádí, takže se kontroluje jen proti `svazky.json`. Pomůcka NAD 190 a dávkové stahování zůstávají v `docs/todo.md`.
+
+**`pomucka.py` (2026-11-11).** Nástroj na Archivní pomůcku NAD 190: `rozbor <pdf>` a `hledej <obec> [N|O|Z] [rok] [--vse]`, test `tests/podminky/test_pomucka.py` (4 případy, bez PDF). Vychází z rozboru uživatele (`pomucka_parse.py`, `hledej_pomucku.py`), ale odkazy bere přes `qpdf --json` v pořadí stránek a anotací; pořadí objektů v `qpdf --qdf` pořadí v textu neodpovídá (první pokus selhal na 27. odkazu, kontrola dvojic ARON a ZIP to chytila). Varianta (a) bez stahování: PDF se stahuje ručně, protože přímá adresa souboru z dostupných podkladů není známá a stahování by šlo přes brzdu; hledání je lokální. Výstup shodný s uživatelovým JSON (14 189 knih, 12 911 odkazů, `==`). `qpdf` a `pdftotext` jsou závislost, nástroj bez nich skončí s návodem k instalaci. Dávkové stahování zůstává v `docs/todo.md`.
+
+## Přebírání sarsonj/rodokmen-skill 0.10.0 (2026-11-11)
+
+Základ `bc6cd33` (0.8.2), upstream `0fb0c03` (0.10.0), 64 souborů. Rozhodnuto s uživatelem po rozboru po souborech:
+- **Cloudflare přebrat jako výchozí zveřejnění webu**; Netlify a náš `Containerfile` na UBI zůstanou jako další možnosti, upstreamový nginx a Docker se nepřebírají. Důvod: Netlify zdarma vystačí asi na 20 nasazení měsíčně (neověřeno).
+- **`verze.py` převzít s úpravou** na `vmi43/rodokmen-skill`, id pluginu `rodokmen@rodokmen` a cestu `shared/VERZE`; bez úpravy by hlásil novou verzi podle cizího repozitáře.
+- **`playbook.md` smazat, nahrazuje ho `metodika.md`** (česky, MIT; zmizí výjimka v `LICENSE`, odkazy na 7 místech se převedou). Stopa: playbook se vědomě nepřebíral ani neudržoval dál, protože ho upstream nahradil metodikou.
+- **`SKILL.md` zeštíhlit**: Fáze 0 do `instalace.md`, import stromu do `data.md`; naše přidané pasáže (`zarad.py`, `pomucka.py`, brzda, dům) zůstanou.
+- **Číslo vydání 0.9.1** (uživatel zvolil proti doporučení 0.10.0): plynulá řada našich verzí; upstreamová čísla 0.9.0 a 0.10.0 mají jiný obsah, v `CHANGELOG.md` uvést, které upstreamové verze obsahuje.
+- **Ostrý výřez indikační skici v `portaly.md` nepřebírat** (upstream ho stahuje přes `fetch` ve stránce, mimo brzdu); odkázat na `cuzk_archiv.py`. Opravu čtení barev čísel převzít (rozpor `portaly.md:555` × `prameny.md:191`).
+
+### Krok 2 přebírání: `verze.py` a pojistka verze (2026-11-11)
+
+- **`shared/tools/verze.py` převzat a zjednodušen.** Dotazuje se na `vmi43/rodokmen-skill`, hledá plugin `rodokmen@rodokmen` a jeho složku `shared/`. **Větev „ručně nakopírovaný skill v `~/.claude/skills/rodokmen`“ je vypuštěna**: po přesunu do `shared/` takto nainstalovaný skill nefunguje (viz README, varianta B), takže nová verze se vždy radí přes `claude plugin update rodokmen@rodokmen`. Stopa: upstream tuto větev a test k ní má.
+- **`novy_projekt.py`**: `_python_windows()` vrací vždy `sys.executable`; `nastaveni()` čte JSON s BOM (`utf-8-sig`); `zkontroluj_verzi()` odmítne aktualizovat projekt novější než skill.
+- **Testy**: `tests/verze/test_verze.py` (20/20, bez případu ručního skillu), `test_hlidac.py` 83/83 po sloučení upstreamových případů (`git merge-file`), `test_hook_windows.py` 3/3.
+- **`SKILL.md` ještě `verze.py` nevolá** – přijde v kroku 5 (zeštíhlení), spolu s textem, kdy ho Claude spouští na začátku konverzace.
+
+### Krok 3 přebírání: Cloudflare, oprava nginx a `podminky.json` (2026-11-11)
+
+- **Cloudflare převzat** (`worker.sablona.js`, `scripts/nasadit_cloudflare.mjs`, `scripts/npx.mjs`, změny `overit.mjs`, `package.json` skript `nasadit-cloudflare`, `.gitignore`, `.dockerignore`, `cloudflare_files()` v `export_web.py`, `tests/web/test_cloudflare.py` 34/34, `test_overit.py` 13/13). Netlify i `Containerfile` zůstávají. `export_web.py` se slučoval `git merge-file` (dva střety, vyřešeno: náš `os.path.exists(osoby.py)` s `utf-8-sig`, upstreamová regulární výrazová oprava dvojího `default`); převzaly se tím i další drobné opravy upstreamu v něm (BOM, číselná odpověď, zástupná matka, shodné názvy rodů, `SAME` bez cíle).
+- **Nginx: upstreamové soubory se nepřebraly** (`Dockerfile`, `nginx.sablona.conf` do `conf.d`), **jediná oprava ano**: do naší šablony `map_hash_bucket_size 128;`. Ověřeno v `ubi9/nginx-126` přes Podman: bez řádku `nginx -t` selže („could not build map_hash“ u 64znakového otisku), s ním projde. Chyba tedy v kontejneru s ochranou odpovědí existovala. `tests/web/test_nginx.py` převeden na Podman/UBI (10/10).
+- **Nalezená vlastní chyba vydání 0.9.0:** `novy_projekt.py` kopíroval do `tools/` jen `.py` a `.sh`, takže `podminky.json` v projektu chyběl a `podminky.py` (a tím `slusne.pockej`) zastavil každé stahování a export otevřeného webu s „Tabulka podmínek chybí“. Opraveno seznamem `DATA_NASTROJU`; nový případ 22 v `test_aktualizace.py` (22/22). Existující projekty se opraví aktualizací (`novy_projekt.py` na stejnou složku). Patří do `CHANGELOG.md` 0.9.1 jako oprava.
+- **Neověřeno:** skutečné nasazení na účet Cloudflare (potřebuje přihlášení uživatele), vzhled webu v prohlížeči.
+
+### Krok 4 přebírání sarsonj/rodokmen-skill: `playbook.md` → `metodika.md` (2026-11-11)
+
+- **`shared/reference/playbook.md` smazán, nahradila ho česká `shared/reference/metodika.md`** převzatá beze změny z `upstream/HEAD` (`0fb0c03`, MIT). Zmizela výjimka z licence v `LICENSE` a v `README.md` (strom souborů, odstavec Licence).
+- **Stopa:** playbook byl anglická rešeršní zpráva bez uvedeného autora (stav 2026-10-09), vědomě se nepřebíral ani neudržoval dál; vrátit by se mohl omylem z upstreamu `dejiny-domu-skill`, který ho ještě má.
+- **Odkazy převedeny ručně, ne slepě:** `portaly.md` a `matriky.md` (§2 → kapitola Prameny mimo ČR), `skills/rodokmen/SKILL.md`, `skills/dum/SKILL.md`. Věta v `matriky.md` „Pomocníci a OCR/AI čtou písmo chybně (`playbook.md` §1 bod 10)“ zůstala bez odkazu, protože `metodika.md` to netvrdí.
+
+### Krok 5 přebírání sarsonj/rodokmen-skill: zeštíhlení `SKILL.md` (2026-11-11)
+
+- **Fáze 0 přesunuta do `shared/reference/instalace.md`** (základ upstream `0fb0c03`, `SKILL_DIR` → `SHARED_DIR`). Naše doplňky zůstaly v návodu: `--bez-webu`, výpis „NEZAPSÁNO“ při sandboxu a pravidlo, že `git` v sandboxu nesmí do `.git`. V `SKILL.md` zbyl odstavec s odkazem a zkratkou pro Windows.
+- **Import rodinného stromu přesunut do `data.md`** (nová sekce „Import rodinného stromu (Fáze 1)“, text upstreamu); ve Fázi 1 zůstal jen odkaz.
+- **Na začátku konverzace se volá `verze.py`** (dosud ho `SKILL.md` nevolal): výsledky `NOVA_VERZE_SKILLU`, `PROJEKT_NOVEJSI`, `SKILL_NEZJISTEN`, `AKTUALIZUJ_PROJEKT`; náš text o `--bez-webu` a hlídači zůstal. Záložní cesta přes `slusne.py`, když hlídač kontrolu zamítne.
+- **Výsledná velikost `SKILL.md` je 34 KB** (bylo 39,8 KB, upstream 23 KB). Dál se nezkracuje: zbytek jsou naše pasáže (`zarad.py`, `pomucka.py`, brzda, pomocníci, dům), které upstream nemá.
+- **Neověřeno:** že Claude podle zkráceného `SKILL.md` opravdu otevře `instalace.md` při zakládání projektu (chce zkoušku v živé session).
+
+### Krok 6 přebírání sarsonj/rodokmen-skill: README, kontrola, zapis, overit, portaly (2026-11-11)
+
+- **`kontrola.py`** (sloučeno ručně, tři střety): `--help`, čtení dat s BOM (`utf-8-sig`), nová upozornění (boční příbuzný bez textu, dokument bez popisu), chyby (alias `SAME` na zástupnou osobu, dva rody se stejným názvem). Naše `jen_dum` a import `podminky` zůstaly. Testy `tests/kontrola/*` 65/65 a 9/9.
+- **`zapis.py`: jen podpříkaz `odkaz`** (přidá klíč zápisu do `r` u osoby nebo bočního příbuzného, zbytek `osoby.py` zůstane doslova, před zápisem se ověří, že se změnil jen ten seznam) a čtení vstupu v UTF-8. Naše `denik`, zámek a `--sloucit` zůstaly. Přibyly čtyři testy `TestOdkaz` v `tests/podminky/test_zapis.py` (upstream test nemá), 21 testů celkem. `SKILL.md` ho volá ve Fázi 2 (krok 6 zápisu), v pravidlech zápisu a v tabulce nástrojů.
+- **`overit.py`: naše druhá nápověda smazána**, platí upstreamová na začátku souboru. Vedlejší důsledek: `overit.py <snímek> <výřez> --kontrast` bez prefixu (tři argumenty včetně přepínače) projde kontrolou počtu a spadne na rozbalení, místo aby vypsal nápovědu. Vědomě přijato.
+- **`portaly.md`:** převzaty `zapis.py svazky` místo „ručně“, MZA (403 po 45–60 snímcích, vestavěný prohlížeč Claude desktop nepoužívat, 410 = vypršel token), pozemkové knihy Třeboň a Opava, pauza 5 s a zákaz smyček na pozadí, oprava čtení barev indikační skici. **Nepřevzat ostrý výřez skici** (`fetch` ve stránce mimo brzdu): odkaz na `cuzk_archiv.py export`. Z věty o skice vypadlo „stahování je placené“: nešlo ověřit a odporovalo `cuzk_archiv.py`, který listy stahuje.
+- **`README.md`:** Cloudflare jako výchozí zveřejnění (4 místa) a strom `reference/`. **Číslo verze zůstalo 0.9.0 až do kroku 7.**
+- **Neověřeno:** `tests/web/test_overit.py` se nespouštěl (měnil se v kroku 3); tvrzení o MZA (403, pozemkové knihy Třeboň a Opava) jsou z upstreamu, neověřeno na živých archivech.
+
+## Krok 7 přebírání upstreamu: ověření právních tvrzení (2026-11-13)
+
+- **§ 25b zákona 301/2000 Sb. doložen** čtením textu na zakonyprolidi.cz/cs/2000-301 (znění k 1. 1. 2025): zápis starší 100 / 75 / 30 let vydá úřad fyzické osobě, rodina je definována v § 8a odst. 6, mladší zápisy podle § 25 odst. 1. Převzato do `matriky.md` včetně rodiny a doslovného výpisu.
+- **Chyba v upstreamu i v našem textu opravena:** do archivu jde kniha úmrtí po 75 letech od posledního zápisu (§ 23), ne po 30. „30“ je lhůta přístupu u úřadu (§ 25b). Opraveno v `matriky.md`, `SKILL.md`, `README.md`, `ged_import.py`. Upstream to dál tvrdí chybně.
+- **„Lhůta běží u každého zápisu zvlášť“** zákon výslovně neříká; plyne z formulace „od provedení dotčeného zápisu“ (úsudek, ne citace).
+- **Zahraniční lhůty (SK, AT, DE, PL, HU) neověřeny** primárními zdroji; v `metodika.md` označeno. Důvod: mimo hlavní oblast skillu, ověření pěti zákonů by bylo samostatná práce. Ověřit, až je někdo bude potřebovat.
+- Tvrzení o MZA a pozemkových knihách Třeboně a Opavy v `portaly.md` zůstávají z upstreamu neověřená.
+
+## Přebírání vzoha/dejiny-domu-skill 32bef07 → 5c1715b (2026-11-13)
+
+- **Co se převzalo:** `reference/prameny.md` (sekce *Čísla domů*, indikační skica „N° X“, Heimatbücher, Brno, elipsa na všech mapách, farní hranice Gundackera), nové `tools/heimatbuch.py` (katalog DNB) a `tools/brno_encyklopedie.py` s testy `tests/podminky/test_heimatbuch.py` (3) a `test_brno_encyklopedie.py` (2), 11 portálů v `podminky.json` a řádky v `podminky.md`, kontroly v `zdravi.py`, sekce v `portaly.md` (Encyklopedie měst, Místní fotoarchivy, Slavné vily, Heimatbücher, Bundesarchiv, ÖNB/Polona/SBC), `utf-8-sig` ve čtení `domy.py` (`domy_web.py`), v `podminky.py` a `export_web.py`, komentář o přečíslování v šabloně `domy.py`. `ramecek.py` (`utf-8-sig`) už převzatý byl. Hlavičky „Původ“ jsou zvednuté jen u těchto souborů.
+- **Úprava při převzetí:** `slusne.py` se u nás zapíná importem, proto `import slusne` bez volání `slusne.instaluj()` (u nás neexistuje). Řádky zdravi u `ddb`, `seidel` a dalších nástrojů, které tu nejsou, se nepřevzaly.
+- **Ověření tvrzení v `prameny.md` (webové vyhledávání, jen přečtená shrnutí zdrojů, ne text zákonů):** doloženo vyhl. 97/1961 § 8, § 31 zákona o obcích (čísla nelze užívat opakovaně), zákon 266/1920 (podle návrhu z 1920), patent z 23. 3. 1857 č. 67 jako sčítací (ČSÚ), první vlna přečíslování 1805–1815; jen částečně patenty 10. 3. 1770 (zdroje se liší: únor × 10. březen) a 25. 10. 1804, sčítání 1869; neověřeno datum 1. 7. 2010 a novela 227/2009, „dodnes Brno“, příklady měst a let. Označeno poznámkou v sekci *Čísla domů*; doplnit z textu zákonů (zakonyprolidi.cz), až půjde o jejich citaci.
+- **Nepřevzato:** `sdileni.py` a `sdileni.md` v původní podobě (580 řádků, posílá PR do cizích repozitářů); rozhodnutí 13. 11. 2026 je níže, kus se převzal jako jen čtení. Dál nepřevzato: `brno_scitani.py`, `ddb.py`, `europeana.py` a další nástroje, které v `rodokmen` nejsou (už dřív rozhodnuto: jen to, co dává smysl pro náš rozsah).
+- **Živě ověřeno 13. 11. 2026 (jeden dotaz):** `heimatbuch.py Bleiswedel` (1 nález, kniha z 1966) a `brno_encyklopedie.py Poděbradova 5` (dům Orlovna, deska, 4 události). Ostatní kontroly `zdravi.py` nebyly spuštěny.
+
+### `sdileni.py`: přebráno jen čtení (2026-11-13)
+
+- **Rozhodnutí uživatele:** z `sdileni.py` a `sdileni.md` upstreamu `dejiny-domu-skill` přebrat **jen čtení** (`najdi`, `kniha`). Doporučoval jsem nepřebírat nic.
+- **Co se převzalo:** `shared/tools/sdileni.py` (jen dotazy do Mapy matrik `ondrnovy.github.io/mapa-matrik` a indexu `pe-pan.github.io/matriky-index`, odhad snímku, poznámky ke knize, přečtené zápisy; brzda přes `slusne.pockej`, mezipaměť na den v `~/.cache/rodokmen_sdileni/`), `shared/reference/sdileni.md` (zúžený návod), řádek v tabulce nástrojů ve `SKILL.md`, sekce v `portaly.md`, dva portály v `podminky.json` a `podminky.md` (`vyrez: ne`), `tests/podminky/test_sdileni.py` (5 testů bez sítě).
+- **Co se vědomě nepřevzalo a proč:** příkazy `bod`, `prehled`, `souhlas`, `kanal`, `navrh`, `odeslat`, fronta bodů a `data/sdileni.json`. Posílaly by údaje o bádání uživatele (kde bádá, které knihy, přepisy jmen) na cizí servery a do cizích repozitářů přes pull request nebo přes sběrnou schránku, kterou provozuje třetí strana (`mapa-matrik-schranka.schranka.workers.dev`). To je v rozporu se zásadou soukromí skillu (`soukromi.md`). Test `test_nic_se_neodesila` hlídá, že tyto funkce ani `subprocess` ve zdroji nejsou.
+- **Proč čtení stačí:** ušetří listování knihou a nic neodchází. Rizika jsou jiná: závislost na dvou cizích službách bez záruky provozu (nástroj při výpadku řekne chybu a postup jde dál) a kvalita indexu (většinu přečetl jazykový model, proto je zápis vodítko, ne doklad a do dat jde jen to, co uživatel přečte sám).
+- **Vrátit se k odesílání:** jen na výslovný pokyn a s rozborem soukromí; původní kód je v upstreamu (`skills/dejiny-domu/tools/sdileni.py`, commit 5c1715b).
+- **Živě ověřeno 13. 11. 2026 (jeden dotaz):** `sdileni.py najdi Kozlany 1905 Z` vrátil knihu Kožlany 22, poznámky ke stránkování a 2 přečtené zápisy v indexu. První běh spadl na přerušeném čtení `knihy.json` (`IncompleteRead`), opraveno a pokryto testem. **Neověřeno:** příkaz `kniha` naživo; licence indexu CC BY 4.0 je podle návodu upstreamu, na stránce indexu jsem ji nekontroloval; tvar JSON mapy (`obce/<slug>.json`, `svazky/…`) je převzatý z upstreamového kódu.
+
+### Dávkové stahování s frontou: zahozeno (2026-11-13)
+
+- **Rozhodnutí uživatele:** nedělat. Byla to položka C z poznámek uživatele (fronta svazků, rozpočet MB, přeskakování hotového, zastavení při 429/503, časový limit na snímek).
+- **Proč:** strojové stahování z ARON a eBadatelny může být blokované (poznámka 2026-11-05, neověřeno) a nástroj by musel zachovat brzdu, takže by přinesl málo; ruční stahování zůstává výchozí a `zarad.py` zařadí ručně stažené snímky. Část potřeby už kryje `aron_img.py … rozsah` (stáhne jen část svazku a přeskočí hotové).
+- **Vrátit se k tomu:** jen na nový pokyn; zadání je v poznámkách `~/osobni/aplikace/rodokmen/poznamky_pro_skill.md` (2026-10-28 a 2026-11-03).

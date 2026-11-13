@@ -35,11 +35,13 @@ junction) mimo projekt a na místě záloh, složku místo souboru a cesty liš�
 Projekt bez .skill_sablona/ (ze starší verze) přepíše a původní verze změněných souborů uloží do
 pracovni/zaloha_<datum>/puvodni/.
 """
-import hashlib, json, os, shutil, subprocess, sys, tempfile, time
+import hashlib, json, os, re, shutil, subprocess, sys, tempfile, time
 for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8 (cp1250 neumí třeba „→“)
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
 
+# Datové soubory, které nástroje v tools/ čtou vedle sebe (bez nich podminky.py zastaví každé stahování).
+DATA_NASTROJU = ("podminky.json",)
 SKILL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -295,7 +297,7 @@ def vyresit(dst, cesta):
     if cast == "web":
         v_sablone = os.path.isfile(new) and not set(zbytek.split("/")) & set(SKIP)
     else:
-        v_sablone = os.path.isfile(new) and "/" not in zbytek and zbytek.endswith((".py", ".sh")) and zbytek != "novy_projekt.py"
+        v_sablone = os.path.isfile(new) and "/" not in zbytek and (zbytek.endswith((".py", ".sh")) or zbytek in DATA_NASTROJU) and zbytek != "novy_projekt.py"
     cek = nacti_cekajici(dst)
     zaznam = cek.get(rel)
     if isinstance(zaznam, dict):
@@ -333,10 +335,10 @@ MATCHER = "Bash|PowerShell|Monitor"   # Monitor spouští příkaz v bashi stejn
 
 
 def _python_windows():
-    """Python pro hook na Windows: z PATH (projde i projekt sdílený přes OneDrive na dvou počítačích), jinak plná cesta.
-    Zástupce z Microsoft Store (WindowsApps) se nepočítá – bez nainstalovaného Pythonu jen otevře obchod."""
-    p = shutil.which("python")
-    return "python" if p and "windowsapps" not in p.lower() else sys.executable
+    """Python pro hook na Windows: vždy plná cesta k Pythonu, kterým běží aktualizace. Hooky Claude Code mají jiný PATH
+    a „python“ tam může vést na nefunkční zástupce z Microsoft Store – hlídač by se tiše nespustil. Projekt sdílený
+    přes OneDrive na dvou počítačích opraví aktualizace spuštěná na druhém počítači (hook se pokaždé přepíše)."""
+    return sys.executable
 
 
 def hook_hlidace():
@@ -353,7 +355,7 @@ def nastaveni(dst, hlidac):
     data = {}
     if os.path.exists(path):
         try:
-            data = json.load(open(path, encoding="utf-8"))
+            data = json.load(open(path, encoding="utf-8-sig"))
         except ValueError:
             print(f"POZOR: {path} není platný JSON – nastavení brzdy jsem nedoplnil. Oprav ho a spusť znovu.")
             return
@@ -381,6 +383,26 @@ def nastaveni(dst, hlidac):
     print("Hlídač sítě:", "zapnutý" if zapnuty else "vypnutý (zapnout: --hlidac)")
 
 
+def _verze(text):
+    m = re.fullmatch(r"v?(\d+)\.(\d+)\.(\d+)", (text or "").strip())
+    return tuple(int(x) for x in m.groups()) if m else None
+
+
+def zkontroluj_verzi(dst):
+    """Projekt založený novějším skillem neaktualizovat starší kopií skillu – vrátilo by ho to ke staré verzi."""
+    try:
+        with open(os.path.join(dst, ".skill_verze"), encoding="utf-8") as f:
+            projekt = f.read().strip()
+        with open(os.path.join(SKILL, "VERZE"), encoding="utf-8") as f:
+            skill = f.read().strip()
+    except OSError:
+        return
+    p, s = _verze(projekt), _verze(skill)
+    if p and s and p > s:
+        sys.exit(f"CHYBA: projekt je z verze skillu {projekt}, tento skill je starší ({skill}). Aktualizace by projekt vrátila\n"
+                 "ke starší verzi, proto nic neměním. Aktualizujte nejdřív skill (README, část Instalace) a pak to zkuste znovu.")
+
+
 def main():
     if len(sys.argv) < 2 or sys.argv[1].startswith("-"):
         sys.exit(__doc__)
@@ -390,6 +412,7 @@ def main():
         if not cesty:
             sys.exit(__doc__)
         sys.exit(0 if all([vyresit(dst, c) for c in cesty]) else 1)
+    zkontroluj_verzi(dst)
     demo = "--ukazka" in sys.argv
     os.makedirs(dst, exist_ok=True)
     jen_dum = "--jen-dum" in sys.argv
@@ -419,7 +442,7 @@ def main():
     tools = os.path.join(dst, "tools")
     os.makedirs(tools, exist_ok=True)
     nastroje = sorted(f for f in os.listdir(os.path.join(SKILL, "tools"))
-                      if f.endswith((".py", ".sh")) and f != "novy_projekt.py")
+                      if (f.endswith((".py", ".sh")) or f in DATA_NASTROJU) and f != "novy_projekt.py")
     aktualizuj(os.path.join(SKILL, "tools"), dst, "tools", nastroje, zaloha, vysl, stary, cek)
     uloz_cekajici(dst, cek)
     for f in nastroje:   # i ponechaný vlastní .sh s CRLF: Git Bash by skript nespustil
@@ -430,15 +453,32 @@ def main():
                 zapis(p, data.replace(b"\r\n", b"\n"))
     for d in ("vyrezy", "zdroje", "dokumenty", "pracovni"):
         os.makedirs(os.path.join(dst, d), exist_ok=True)
-    os.makedirs(os.path.join(dst, ".claude"), exist_ok=True)
-    for name in ("CLAUDE.md", ".gitignore", ".gitattributes", "poznamky_pro_skill.md", os.path.join(".claude", "launch.json")):
+    for name in ("CLAUDE.md", ".gitignore", ".gitattributes", "poznamky_pro_skill.md"):
         out = os.path.join(dst, name)
         if not os.path.lexists(out):
             copy(os.path.join(SKILL, "template", name), out)
-    nastaveni(dst, True if "--hlidac" in sys.argv else False if "--bez-hlidace" in sys.argv else None)
     with open(os.path.join(dst, ".skill_verze"), "w", encoding="utf-8") as f:   # SKILL.md podle něj nabídne aktualizaci
         f.write(open(os.path.join(SKILL, "VERZE"), encoding="utf-8").read())
+    # .claude/ chrání sandbox Claude Code (zápis končí PermissionError): chyba nesmí shodit skript, ať je hotová
+    # aktualizace tools/ a .skill_verze; co se nezapsalo, vypíšeme a Claude to doplní sám (Edit/Write)
+    nezapsano = []
+    try:
+        os.makedirs(os.path.join(dst, ".claude"), exist_ok=True)
+        out = os.path.join(dst, ".claude", "launch.json")
+        if not os.path.lexists(out):
+            copy(os.path.join(SKILL, "template", ".claude", "launch.json"), out)
+    except OSError as e:
+        nezapsano.append((".claude/launch.json", os.path.join(SKILL, "template", ".claude", "launch.json"), e))
+    try:
+        nastaveni(dst, True if "--hlidac" in sys.argv else False if "--bez-hlidace" in sys.argv else None)
+    except OSError as e:
+        nezapsano.append((".claude/settings.json", None, e))
     print("Projekt připraven:", dst)
+    for jmeno, zdroj, e in nezapsano:
+        print(f"NEZAPSÁNO: {jmeno} ({e}). Sandbox chrání .claude/; zbytek je hotový. "
+              + (f"Vytvoř ho nástrojem Write podle {zdroj}." if zdroj else
+                 "Doplň do něj nástrojem Edit zákaz curl/wget a hook hlídače (viz tools/novy_projekt.py, nastaveni), "
+                 "nebo spusť skript mimo sandbox se souhlasem uživatele. Cizí hooky v něm se nikdy nemění."))
     for k, popis in (("prepsano", "Přepsáno novou verzí (bez vlastních úprav)"),
                      ("zalohovano", "Přepsáno, původní verze je v " + os.path.join(zaloha, "puvodni")
                       + " (projekt neměl uloženou šablonu – vlastní úpravy převezměte ze zálohy)"),

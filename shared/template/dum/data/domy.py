@@ -7,7 +7,7 @@
 # `r` = klíče zápisů z data/zaznamy.json, které údaj dokládají.
 #
 # Původ: struktura (OBEC, OBEC_UDALOSTI, D, ISSUES) vychází ze souboru skills/dejiny-domu/template/data/domy.py
-# projektu dejiny-domu-skill (https://github.com/vzoha/dejiny-domu-skill), commit bda6028bae08307727a4449931497c9f163ea691.
+# projektu dejiny-domu-skill (https://github.com/vzoha/dejiny-domu-skill), commit bda6028bae08307727a4449931497c9f163ea691. Z 5c1715b: komentář o přečíslování.
 # Naše úprava: pole `os` (vazba na osobu v data/osoby.py), viz níže.
 
 # Obec – vstupní stránka webu „Obec“
@@ -28,7 +28,7 @@ OBEC_UDALOSTI = [
 
 # Domy podle čísla popisného (klíč = číslo jako text, i „12a“, „ev. 3“). Dvě části obce se stejným čp. nebo nový
 # dům na místě starého: jiný klíč („lhota-12“) a cp="12", cast="Horní Lhota" (reference/data.md).
-# Pozor na přečíslování: čísla se zaváděla 1770–71 a obce se často přečíslovaly (hlavně 1805–1830 a po 1900).
+# Pozor na přečíslování: čísla se zaváděla 1770–71, města se pak přečíslovávala (1804–15, kolem sčítání 1869–1910, 1960–80), vsi méně (reference/prameny.md → Čísla domů).
 # dict(
 #   nazev="U Nováků",                   # jméno statku / chalupy (po domácku), může být prázdné
 #   druh="selský dvůr",                 # selský dvůr / chalupa / domek / mlýn / hospoda / kovárna / škola…
