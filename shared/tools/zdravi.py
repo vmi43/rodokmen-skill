@@ -10,7 +10,7 @@ Použití (z kořene projektu i ze složky skillu):
   zdravi.py --jen aron,cuzk
                             jen vybrané portály (názvy viz výpis)
 Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/tools/zdravi.py), commit bda6028; úprava: jen kontroly
-nástrojů, které tu jsou (ostatní přibudou s nástroji). SOA Třeboň, SOA Praha a MZA stojí podle slusne.py, proto tu nejsou.
+nástrojů, které tu jsou (ostatní přibudou s nástroji). SOA Třeboň, SOA Praha a MZA stojí podle slusne.py, proto tu nejsou. Z 5c1715b: kontroly brno_encyklopedie a heimatbuch.
 Portály, které nástrojům stahování nedovolují (tools/podminky.json), se vypíšou jako „vynecháno“.
 Návratový kód 1 = aspoň jedna kontrola selhala. Selže-li portál, zkus to za chvíli znovu (výpadky bývají krátké);
 trvá-li chyba, změnilo se API – oprav nástroj a zapiš to do poznamky_pro_skill.md.
@@ -42,6 +42,8 @@ KONTROLY = [
     ("ruian", "adresa v RÚIAN", ["mista.py", "ruian", "Karlova 190/1"], r"k\. ú\. Staré Město", None),
     ("kramerius", "fulltext", ["kramerius.py", 'text_ocr:"Chyšky"', "1"], r"^found [1-9]", None),
     ("anno", "rakouské noviny", ["anno.py", "Chischka", "1880", "1890", "1"], r"ANNOP_", None),
+    ("brno_encyklopedie", "Encyklopedie Brna", ["brno_encyklopedie.py", "Poděbradova", "5"], r"Orlovna \| Poděbradova 5/156", None),
+    ("heimatbuch", "Heimatbücher obce", ["heimatbuch.py", "Bleiswedel"], r"1966 \| Bleiswedel im Sudetenland : Ein Heimatbuch", None),
 ]
 # Portály bez pevného svazku (cestu k obrázku dává jen prohlížeč): jen „server odpovídá“
 DOSTUPNOST = [

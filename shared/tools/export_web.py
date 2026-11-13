@@ -424,7 +424,7 @@ def main():
         m = re.match(r"pribeh_([a-z0-9-]+)\.md$", fn)
         if not m:
             continue
-        text = strip_comments(open(os.path.join(DATA, fn), encoding="utf-8").read())
+        text = strip_comments(open(os.path.join(DATA, fn), encoding="utf-8-sig").read())
         fm = dict(re.findall(r"^(title|lead|poradi|obdobi):\s*(.*)$", text.split("---")[1] if text.startswith("---") else "", re.M))
         poradi = fm.get("poradi", "").strip()
         extra_stories.append(dict(slug=m.group(1), title=fm.get("title", m.group(1)).strip().strip("'\""),

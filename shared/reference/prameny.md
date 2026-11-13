@@ -1,6 +1,6 @@
 # Prameny k dějinám domu a obce
 
-> Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/reference/prameny.md), commit bda6028; odstavec o prázdných spojených vrstvách (bílý obrázek) a věta o `elipsa.py` z e1cd204, jinak beze změn. **Nástroje, které tu zatím nejsou:** `akon.py`, `brno_scitani.py`, `commons.py`, `ddb.py`, `dnnt.py`, `esbirky.py`, `europeana.py`, `geolab.py`, `industrial.py`, `ipr_praha.py`, `mis.py`, `narp.py`, `ortofota.py`, `pamatky.py`, `rejstrik.py`, `seidel.py`, `translokace.py`, `valecne_hroby.py`, `veduty.py`, `zanikleobce.py`. U nich postupuj ručně na webu portálu (adresy jsou v tabulce) a nález zapiš běžným způsobem; až se nástroj přidá, odkaz začne platit.
+> Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/reference/prameny.md), commit bda6028; odstavec o prázdných spojených vrstvách (bílý obrázek) a věta o `elipsa.py` z e1cd204; sekce o číslech domů, indikační skice, Heimatbücher a Brno z 5c1715b (právní tvrzení ověřena podle poznámky v sekci *Čísla domů*), jinak beze změn. **Nástroje, které tu zatím nejsou:** `akon.py`, `brno_scitani.py`, `commons.py`, `ddb.py`, `dnnt.py`, `esbirky.py`, `europeana.py`, `geolab.py`, `industrial.py`, `ipr_praha.py`, `mis.py`, `narp.py`, `ortofota.py`, `pamatky.py`, `rejstrik.py`, `seidel.py`, `translokace.py`, `valecne_hroby.py`, `veduty.py`, `zanikleobce.py`. U nich postupuj ručně na webu portálu (adresy jsou v tabulce) a nález zapiš běžným způsobem; až se nástroj přidá, odkaz začne platit.
 
 Postup: **od dneška zpátky**. Každý pramen vám dá číslo domu, jméno držitele a odkaz na starší pramen.
 Matriky (jak je číst, lhůty, písmo) → `matriky.md`. Portály a nástroje na stahování snímků → `portaly.md`.
@@ -19,7 +19,7 @@ Kde něco nevíš jistě (adresa portálu, co je digitalizované), ověř to. Co
 | 1870–1950 | pozemkové knihy (vložky) a sbírka listin | vlastníci, kupní a svatební smlouvy, dluhy, výměnky | katastrální pracoviště (do 1950 často SOA / SOkA) – `archivni_dotazy.md` |
 | 1857–1921 | sčítání lidu (1857, 1869, 1880, 1890, 1900, 1910, 1921) | **celá domácnost po číslech domů**: jména, roky a místa narození, vztahy, řemesla, dobytek | SOkA. Jižní Čechy jsou na digi.ceskearchivy.cz (stejný portál jako matriky; snímky jen prohlížet, `podminky.md`) |
 | 1784–1900 | matriky (od 1784 se v nich uvádí číslo domu) | kdo v domě bydlel při křtu, sňatku a úmrtí. **Čti podle čísla domu, ne podle jména.** Číslo je bydliště, ne vždy místo události (svatba v kostele, smrt v nemocnici, ženich z jiného domu) | `matriky.md`, `portaly.md` |
-| 1824–1843 | stabilní katastr: císařské otisky, indikační skici, písemný operát | půdorys domu a dvora, číslo domu, parcely. **Indikační skica má u parcel i jméno držitele** | `cuzk_archiv.py` (Archiv ČÚZK: originální mapy s reambulací, otisky, skici), písemný operát (parcelní protokoly): Čechy Národní archiv, Morava MZA, Slezsko ZA Opava |
+| 1824–1843 | stabilní katastr: císařské otisky, indikační skici, písemný operát | půdorys domu a dvora, číslo domu, parcely. **Indikační skica má u parcel i držitele** – jméno, nebo jen „N° X“ = čp. jeho domu (níže) | `cuzk_archiv.py` (Archiv ČÚZK: originální mapy s reambulací, otisky, skici), písemný operát (parcelní protokoly): Čechy Národní archiv, Morava MZA, Slezsko ZA Opava |
 | 1785–1789 | josefský katastr | držitel, výměra pozemků, číslo domu | Čechy Národní archiv (fond Josefský katastr), Morava MZA, Slezsko ZA Opava (fond Josefský katastr: jen písemný operát, parcelní protokol a kniha pozemnostních archů po berních obcích, mezery hlavně Těšínsko; protokoly bývají v Digitální badatelně ZAO se snímky). Jinde často jen badatelna |
 | 1748–1757 | tereziánský katastr (**Čechy, Morava**) | usedlíci podle kategorie (sedlák, chalupník), výměra | Čechy Národní archiv, Morava MZA. Slezsko má místo něj karolinský katastr. Výtahy bývají v regionální literatuře |
 | 1550–1850 | **gruntovní knihy** (pozemkové knihy vrchnosti) | **všichni držitelé gruntu za sebou**: koupě, dědictví, cena, splátky, výminky, sirotci | fond velkostatku (panství) v SOA. Některé jsou digitalizované na portálech SOA |
@@ -44,6 +44,7 @@ Kde něco nevíš jistě (adresa portálu, co je digitalizované), ověř to. Co
 | 1800–1950 | Europeana: sbírky evropských muzeí a knihoven (**rakouská, maďarská, německá muzea, mapy PřF UK**) | podoba obce, kostela, hradu; mapy okresů a okolí | `europeana.py "Obec" "Německý název"` (okolí podle polohy i název), `detail <id>`; potřebuje klíč; licence u předmětu |
 | 1880–1945 | Bildarchiv Herder-Institutu Marburg (**německá místa Čech, Moravy a Slezska**, ~800 tis. fotek, negativů, pohlednic, online třetina) | podoba obce, kostela, náměstí před odsunem; foto dokumentace památek | jen ručně uživatel v Bildkatalogu (Claude ho neotevírá), skeny objednat (`portaly.md`); obrázek jen se souhlasem a poplatkem |
 | 1895–1945 | pohlednice v obchodech a aukcích (akpool.de, delcampe.net, ansichtskarten-lexikon.de; **i malé vsi, hospody, mlýny**) | že pohled na obec nebo dům existuje, rok odeslání, co je na něm | jen ručně uživatel, český i německý název (`portaly.md`); jen vodítko, obrázek do výstupu ne, koupená pohlednice je vlastní originál |
+| 1900–1945 (vydáno po 1950) | Heimatbücher a seznamy domů vysídlených obcí (**jen pohraničí a německé vsi**) | majitelé a obyvatelé domu k 1945, často čp., fotky statků, vzpomínky | `heimatbuch.py "Německý název"` (katalog DNB), brožury vsí a Ortsbetreuer na GenWiki (stránka okresu, uživatel), kniha přes MVS nebo Sudetendeutsche Bibliothek (`portaly.md`); fotky jen se souhlasem |
 | 1850–2000 | zaniklé vsi, samoty, mlýny, dvory a kaple (zanikleobce.cz, **hlavně pohraničí po 1945, mlýny všude**) | co stálo kolem domu a zmizelo, dobové fotky a pohlednice, vzpomínky pamětníků, počty obyvatel a domů | `zanikleobce.py "Obec"` (okruh 3 km), `detail <id>`; příspěvky dobrovolníků, ověř v pramenech; fotky jen se souhlasem autora |
 | 1900–1990 | Fortepan (maďarský fotoarchiv, CC BY-SA; **z Česka hlavně Praha, Brno, lázně**) | amatérské a rodinné fotky ulic a domů | ručně fortepan.hu nebo „Fortepan Obec“ v hledání Commons (`portaly.md`); smí do výstupu s citací |
 | 1700–1960 | Wikimedia Commons: pohlednice, fotky, rytiny, plány, které nahráli lidé a instituce (**hlavně města, hrady, kostely**) | podoba obce a jednotlivých staveb; u měst sbírky pohlednic (Brück & Sohn) | `commons.py "Obec"`, `detail "<soubor>"`; volná licence, smí do PDF s autorem a licencí |
@@ -56,6 +57,9 @@ Matriky a sčítání do roku 1921 tu skoro nepomohou (dům často stojí až po
 bývají nedostupné – ověř v archivu).
 Osvědčené pořadí:
 1. **Dnešní adresy domu i sousedů** z RÚIAN: `mista.py okoli "Ulice čp/čo" 80`. Rohový dům má dvě adresy.
+   Brno: `brno_encyklopedie.py "Ulice" <číslo>` (heslo domu, osobnosti s bydlištěm, desky); Plzeň a Ostrava
+   mají encyklopedii stejně, hledá uživatel (`portaly.md`). Vila 1900–1945: slavnevily.cz (`portaly.md`).
+   Místní fotoarchivy („Zmizelá <město>“, mapy dobových fotek měst a spolků): `portaly.md` → Místní fotoarchivy.
 2. **Staré plány a letecké snímky stejného výřezu** – kdy na parcele poprvé stojí budova. V Praze IPR (plány 1889, 1909,
    1920, 1938 s čísly popisnými, 1944, ortofota 1938–2006: `ipr_praha.py serie … --zapsat`); jinde `cuzk_archiv.py mapa pk`.
 3. **Adresní kniha čp. → ulice a č. or.** (Praha: Orientační kniha Velké Prahy 1936/1937) – jaká orientační čísla dům
@@ -85,16 +89,67 @@ Většina tisku 1900–1990 je v Krameriu NK **neveřejná, ale v režimu DNNT**
 Bez přihlášení vidíš jen úryvky ve vyhledávání.
 
 ## Čísla domů – největší past
-- Čísla popisná zavedla konskripce 1770–1771. **Ves se pak často přečíslovala** (typicky kolem 1805–1830 a znovu
-  po 1900). Dnešní čp. 12 může být v roce 1800 jiné číslo.
+> **Ověření právních a datových tvrzení níže (13. 11. 2026, webové vyhledávání, jen přečtené shrnutí zdrojů).**
+> *Doloženo:* vyhl. 97/1961 § 8 (číslování zpravidla samostatně za osadu, dřívější očíslování zůstává); zákon o obcích
+> § 31 (přidělená čp. a ev. č. nelze užívat opakovaně, ani po přečíslování); zákon 266/1920 (sloučený dům nese
+> všechna čísla, podle vládního návrhu z roku 1920); patent z 23. 3. 1857 č. 67 jako sčítací (ČSÚ); první vlna
+> přečíslování 1805–1815 (Muni, pozemková držba). *Jen částečně:* patent 10. 3. 1770 (jeden zdroj, jiný říká únor
+> 1770 – dnem se neřiď); patent 25. 10. 1804 (jen heslo v encyklopedii); souvislost patentu 1857 s číslováním podle
+> ulic; sčítací pravidla 1869 (Novotný zmiňuje 29. 3. 1869, povinnost kontroly čísel před každým sčítáním nedoložena).
+> *Z upstreamu, neověřeno:* datum 1. 7. 2010 a novela 227/2009 (dnešní zákaz opakovaného užití čísel je doložen, od
+> kdy platí, ne), „dodnes Brno“, příklady měst a let přečíslování (Praha 1805, Brno 1806, Tábor, Varnsdorf, Pardubice,
+> České Budějovice, Zruč, Beroun, Olomouc), „dřív zpravidla za celou obec“.
+
+- Čísla popisná zavedla konskripce 1770–1771 (patent 10. 3. 1770), nový dům dostal další volné číslo. Dnešní
+  čp. 12 může být v roce 1800 jiné číslo. **Kdy se přečíslovávalo** (vodítka, kde hledat; rok vždy ověř v obci):
+  - **1785–1789 josefínský katastr**: místy nové číslování (Tábor 1785).
+  - **1804–1815 první vlna, hlavně města** (konskripční patent 25. 10. 1804): Praha 1805 (každá čtvrť I–IV
+    zvlášť, odtud „27/I“), Brno 1806, Tábor 1804. **Vsi** většinou drží řadu z 1770–71, ale přečíslovat se mohly.
+  - **Kolem sčítání 1869–1910**: zákon o sčítání z 1869 ukládal před každým sčítáním (1869, 1880, 1890, 1900,
+    1910) číslování obce zkontrolovat a doplnit, místní přečíslování proto hledej hlavně v těchto letech
+    (Tábor 1880, Varnsdorf 1870 po povýšení na město). Usnesení o přečíslování se někdy neprovedlo (Pardubice 1880).
+  - **Pozemkové knihy** (zákony 1871/1874, zakládány obec po obci do 80. let 19. stol.) čp. ustálily. Pozemková
+    kniha a katastr znají jen čp., nikdy čísla po ulicích, takže jsou nejlepší kotvou.
+  - **Od 1961 se čísluje za osadu / část obce** (vyhl. 97/1961, dřív zpravidla za celou obec): stejné čp. může
+    být v jedné obci dvakrát, v různých osadách. Kde dřív běžela jedna řada za obec, mohlo se přečíslovat; zánik
+    nebo vznik části obce přečíslování vynutí (České Budějovice 1970: sedm nových řad čp. pro části 1–7 včetně
+    připojených vsí, 1978–79 sjednocení). Starší čp. pak bývá jen v archivu obce (SOkA, fond MNV).
+- **Pasti, které vypadají jako stejný nebo jiný dům:**
+  - Čp. zbořeného domu směla obec dát novému domu **až do 1. 7. 2010** (od novely 227/2009 zakázáno). Stejné čp.
+    v různých letech může být jiný dům, i na jiném místě. Ověř přes parcelu.
+  - Sloučené domy nesly víc čísel naráz (zákon 266/1920, dodnes Brno), rozdělený grunt má dvě čísla.
+  - Židovské domy měly do 70. let 19. stol. vlastní řadu římskými čísly (Turnov do 1875, místy déle):
+    „II“ není čp. 2.
+  - Evidenční čísla (od 1961, chaty a dočasné stavby) jsou samostatná řada: čp. 5 a ev. č. 5 jsou dva domy.
+  - **Číslo v hlavičce gruntovní knihy** bývá dopsané později, někdy staré i nové naráz (Olomouc 1755 „N. 431“
+    i „N. 183“). Nedokládá, že dům to číslo měl v roce zápisu; číslo k roku ber z matriky nebo soupisu té doby.
+  - **Římská číslice u čp.** = část obce nebo předměstí („288-IV“). Změní se i bez změny domu a písaři ji pletli:
+    Beroun čp. 288 v matrikách 1900–1931 střídavě „IV“ a „II“ (IV převažuje do 1922, II od 1925), pak při vzniku
+    části Zavadilka 1980 nové čp. 66. Stejné číslo s jinou číslicí ztotožni přes osoby a dobu, jiné číslo se
+    stejnou číslicí je jiný dům.
+- **Orientační čísla** (podle ulic, patent z 23. 3. 1857; Brno 1867, Praha 60. léta, České Budějovice 1875)
+  **nejsou přečíslování**: čp. platí dál a v matrikách i pozemkové knize se dům hledá podle čp. Adresa „ulice
+  č.“ ze starého tisku je orientační číslo, ne čp.; v polovině 20. stol. se jim říkalo i „nová čísla“.
 - **Stejná osoba pod dvěma čísly je jen vodítko.** Mohla se přestěhovat, mít dva domy nebo provozovny, starý údaj
   se mohl opisovat dál, nebo jde o jmenovce. Přečíslování dolož něčím, co se týká domu, ne osoby: srovnávací
   seznam čísel, vyhláška obce s datem, tentýž dům nebo parcela na mapě či v pozemkové knize pod oběma čísly,
   nebo totéž posunutí u **několika** sousedních domů naráz. Dokud to nemáš, zapiš obě možnosti (přečíslování ×
   přestěhování). Adresáře a OCR opisující tentýž zdroj nejsou dva nezávislé doklady.
-- Jak to poznat: stejná rodina pod dvěma čísly v blízkých letech (matrika ↔ sčítání) jako vodítko, stabilní katastr (číslo
-  z doby mapování obce + půdorys = dnešní parcela), indikační skica (jméno držitele). Do `cisla` u domu zapiš všechna čísla s roky
-  a **doklad** (klíč zápisu).
+- **Matriky v roce přečíslování:** farář někdy chvíli psal u domu obě čísla („starý 12 / nový 31“), pak už jen nová
+  (Zruč nad Sázavou 1813, narození únor–říjen). To je doklad o domu, ne o osobě: projdi knihy v roce přečíslování
+  a vypiš všechny dvojice, vznikne převodní tabulka.
+- **Jak přečíslování poznat** (od nejlevnějšího):
+  - **Hromadná změna v matrikách:** v jednom roce „se přestěhuje“ víc rodin naráz a pořadí sousedů zůstane =
+    přečíslování; mění-li číslo jen jedna rodina, je to spíš stěhování. Dvě nezávislé rodiny posunuté podle
+    stejného pravidla (o konstantu, jeden konec vsi) přečíslování potvrdí.
+  - **Počet domů proti nejvyššímu čp.:** počty domů ze sčítání (ČSÚ od 1869, Sommer 1833–49, Schaller 1785–91)
+    proti nejvyššímu čp. v matrice; skok bez výstavby nebo čp. vysoko nad počtem domů = podezření. Jen vodítko.
+  - **Kotva na mapě:** čp. z indikační skicy (držitel jménem nebo „N° X“) → stavební parcela → dnešní parcela
+    (`mapa pk`, RÚIAN). Dvě kotvy se stejným posunem převod potvrdí.
+  - **Sčítání po domech** (1869 × 1880 …): posun celé řady čp.; pražské sčítání 1869 má čp. i orientační číslo.
+  - **Převodní seznamy** (staré → nové čp.) bývají jen v SOkA (archiv obce, MNV, ONV) a u katastrálního úřadu:
+    dotaz e-mailem, online zřídka.
+- Do `cisla` u domu zapiš všechna čísla s roky a **doklad** (klíč zápisu); převod jen z heuristiky je `prob`.
 - Nový dům na parcele starého (vyhořel, rozdělení gruntu) dostává často nové číslo. Rozdělený grunt má dvě čísla.
 - Do ztotožnění starého a nového čísla je všechno starší `prob`, s poznámkou proč.
 - **Města: orientační čísla se měnila** (i ve 20. století, celé ulice najednou) a rohové domy mají dvě adresy.
@@ -140,6 +195,8 @@ majetek zkonfiskovaly a stát ho přidělil novým obyvatelům. Úřady se děli
   a osidlovací komise okresu (Rumburk, Děčín, Kaplice…). Stejnojmenné obce mají MNV v různých archivech (Levín 3×).
 - Nic z toho není online. Spis si vyžádej podle obce a čísla domu, nejlépe se jménem posledního německého
   majitele → `archivni_dotazy.md`. Příděl bývá zapsaný i v pozemkové knize (vklad pro přídělce).
+- Jméno posledního německého majitele často dá Heimatbuch obce: seznam domů s čp. a majiteli k 1945
+  (`heimatbuch.py "Německý název"`, řádky s ⌂).
 - **Citlivé:** odsun a konfiskace se týkají rodin, které možná dosud žijí ve vsi nebo v Německu → `soukromi.md`.
 
 ## Gruntovní knihy – jak na ně
@@ -192,6 +249,10 @@ Archiv ČÚZK je na https://ags.cuzk.gov.cz/archiv/ (staré archivnimapy.cuzk.cz
   u budovy jen černé číslo parcely, červená čísla tam znamenají reambulaci). Při záměně čteš celou ves obráceně; ověř
   přes `mapa pk` s adresními body (níže). Čti z ní (čísla domů, držitelé), ale výřez nepřikládej do e-mailu, PDF ani
   na web bez souhlasu archivu (`podminky.md`). Přikládej originální mapu nebo pozemkový katastr.
+  **Držitel** bývá jménem i číslem („Brabetz … N 11“, Lniště 1827), na vsi i ve městě ale často **jen číslem:
+  „N° 22“ = patří majiteli domu čp. 22** (Zruč nad Sázavou 1838 celé náměstí bez jmen). Jméno pak dá písemný operát
+  (parcelní protokol), nebo matriky a gruntovní kniha podle čp. **Číslo bez „N°“ (N., N) je číslo parcely**, ne čp.:
+  pozemková parcela 29 může ležet vedle „N° 29“ a zahrady 22–18 za domy čp. 76–80 (Zruč) vypadají jako „patří čp. 22“.
 - **Pozemkový katastr** (`mapa pk "Osada čp" výstup.jpg`) je georeferencovaný v S-JTSK: sedí na dnešní mapu, takže
   přes RÚIAN budovy jde ztotožnit starou parcelu s dnešním domem, zpravidla do pár metrů. (Posun 60–100 m k SV, který
   tu dřív stál, byl chybou nástroje: výřez se zadával ve WGS 84 a server ho do S-JTSK převedl bez transformace datumu.
@@ -202,8 +263,9 @@ Archiv ČÚZK je na https://ags.cuzk.gov.cz/archiv/ (staré archivnimapy.cuzk.cz
   mít pozemková parcela jinde ve vsi). Čísla stavebních parcel se často drží od stabilního katastru dodnes. Spojené
   vrstvy `originalni_mapy` a `cisarske_otisky` malé obce ani města (Olomouc) často nepokrývají: bílý obrázek nástroj
   neuloží, vypíše listy a postup `rastry` → `prehled` → `export`.
-  Dům na mapě pro čtenáře označ elipsou: `elipsa.py <mapa.jpg> <klíč> cx,cy,a,b,úhel --popisek "čp. 183"` (pixely
-  mapy, elipsa přes celou parcelu), příkaz s čísly do `poznamka` v `mapy.json`.
+  Dům na mapě pro čtenáře označ elipsou, a to na všech mapách stejně: `elipsa.py <čistá mapa.jpg> <klíč> cx,cy,a,b,úhel`
+  (pixely mapy, elipsa přes celou parcelu, čistou mapu nech v `pracovni/mapy/`), příkaz s čísly do `poznamka` v `mapy.json`,
+  do popisu mapy „Dům je v modré elipse.“
 - **Reliéf terénu z laserového skenování** (DMR 5G, ČÚZK 2009–2013): `mapa relief "Osada čp" výstup.jpg 250` –
   stínovaný terén bez stromů a domů, stejný výřez a čísla domů jako u PK. Ukáže, co na mapách ani ortofotu není:
   základy zbořených stavení, zaniklé úvozové cesty, meze a plužiny, hráze vypuštěných rybníků, haldy, i pod lesem.
@@ -252,6 +314,8 @@ Archiv ČÚZK je na https://ags.cuzk.gov.cz/archiv/ (staré archivnimapy.cuzk.cz
   pro hledání v matrikách (roky narození).
 
 ## Matriky podle čísla domu
+- Farnost obce před 1918, když ji archivní portál neukáže: mapa farních hranic Čech, Moravy a Slezska od F. Gundackera
+  (PDF zdarma: felixgundacker.at → Download → Pfarrgrenzen in Tschechien vor 1918; jen k určení fary, do výstupu ne).
 - Od 1784 je u každého zápisu číslo domu. V knize hledej **všechny** zápisy z daného čísla (křty, sňatky, úmrtí).
   Tak poznáš, které rodiny v domě žily a kdy se střídaly (přiženění, prodej).
 - Rejstříky jsou podle jmen. U domu proto nejdřív získej jména ze sčítání nebo z gruntovní knihy, pak teprve rejstřík.
@@ -263,6 +327,7 @@ Archiv ČÚZK je na https://ags.cuzk.gov.cz/archiv/ (staré archivnimapy.cuzk.cz
 ## Obec
 - Literatura: vlastivědy okresu, dějiny panství (např. „Geschichte der Herrschaft …“), Sedláček (Hrady, zámky a tvrze;
   Místopisný slovník), Profous (Místní jména v Čechách – původ názvu), Statistický lexikon obcí (počty domů a obyvatel).
+  Německé vsi: Heimatbücher, Ortschroniken a Heimatkunde okresu (`heimatbuch.py "Německý název"`, i název okresu).
 - Do `OBEC_UDALOSTI` se stavem `lit` a `zdroj` (kniha, strana). Údaj z literatury, který jde ověřit v prameni,
   ověř a změň na `doc`.
 - Kroniky obce a školy: bývají digitalizované u SOkA (na stejných portálech jako matriky). Čti zápisy o požárech,

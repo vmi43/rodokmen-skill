@@ -4,7 +4,7 @@ Volá ho export_web.py, jen když projekt má data/domy.py. Samo nic nezapisuje.
 
 Původ: logika vychází z tools/export_web.py projektu dejiny-domu-skill (https://github.com/vzoha/dejiny-domu-skill),
 commit bda6028bae08307727a4449931497c9f163ea691. Naše úprava: je to samostatný modul (rodokmenový export zůstává
-v export_web.py), držitelé a obyvatelé mají pole `os` (vazba na osobu z data/osoby.py), viz `nacti()`.
+v export_web.py), držitelé a obyvatelé mají pole `os` (vazba na osobu z data/osoby.py), viz `nacti()`. Z 5c1715b: domy.py se čte s utf-8-sig a chybějící soubor hlásí srozumitelně.
 """
 import os, re, sys
 
@@ -30,7 +30,10 @@ def year_key(text):
 
 def load_houses(data_dir):
     ns = {}
-    exec(open(os.path.join(data_dir, "domy.py"), encoding="utf-8").read(), ns)
+    try:
+        exec(open(os.path.join(data_dir, "domy.py"), encoding="utf-8-sig").read(), ns)
+    except OSError as e:
+        sys.exit(f"CHYBA: data/domy.py nejde načíst ({e.strerror}) – spouštěj z kořene projektu: python3 -I tools/export_web.py")
     for name, default in (("OBEC", {}), ("OBEC_UDALOSTI", []), ("D", {}), ("ISSUES", [])):
         ns.setdefault(name, default)
     return ns

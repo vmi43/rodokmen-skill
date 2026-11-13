@@ -1,6 +1,6 @@
 # Portály archivů a jak z nich dostat snímky
 
-> Sekce Street View, NCAP a Fortepan: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/reference/portaly.md), commit 32bef07, beze změn. Ostatní domovní portály (veduty, Ostrava, Europeana…) tu zatím nejsou, jejich přehled drží `prameny.md`.
+> Sekce Street View, NCAP a Fortepan: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/reference/portaly.md), commit 32bef07, beze změn. Sekce Encyklopedie dějin měst, Místní fotoarchivy, Slavné vily, Heimatbücher, Bundesarchiv a Bildarchiv Austria/Polona/SBC: ze stejného souboru, commit 5c1715b, beze změn textu (odkazují i na nástroje, které tu zatím nejsou, např. `akon.py`; postupuj ručně). Ostatní domovní portály (veduty, Ostrava, Europeana…) tu zatím nejsou, jejich přehled drží `prameny.md`.
 
 Matriky jsou online u osmi státních archivů – podle toho, **kde předci žili** (dnešní kraje zhruba odpovídají):
 
@@ -527,6 +527,86 @@ Maďarský komunitní fotoarchiv (přes 200 000 fotek amatérů a rodin, 1900–
   sbírky (soubory „… Fortepan 12345.jpg“), hledání `Fortepan Obec` v Commons najde i soubory bez kategorie obce,
   které `commons.py` nevidí.
 - Smí do výstupu i za peníze: uveďte „Fortepan / jméno dárce, číslo fotky“ a licenci CC BY-SA 3.0.
+
+## Encyklopedie dějin měst (Brno, Plzeň, Ostrava) – `tools/brno_encyklopedie.py`
+Encyklopedie dějin města Brna (Muzeum města Brna, MU): hesla domů a staveb (stavební vývoj, majitelé, fotky),
+objekty (pamětní desky, Kameny zmizelých), události, ulice (názvy v čase) a osobnosti s bydlištěm.
+- `python3 -I tools/brno_encyklopedie.py "Poděbradova" 5` → domy, objekty, události ulice a osobnosti s bydlištěm
+  v domě, každý s odkazem; bez čísla celá ulice. Ulice dnešním názvem. `detail <odkaz>` → text hesla a citace.
+- **Bydliště hledá jako text:** „Poděbradova 5“ najde i Olomouc, Poděbradova 5 (Elise Munková) a „Pekařská 4“ i 40.
+  Bydliště v profilu osoby ověř, než ji k domu přiřadíš.
+- Podmínky užití web neuvádí, robots.txt nemá: fakta s citací ano, fotky a delší text jen se souhlasem Muzea
+  města Brna.
+- **Plzeň** (encyklopedie.plzen.eu) a **Ostrava** (encyklopedie.ostrava.cz) mají stejnou strukturu (domy, osobnosti,
+  ulice), ale starší web, který nástroj neumí: hledá uživatel v prohlížeči, nebo otevři heslo, když máš odkaz.
+
+## Místní fotoarchivy měst a spolků – ručně
+Města, muzea a spolky mívají vlastní weby s dobovými fotkami po ulicích a domech, mimo eSbírky a Commons. Každý je
+jiný, nástroj nemá smysl. Hledá uživatel, nebo jeden dotaz vyhledávačem: „Zmizelá <město>“, „Historická <město>
+fotografie“, „<obec> staré fotografie ulice“, „<město> fotoarchiv“. Ověřené příklady (11/2026):
+- Historická Třebíč (historicka.trebic.cz → mapa dobových fotek na gis.trebic.cz), Zmizelá Kutná Hora
+  (zmizelakutnahora.cz, ulice a náměstí), spolek Veselí přátelé historie (veselipratelehistorie.cz, fotoalba po ulicích
+  a měšťanských domech), Olomouc z výšky (UP Olomouc, letecké snímky města 1927–2021).
+- Archivy měst: AHMP Sbírka fotografií (~40 tis., část online v Archivním katalogu, hledej adresu nebo čp.,
+  `portaly.md` → AHMP), AMO Ostrava (Fotografie v Digitální badatelně), okresní archivy (Sbírka fotografií
+  v eBadatelně, Porta fontium – SOkA Cheb, jen nevýdělečně).
+- Do výstupu fakta (co je na fotce, rok) s citací a odkazem; fotku jen se souhlasem majitele webu nebo autora.
+
+## Slavné vily (slavnevily.cz) – ručně, pro vily 1900–1945
+Web k edici knih Slavné vily (Foibos, po krajích): stránka vily má adresu s čp., stavebníka, architekta, roky stavby
+a úvod textu z knihy. Jen vybrané architektonicky cenné vily.
+- Hledání (pole Hledej, obec nebo ulice) běží na serveru; robots.txt ho nezakazuje. Stačí jeden dotaz na dům,
+  pak stránka vily `/vily/<kraj>/<vila>`. Hledá i v textu: „Zlín“ najde i vily jinde, kde se Zlín zmiňuje.
+- Celý text je v knize kraje (citace: autor, Slavné vily … kraje, rok, strana). Do výstupu fakta s citací,
+  fotky (Jiří Podrazil a další) a delší text jen se souhlasem nakladatele.
+
+## Heimatbücher (katalog Německé národní knihovny) – `tools/heimatbuch.py`
+Vysídlení Němci vydali po 1945 ke stovkám obcí Heimatbücher, Ortschroniken, Häuserbücher a seznamy domů s majiteli
+k 1945, často s fotkami statků a plánkem vsi s čísly domů. Vydávaly je Heimatkreise (spolky okresů) a jednotlivci
+vlastním nákladem, v malých nákladech; české knihovny je mají zřídka, DNB skoro všechny (povinný výtisk).
+- `python3 -I tools/heimatbuch.py "Bleiswedel"` → rok | název | autor | vydavatel | odkaz d-nb.info. **Německý název**
+  obce (víc názvů za sebou), u malé vsi zkus i okres (Kaplitz, Prachatitz) – vsi bývají v knize celého okresu nebo
+  farnosti. Velké město a stejné jméno v Německu (Schweinitz) dají moc nálezů: nástroj pak nechá jen místopisné
+  tituly; co nesedí na Čechy, přeskoč. ⌂ = v názvu domy, majitelé, obyvatelé (Häuserverzeichnis, Hauseigentümer).
+- Katalog DNB (SRU) je zdarma a bez registrace, metadata CC0. Kniha: Knihovny.cz (otevře uživatel), meziknihovní
+  výpůjčka z Německa v místní knihovně, Sudetendeutsche Bibliothek v Mnichově, nebo antikvariát (zvlášť když
+  zákazník bude chtít knihu mít).
+- Do výstupu údaje z knihy s citací (autor, název, rok, strana). Kniha je vydaná po 1950 a autorsky chráněná:
+  fotky a delší úryvky jen se souhlasem vydavatele (Heimatkreis, dědici autora). Údaje o lidech ověř v matrice
+  nebo katastru, psali je pamětníci po letech.
+- **GenWiki (wiki-de.genealogy.net), stránka okresu – jen uživatel:** Anubis odmítá Claude-User, Claude ho neotevírá.
+  Uživatel zadá do hledání GenWiki německý název obce; stránky mají názvy `Bezirk Prachatitz`, `Gerichtsbezirk …`,
+  `Pfarrei …`, vsi `Winterberg (Böhmen)` (stránka jen s názvem vsi často neexistuje). Ať pošle text stránky okresu
+  (Ctrl+A, Ctrl+C). Oddíl **Bibliographie** má i brožury vsí, které DNB nemá (Kubohütten, Sablat u Prachatitz),
+  **Andere Gesellschaften** Heimatkreis a patronátní město (Ingolstadt pro Prachatitz) s Heimatsammlung (muzeum
+  vysídlených). Odkaz „Liste aller … Gemeinden und Dörfer“ dá části obce s německými názvy samot, mlýnů
+  a hospod (Pfefferschlag: Holzmühle, Gasthaus Schmied-Jogl), počty obyvatel a faru.
+- **Heimatkreise zanikají** (pamětníci vymřeli): kontakty na GenWiki bývají staré (Prachatitz: web zrušen,
+  Heimatbrief vycházel 1948–2018). Jestli spolek žije, ověř: web, poslední ročník Heimatbriefu v DNB
+  (`heimatbuch.py` s názvem okresu). Živý Heimatkreis má Ortsbetreuer (správce obce: fotky, plánky, seznamy
+  domů); dotaz napiš uživateli německy (co hledá, čp., jména). Sbírky zaniklých spolků bývají v Heimatsammlung
+  patronátního města, v Sudetendeutsches Museum nebo Sudetendeutsches Archiv (Mnichov): dotaz tam.
+- Weby Heimatkreisů (Ortsbilder, Häuserlisten) najde uživatel i přes vyhledávač („Heimatkreis Kaplitz“,
+  „<německý název> Häuserliste“).
+
+## Bundesarchiv, Digitales Bildarchiv (bild.bundesarchiv.de) – jen ručně
+Fotky, letecké snímky a plakáty německých archivů; z Česka hlavně města v Sudetech 1938–1945 (propagandistické
+roty wehrmachtu, ADN), vesnice skoro nikdy: Reichenberg 40, Eger 56, Rumburg 11, Komotau 4, Prachatitz 0 (11/2026).
+- Hledá uživatel (pole Suche, **německý název**), stačí jednou: když nic, dál nehledej.
+- Do placeného výstupu jen objednaný snímek s poplatkem (publikace přes databázi, „Quelle: Bundesarchiv, Bild …,
+  Foto: …“). Zdarma jen soukromě a na nekomerčním webu do 800 px. Fotky z daru Bundesarchivu na Commons
+  (CC BY-SA 3.0 DE, „Bundesarchiv Bild …“) smí i do placeného výstupu; najde je `commons.py`.
+
+## Bildarchiv Austria (ÖNB), Polona, Śląska Biblioteka Cyfrowa – jen ručně
+Doplňky pro obce s vazbou na Rakousko a Polsko; hledá uživatel (**německý, polský i český název**), když nic, dál nehledej.
+- **Bildarchiv Austria** (bildarchivaustria.at, Rakouská národní knihovna): fotky a negativy monarchie, hlavně
+  Vídeň a Rakousko; české obce sporadicky. Web picturemaxx bez API, do Europeany fotky českých obcí neposílá.
+  Pohlednice ÖNB najde `akon.py`. Snímek do výstupu jen objednaný (ceník Tarifordnung ÖNB, bildarchiv@onb.ac.at).
+- **Polona** (polona.pl, Polská národní knihovna): pohlednice a grafika, u Česka nejspíš pohraničí s Polskem (neověřeno). Nástrojům
+  spojení odmítá (reset při TLS), Claude ho neotevírá. Licence u každého objektu (volná díla smí do výstupu).
+- **Śląska Biblioteka Cyfrowa** (sbc.org.pl): slezské knihy, noviny a pohlednice, nejspíš i Těšínsko a Opavsko
+  (Teschen, Troppau; neověřeno). Výsledky hledání vykresluje JavaScript; robots.txt zakazuje jen stahování ZIP. Licence u objektu.
+
 
 ## Ostatní portály – obecný postup
 Nástroje pro ně hotové nejsou. Postupuj takto a výsledek zapiš do `STAV.md`, ať to příště víš:

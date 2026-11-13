@@ -1,6 +1,6 @@
 # Co se smí v archivech a mapových portálech
 
-> Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/reference/podminky.md), commit bda6028, řádky Krameria (ČDK, UK, VKOL) z e1cd204; zúženo na portály, které naše nástroje používají; Porta fontium a SOA Praha podle našeho nástroje a `slusne.py`. Ostatní portály a text bez zkrácení najdeš v upstreamu.
+> Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/reference/podminky.md), commit bda6028, řádky Krameria (ČDK, UK, VKOL) z e1cd204; zúženo na portály, které naše nástroje používají; Porta fontium a SOA Praha podle našeho nástroje a `slusne.py`. Ostatní portály a text bez zkrácení najdeš v upstreamu. Portály a řádky přidané z 5c1715b: Slavné vily, encyklopedie měst, DNB (`heimatbuch.py`), GenWiki, Bundesarchiv, Bildarchiv Austria, Polona, SBC.
 
 > **Upozornění:** Vycházím jen z veřejných zdrojů: podmínky portálů, badatelské řády, ceníky a zákaz pro roboty (soubor robots.txt). Stav 3. 11. 2026. Není to právní rada a nic z toho jsem zatím neověřil přímo u archivů. Podmínky se mění. Platí vždy aktuální znění na webu archivu nebo jeho písemná odpověď. Když si nejste jistí, zeptejte se archivu.
 
@@ -51,6 +51,14 @@ Vždy uveďte archiv, fond, signaturu, číslo snímku a trvalý odkaz. Zjiště
 | III. vojenské mapování (geoportál CENIA) | Nástroj | ano | prohlížet ano | souhlas | ano | Stejný rozpor podmínek jako u II. mapování. Obrázek vezměte z ÚAZK |
 | Indikační skici, Čechy (Národní archiv) | Ručně | ano | neřeší | souhlas | ano | Najdete je v aplikaci ČÚZK Archiv, patří ale Národnímu archivu |
 | Indikační skici, Morava (MZA) | Ručně | ano | neřeší | souhlas | ano | Platí podmínky MZA |
+| Slavné vily (slavnevily.cz) | Ručně | ano | neřeší | souhlas | ano | robots.txt hledání nezakazuje; fotky a texty z knih nakladatelství Foibos, jen fakta s citací (10. 11. 2026) |
+| Encyklopedie dějin města Brna (`brno_encyklopedie.py`), Plzně a Ostravy | Nástroj (Brno), ručně | ano | neřeší | souhlas | ano | Podmínky užití neuvedeny, robots.txt nemá; fakta s citací ano, fotky a delší text se souhlasem muzea (10. 11. 2026) |
+| Katalog Německé národní knihovny (SRU, `heimatbuch.py`) | Nástroj | ano | ano | — | ano | Zdarma a bez registrace, metadata CC0. Jen popis knih; z knihy samé údaje s citací, fotky a delší text se souhlasem vydavatele (10. 11. 2026) |
+| GenWiki (wiki-de.genealogy.net) | Ručně | ano | neřeší | neřeší | ano | Ochrana Anubis odmítá Claude-User, Claude neotevírá. Hledá uživatel (stránky `Bezirk …`, literatura, Heimatkreis a Ortsbetreuer) (10. 11. 2026) |
+| Bundesarchiv, Digitales Bildarchiv | Ručně | ano | poplatek | poplatek | ano | Zdarma jen soukromě a na nekomerčním webu do 800 px, publikace s poplatkem (BKMBGebV); robots.txt nemá. Dar Bundesarchivu na Commons je CC BY-SA 3.0 DE (10. 11. 2026) |
+| Bildarchiv Austria (ÖNB, fotky) | Ručně | ano | poplatek | poplatek | ano | Web picturemaxx bez API; snímky objednat podle Tarifordnung ÖNB. Pohlednice ÖNB viz AKON (10. 11. 2026) |
+| Polona (Polská národní knihovna) | Ručně | ano | podle licence | podle licence | ano | Nástrojům odmítá spojení, Claude neotevírá; licence u objektu (10. 11. 2026) |
+| Śląska Biblioteka Cyfrowa | Ručně | ano | podle licence | podle licence | ano | robots.txt zakazuje jen stahování ZIP; hledání jen v prohlížeči; licence u objektu (10. 11. 2026) |
 
 ## Jak se tím řídí nástroje skillu
 - `tools/podminky.json` je stejná tabulka pro nástroje (zúžená na portály, které naše nástroje používají). `slusne.py` ji kontroluje před každým požadavkem: portál, který stahování nedovoluje, skončí hláškou „PODMÍNKY: …“ s návodem, jak dál. Hláškou „PODMÍNKY“ ani „OCHRANA“ neobcházej jiným nástrojem, curl ani prohlížečem řízeným skriptem.

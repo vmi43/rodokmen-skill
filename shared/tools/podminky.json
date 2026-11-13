@@ -1,5 +1,5 @@
 {
-  "_info": "Podmínky portálů pro nástroje skillu. Zdroj a vysvětlení: reference/podminky.md (jen veřejné zdroje, není to právní rada). dotazy/obrazky = smí nástroj stahovat stránky / snímky z této domény. vyrez = smí jít obrázek do výstupu: ano | neresi (podmínky mlčí) | nekomercne | souhlas | ne. vyjimky = pravidlo podle textu v adrese, zdroji nebo názvu (malá písmena). Tabulka obsahuje jen portály, které naše nástroje používají; původ a další portály: vzoha/dejiny-domu-skill, skills/dejiny-domu/tools/podminky.json, commit 32bef07 (z dalších portálů jen ty, které naše nástroje používají). U www.portafontium.eu a ebadatelna.soapraha.cz hodnoty odpovídají tomu, co dělá náš nástroj a slusne.py (docs/decisions.md).",
+  "_info": "(Portály přidané z vzoha/dejiny-domu-skill, commit 5c1715b.) Podmínky portálů pro nástroje skillu. Zdroj a vysvětlení: reference/podminky.md (jen veřejné zdroje, není to právní rada). dotazy/obrazky = smí nástroj stahovat stránky / snímky z této domény. vyrez = smí jít obrázek do výstupu: ano | neresi (podmínky mlčí) | nekomercne | souhlas | ne. vyjimky = pravidlo podle textu v adrese, zdroji nebo názvu (malá písmena). Tabulka obsahuje jen portály, které naše nástroje používají; původ a další portály: vzoha/dejiny-domu-skill, skills/dejiny-domu/tools/podminky.json, commit 32bef07 (z dalších portálů jen ty, které naše nástroje používají). U www.portafontium.eu a ebadatelna.soapraha.cz hodnoty odpovídají tomu, co dělá náš nástroj a slusne.py (docs/decisions.md).",
   "portaly": {
     "digi.ceskearchivy.cz": {
       "nazev": "SOA Třeboň (DigiArchiv)",
@@ -391,6 +391,56 @@
       "vyrez": "souhlas",
       "proc": "podmínky webu čl. 8.1 zakazují jakéhokoli robota, scraper a automatizovaný nástroj „to access, obtain, copy“ (i Air Photo Finder); obrázky Crown Copyright, licence: osobní zdarma, do zprávy (report) £15, kniha od £55 za snímek bez DPH (10. 11. 2026)",
       "jinak": "Air Photo Finder (airphotofinder.ncap.org, mapa) prohledá uživatel sám; ty poradíš polohu a roky 1943–45. V Česku jen asi 35 průzkumných letů (ACIU) a MAPRW, hlavně kolem cílů náletů (továrny, rafinerie, nádraží). Snímek do výstupu jen s licencí NCAP; jinak zjištění s citací (sbírka, let, snímek)."
+    },
+    "www.slavnevily.cz": {
+      "nazev": "Slavné vily (Foibos)", "dotazy": true, "obrazky": false, "vyrez": "souhlas",
+      "proc": "robots.txt hledání (search.php) a stránky vil nezakazuje; texty a fotky z knih Foibos, licence žádná (10. 11. 2026)",
+      "jinak": "Jeden dotaz v hledání webu (obec, ulice), pak stránka vily. Fakta s citací knihy; fotku nebo delší text jen se souhlasem nakladatele."
+    },
+    "encyklopedie.brna.cz": {
+      "nazev": "Encyklopedie dějin města Brna (Muzeum města Brna)", "dotazy": true, "obrazky": false, "vyrez": "souhlas",
+      "proc": "podmínky užití neuvedeny, robots.txt nemá (10. 11. 2026); fotky mají autory (Foto …), licence žádná",
+      "jinak": "Ulici a dům vypíše brno_encyklopedie.py, heslo detail. Fakta s citací a odkazem; fotku nebo delší text jen se souhlasem Muzea města Brna."
+    },
+    "encyklopedie.plzen.eu": {
+      "nazev": "Encyklopedie Plzně", "dotazy": true, "obrazky": false, "vyrez": "souhlas",
+      "proc": "stejný projekt jako Brno, podmínky neuvedeny, robots.txt nemá; nástroj starší web neumí (10. 11. 2026)",
+      "jinak": "Hledá uživatel (domy, osobnosti, ulice); heslo s odkazem smíš otevřít. Fakta s citací, fotky se souhlasem."
+    },
+    "encyklopedie.ostrava.cz": {
+      "nazev": "Encyklopedie dějin Ostravy", "dotazy": true, "obrazky": false, "vyrez": "souhlas",
+      "proc": "stejný projekt jako Brno, podmínky neuvedeny, robots.txt nemá; nástroj starší web neumí (10. 11. 2026)",
+      "jinak": "Hledá uživatel (domy, osobnosti, ulice); heslo s odkazem smíš otevřít. Fakta s citací, fotky se souhlasem."
+    },
+    "services.dnb.de": {
+      "nazev": "Deutsche Nationalbibliothek, katalog (SRU)", "dotazy": true, "obrazky": false, "vyrez": "ne",
+      "proc": "SRU „kostenfrei und ohne Registrierung“, metadata CC0; robots.txt zakazuje jen /fize-service; jen popisy knih (10. 11. 2026)",
+      "jinak": "Heimatbücher obce vypíše heimatbuch.py. Knihu půjčí uživatel (MVS, Sudetendeutsche Bibliothek); fotky z knihy jen se souhlasem vydavatele."
+    },
+    "wiki-de.genealogy.net": {
+      "nazev": "GenWiki (Verein für Computergenealogie)", "dotazy": false, "obrazky": false, "vyrez": "souhlas",
+      "proc": "ochrana Anubis (proof-of-work) – nástroj by ji musel obejít (10. 11. 2026)",
+      "jinak": "Uživatel hledá německý název obce, otevře stránku okresu (Bezirk …) a pošle text (Ctrl+A, Ctrl+C): literatura i brožury vsí mimo DNB, Heimatkreis a Ortsbetreuer obce."
+    },
+    "bild.bundesarchiv.de": {
+      "nazev": "Bundesarchiv, Digitales Bildarchiv", "dotazy": false, "obrazky": false, "vyrez": "souhlas",
+      "proc": "Benutzungsarten: zdarma jen soukromě a na nekomerčním webu do 800 px, publikace jen objednaná s poplatkem (BKMBGebV); bez nástroje, z Česka málo fotek (10. 11. 2026)",
+      "jinak": "Uživatel hledá německý název obce v bild.bundesarchiv.de. Snímek do placeného výstupu objedná s poplatkem; fotky Bundesarchivu na Commons (CC BY-SA 3.0 DE) smí bez poplatku s citací."
+    },
+    "onb.wg.picturemaxx.com": {
+      "nazev": "Bildarchiv Austria (ÖNB, picturemaxx)", "dotazy": false, "obrazky": false, "vyrez": "souhlas",
+      "proc": "web picturemaxx bez API se stavem v JavaScriptu; reprodukce jen objednané podle Tarifordnung ÖNB (10. 11. 2026)",
+      "jinak": "Hledá uživatel na bildarchivaustria.at (německý název). Pohlednice ÖNB vypíše akon.py. Snímek do výstupu objednat u bildarchiv@onb.ac.at."
+    },
+    "polona.pl": {
+      "nazev": "Polona (Polská národní knihovna)", "dotazy": false, "obrazky": false, "vyrez": "souhlas",
+      "proc": "server nástrojům ukončí spojení při TLS (connection reset) – blok, neobcházet (10. 11. 2026)",
+      "jinak": "Hledá uživatel v prohlížeči (polský, německý i český název). Obrázek do výstupu podle licence u objektu (volné dílo ano)."
+    },
+    "sbc.org.pl": {
+      "nazev": "Śląska Biblioteka Cyfrowa", "dotazy": false, "obrazky": false, "vyrez": "souhlas",
+      "proc": "výsledky hledání vykresluje JavaScript, nástroj by je nepřečetl; robots.txt zakazuje jen stahování ZIP (10. 11. 2026)",
+      "jinak": "Hledá uživatel v prohlížeči (Teschen, Troppau, polský název). Obrázek do výstupu podle licence u objektu."
     }
   }
 }
