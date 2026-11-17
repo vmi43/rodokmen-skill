@@ -227,6 +227,8 @@ v 17. století. Zapiš to do `ISSUES`/`archivni_dotazy.md` a jdi na jinou větev
 
 ## Fáze 3 – Zajímavosti a Příběh hlavního rodu
 Podrobně `reference/pribehy.md`. Tohle je to, co rodina na webu čte nejradši, takže na to nezapomínej a nenechávej to na konec.
+Než napíšeš jakýkoli text pro web (zajímavost, příběh, úvod, popisky, shrnutí zápisů), přečti si `reference/texty.md`:
+krátké věty, nejdřív to zajímavé, bez archivního žargonu, nejistotu řekni lidsky.
 - **Zajímavosti** („fun facts“) sbírej **průběžně**: co najdeš při čtení, hned zapiš do `data/zajimavosti.md`
   a řekni uživateli. Po každém kole spusť `python3 -I tools/napady.py`. Najde v datech svatby krátce před porodem,
   rod v jednom domě, sňatky příbuzných, dlouhověkost, epidemie… Ověř a napiš jako krátké příběhy.
@@ -329,5 +331,6 @@ Nedělej to pořád. Postup:
 | `zapis.py denik "<zdroj>" "<rozsah>" "<hledáno>" "<výsledek>" "<citace>"` | řádek do `data/research_log.md` s automaticky přiděleným číslem |
 | `slusne.py <skript.py> / curl … / bash x.sh / stav` | brzda proti zablokování archivem – vlastní skripty a curl spouštěj přes ni |
 | `kontrola.py` | kontrola dat; hlásí i citlivé údaje na webu a kdy psát příběh |
+| `zdravi.py [--rychle] [--jen aron,cuzk]` | zkontroluje, jestli nástroje ještě fungují proti živým portálům (archivy mění adresy bez ohlášení); pusť ho, když nástroj najednou selhává. Dělá ~25 požadavků, proto ne zbytečně |
 | `export_web.py` | data → web (volá ho `npm run data`) |
 | `fan_chart.py vystupy/` | vějíř předků jako plakát k tisku |

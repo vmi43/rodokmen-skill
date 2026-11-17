@@ -286,3 +286,8 @@ Základ `bc6cd33` (0.8.2), upstream `0fb0c03` (0.10.0), 64 souborů. Rozhodnuto 
 - **Rozhodnutí uživatele:** nedělat. Byla to položka C z poznámek uživatele (fronta svazků, rozpočet MB, přeskakování hotového, zastavení při 429/503, časový limit na snímek).
 - **Proč:** strojové stahování z ARON a eBadatelny může být blokované (poznámka 2026-11-05, neověřeno) a nástroj by musel zachovat brzdu, takže by přinesl málo; ruční stahování zůstává výchozí a `zarad.py` zařadí ručně stažené snímky. Část potřeby už kryje `aron_img.py … rozsah` (stáhne jen část svazku a přeskočí hotové).
 - **Vrátit se k tomu:** jen na nový pokyn; zadání je v poznámkách `~/osobni/aplikace/rodokmen/poznamky_pro_skill.md` (2026-10-28 a 2026-11-03).
+
+### `texty.md` a `zdravi.py` i ve skillu `rodokmen` (2026-11-13)
+- **Rozhodnutí:** `skills/rodokmen/SKILL.md` odkazuje na `reference/texty.md` (před psaním textů pro web, ve Fázi 3) a má v tabulce nástrojů řádek `zdravi.py`. Soubory se nekopírují, jsou ve `shared/` a sdílí je oba skilly.
+- **Proč:** po přesunu do `shared/` šlo jen o zmínku. Pravidla psaní (krátké věty, bez archivního žargonu, nejistota lidsky) platí pro příběh rodu stejně jako pro dům; `zdravi.py` pomáhá poznat, že portál změnil adresu nebo API.
+- **Nezměněno:** `texty.md` zůstává beze změny obsahu, příklady z domů v něm zůstávají.
