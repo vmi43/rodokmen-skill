@@ -108,7 +108,7 @@ def main():
     projekt = cti(os.path.join(projekt_dir, ".skill_verze")) if projekt_dir else None
     gh = github()
 
-    print(f"Skill (nainstalovaný): {skill}")
+    print(f"Skill (nainstalovaný): {skill} (porovnávám instalaci v {SKILL})")
     if projekt_dir:
         print(f"Projekt: {projekt or 'bez .skill_verze (starší než 0.4)'}")
     print(f"GitHub (nejnovější vydání): {gh or 'nezjištěno (bez sítě nebo GitHub neodpověděl)'}")

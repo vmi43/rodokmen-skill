@@ -60,5 +60,33 @@ pripad("klíč domu jako číslo je chyba", DOBRE.replace('D = {"1"', "D = {1"),
 pripad("projekt jen s domy (bez osoby.py) běží; os pak nemá kam ukazovat", DOBRE, "osoba 1 v data/osoby.py není", osoby=None, rc=1)
 pripad("projekt jen s domy bez os projde", DOBRE.replace(", os=1", ""), None, osoby=None, rc=0)
 
+
+
+def s_textem(stav):
+    tmp = tempfile.mkdtemp(prefix="kontrola_nastroje_")
+    try:
+        zapis(os.path.join(tmp, "data", "osoby.py"), OSOBY)
+        zapis(os.path.join(tmp, "data", "zaznamy.json"), json.dumps(ZAZNAMY))
+        zapis(os.path.join(tmp, "data", "STAV.md"), stav)
+        os.makedirs(os.path.join(tmp, "tools"))
+        shutil.copy(KONTROLA, os.path.join(tmp, "tools", "kontrola.py"))
+        zapis(os.path.join(tmp, "tools", "slusne.py"), "")
+        p = subprocess.run([*PY, "tools/kontrola.py"], cwd=tmp, capture_output=True, text=True, encoding="utf-8")
+        return p.returncode, p.stdout + p.stderr
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+for nazev, stav, chce, nechce in (
+        ("zastaralé jméno nástroje ve STAV.md je upozornění", "Brzda: omezovac.py", "omezovac.py", None),
+        ("existující nástroj ve STAV.md neupozorní", "Brzda: tools/slusne.py, data/osoby.py", None, ".py, ale"),
+        ("cesta k souboru mimo projekt neupozorní", "viz ~/x/omezovac.py", None, ".py, ale")):
+    kod, v = s_textem(stav)
+    ok = kod == 0 and (chce in v if chce else nechce not in v)
+    VYSLEDKY.append(ok)
+    print(("OK  " if ok else "SELHÁNÍ ") + nazev)
+    if not ok:
+        print(f"    rc={kod}, výstup:\n" + "\n".join("    " + l for l in v.splitlines()))
+
 print(f"\n{sum(VYSLEDKY)} z {len(VYSLEDKY)} v pořádku")
 sys.exit(0 if all(VYSLEDKY) else 1)

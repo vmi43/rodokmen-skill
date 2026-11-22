@@ -10,6 +10,10 @@ Použití (z kořene projektu: python3 -I tools/slusne.py tools/mista.py …):
       dům podle RÚIAN (ČÚZK, bez klíče; najde i malé osady): adresa s dnešní obcí, lat/lon, parcela pod domem a katastrální
       území. Dotaz = "Osada čp", "Ulice čp", "Ulice čp/čo" nebo ve městě i "Ulice čo"; obec za čárkou zúží výběr
       ("Husova 66, Beroun"). Dnešní obec a k. ú. se často liší od toho, co uživatel čeká.
+      Za čárkou smí být dnešní obec, obec s PSČ, nebo jen PSČ („Biskupice 14, 53852“): „Biskupice 14, Ronov nad Doubravou“
+      nic nenajde (Biskupice jsou samostatné k. ú.), nástroj pak vypíše, co k adrese zná jinde. `okoli` a `parcely` přijmou
+      i celou adresu z výpisu `ruian` (nebo „lat,lon“).
+      V sandboxu Claude Code musí být povolený host `ags.cuzk.cz`.
   mista.py okoli <"Ulice čp/čo" | lat,lon> [polomer_m=80]
       všechny dnešní adresy v okolí (RÚIAN) podle čp.; adresy jedné budovy (roh) označí – pro tabulku adres domu v čase.
   mista.py parcely <"Osada čp" | lat,lon> [polomer_m=60] [vse]
@@ -205,9 +209,11 @@ def adresni_mista(dotaz, pole, obec=""):
 
 
 def adresa_a_obec(misto):
-    """„Ulice čp, Obec“ → („Ulice čp“, „Obec“); bez čárky obec prázdná."""
-    dotaz, _, obec = misto.partition(",")
-    return dotaz.strip(), obec.strip()
+    """„Ulice čp, Obec“ → („Ulice čp“, „Obec“); bez čárky obec prázdná. Přijme i celou adresu z výpisu `ruian`
+    („Biskupice 14, 53852 Biskupice u Ronova“, „Ulice 12/3, Část, 12345 Obec“): obec je poslední část a smí mít PSČ;
+    samotné PSČ („Biskupice 14, 53852“) zúží výběr jen podle PSČ."""
+    dotaz, _, zbytek = misto.partition(",")
+    return dotaz.strip(), (zbytek.rsplit(",", 1)[-1].strip() if zbytek else "")
 
 
 def odkazy_panorama(lat, lon):
@@ -219,10 +225,16 @@ def odkazy_panorama(lat, lon):
 def ruian(dotaz):
     ulice_cislo, obec = adresa_a_obec(dotaz)
     adr = adresni_mista(ulice_cislo, "adresa,stavebniobjekt", obec)
+    if not adr and obec:   # obec za čárkou často nesedí (jiná obec, než kde je k. ú.) – ukaž, co RÚIAN k adrese zná
+        jinde = adresni_mista(ulice_cislo, "adresa")
+        if jinde:
+            sys.exit(f"RÚIAN „{dotaz}“ nezná, ale „{ulice_cislo}“ zná jinde – zopakuj s celou adresou nebo samotným PSČ:\n"
+                     + "\n".join(f"  {a['attributes']['adresa']}" for a in jinde[:8]))
     if not adr:
         sys.exit(f"RÚIAN „{dotaz}“ nezná – zkus jiný tvar (\"Osada čp\", \"Ulice čp\") nebo jen \"Osada\" v nahlizenidokn.cuzk.cz")
     if len(adr) > 1:
-        print(f"POZOR: {len(adr)} míst se stejnou adresou – vyber podle PSČ a okresu ze zadání (fara, panství, archiv)")
+        print(f"POZOR: {len(adr)} míst se stejnou adresou – vyber podle PSČ a okresu ze zadání (fara, panství, archiv); "
+              "dál (`okoli`, `parcely`) zadej celou adresu z výpisu nebo „adresa, PSČ“")
     for a in adr[:8]:
         at, g = a["attributes"], a["geometry"]
         print(f"{at['adresa']}   lat={g['y']:.5f}, lon={g['x']:.5f}")
@@ -278,7 +290,13 @@ def patri_k_nazvu(cast, obec):
 def v_obci(adresa, obec):
     """Leží adresa („Ulice čp, [Část, ]PSČ Obec“ nebo „Osada čp, PSČ Obec“) v obci nebo části „obec“?
     Porovnává celé části adresy, ne podřetězec."""
+    m = re.fullmatch(r"(\d{3}) ?(\d{2})\s*(.*)", obec.strip())   # obec smí začínat PSČ nebo jím celá být
+    psc, obec = (m.group(1) + m.group(2), m.group(3)) if m else (None, obec)
     prvni, *dalsi = adresa.split(", ")
+    if psc and not any(c.startswith(psc + " ") or c == psc for c in dalsi):
+        return False
+    if not obec:
+        return True
     casti = [re.sub(r" [\d/]+[a-z]?$", "", prvni)] + [re.sub(r"^\d{5} ", "", c) for c in dalsi]
     return any(patri_k_nazvu(c, obec) for c in casti)
 
