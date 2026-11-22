@@ -85,4 +85,4 @@ Rešerše: stažen a přečten celý upstream `dejiny-domu-skill` (0.5.0, větev
 
 ## Parkované v session
 
-- **Export do GEDCOM – odložené (po vydání 0.9.2, import v MacFamilyTree 11 ověřen 2026-11-22):** obrázky (výřezy) v exportu, `GEDZIP`, ověření importu v Gramps.
+- **Export do GEDCOM (`ged_export.py`) – vydání 0.9.2 čeká na dokončení.** Větev `feat/ged-export` (`b2580b9`) je hotová a nepushnutá, verze 0.9.2 a changelog jsou připravené; import včetně výřezů ověřen v MacFamilyTree 11 (2026-11-22 a 23). **Zbývá:** push, PR do `main`, merge (`/merge`), tag `v0.9.2` a release s textem sekce z `CHANGELOG.md` (postup v `CLAUDE.md`). Pak tuto položku smazat. **Odložené:** `GEDZIP`, ověření importu v Gramps.
