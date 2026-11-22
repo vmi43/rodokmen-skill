@@ -125,6 +125,22 @@ Viz `web.md`.
 - Údaje ze stromů (i Smart Match) jsou jen vodítko k zápisu – datum a číslo domu tě dovedou na stránku, ale **jména vždy
   ověř v zápisu** (skutečná chyba: „sňatek“ ze Smart Match byl jiný pár ze stejného domu).
 
+
+## Export do GEDCOM (pro MacFamilyTree, Gramps, Ancestry a další)
+`python3 -I tools/ged_export.py` vyrobí z `data/osoby.py` soubor `pracovni/rodokmen.ged` (GEDCOM 5.5.1, UTF-8; `--verze 7` dá
+GEDCOM 7.0, `--bez-zivych` vynechá osoby bez úmrtí narozené před méně než 100 lety, jiný soubor se zadá jako argument).
+- **Převede se:** osoby a rodiny podle Kekulého čísel (`SAME` se sloučí), narození, sňatek a úmrtí s datem a místem
+  (české „asi“, „před“, „po“, „mezi“ → `ABT`, `BEF`, `AFT`, `BET`; co nejde, zůstane jako text v závorce), `čp.` jako
+  adresa události, souřadnice z `mista.json`, řemeslo (`OCCU`), poznámky, stav jistoty (`st`), `SIDE` jako poznámka u osoby `k`
+  a zápisy ze `zaznamy.json` jako `SOUR` – **citované u osoby, ne u události** (zápis o křtu Jana slouží i k údajům jeho rodičů,
+  takže podle druhu zápisu nejde poznat, kterou událost dokládá).
+- **Nepřevede se:** `ISSUES`, `HYPOTEZY` (jsou pro web), obrázky, osoby „neuveden“ bez údajů (poznámka jde k rodině dítěte)
+  a příčina úmrtí u osob narozených v posledních 100 letech (zdravotní údaj, viz `soukromi.md`).
+- **Soukromí:** soubor je jen na disku, nic se neposílá. Žijící se bez `--bez-zivych` vyexportují taky; před nahráním do cizí
+  služby přepínač použij a zkontroluj `CITLIVÉ` v `kontrola.py`.
+- **MacFamilyTree 11:** úvodní obrazovka → *Import GEDCOM file* (verze 5.5.1 je kompatibilnější, vendor ji doporučuje).
+  Vlastní nestandardní tagy aplikace nabídne v sekci *Action* po importu, my žádné nevyrábíme. Obrázky se neexportují.
+
 ## Odkazy na osoby (slug)
 Slug = jméno bez diakritiky + rok, např. `jan-novak-1890`; při kolizi přidá číslo osoby. Přesné slugy po `npm run data`
 v `web/src/data/site.json` (`people`). Při přejmenování osoby se slug změní – oprav odkazy v textech.

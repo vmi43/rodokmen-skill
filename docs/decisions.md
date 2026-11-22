@@ -291,3 +291,10 @@ Základ `bc6cd33` (0.8.2), upstream `0fb0c03` (0.10.0), 64 souborů. Rozhodnuto 
 - **Rozhodnutí:** `skills/rodokmen/SKILL.md` odkazuje na `reference/texty.md` (před psaním textů pro web, ve Fázi 3) a má v tabulce nástrojů řádek `zdravi.py`. Soubory se nekopírují, jsou ve `shared/` a sdílí je oba skilly.
 - **Proč:** po přesunu do `shared/` šlo jen o zmínku. Pravidla psaní (krátké věty, bez archivního žargonu, nejistota lidsky) platí pro příběh rodu stejně jako pro dům; `zdravi.py` pomáhá poznat, že portál změnil adresu nebo API.
 - **Nezměněno:** `texty.md` zůstává beze změny obsahu, příklady z domů v něm zůstávají.
+
+### Export do GEDCOM: `ged_export.py` (2026-11-22)
+- **Rozhodnutí uživatele:** GEDCOM 5.5.1 jako výchozí (MacFamilyTree 11 umí i 7.0, ale vendor v manuálu 5.5.1 doporučuje, 7.0 podporuje málo programů), zdroje jako plnohodnotné `SOUR`, obrázky v první verzi ne.
+- **Proč GEDCOM:** manuál MacFamilyTree 11.1 (kap. 1.5.2, 25) popisuje jako importní cestu jen GEDCOM (*Import GEDCOM file* na úvodní obrazovce, u médií se aplikace ptá na složku). Jiný importní formát vendor neuvádí.
+- **Zdroje u osoby, ne u události:** zápis ze `zaznamy.json` cituje víc osob a víc událostí (křest Jana dokládá i jeho rodiče), takže přiřazení k `BIRT`/`MARR`/`DEAT` podle druhu zápisu by vyrobilo nepravdivé citace. Zápis proto visí na osobě s `PAGE` (svazek, snímek).
+- **Soukromí:** `ISSUES` a `HYPOTEZY` se nevyvážejí (jsou pro web, mohou mít citlivé věci); příčina úmrtí jen u osob narozených před více než 100 lety (zdravotní údaj, `soukromi.md`); `--bez-zivych` vynechá osoby bez úmrtí narozené před méně než 100 lety. Bez přepínače se žijící exportují, soubor je ale jen na disku.
+- **Nevyřešeno:** zacházení MacFamilyTree 11 s vlastními tagy a s médii není v manuálu popsáno textem, jen screenshoty; export je zkoušený jen vlastním importem (`tests/ged_export`), ne v MacFamilyTree 11.

@@ -167,7 +167,8 @@ shared/              společné soubory skillů
   pomalejší.
 - U úředníků, vojáků a lékařů hledá i v **dobových novinách** (ANNO, Kramerius) – kariéra, vyznamenání, parte.
 - Umí načíst **rodinný strom z MyHeritage** a dalších služeb (export GEDCOM, z MyHeritage i zálohu stromu z programu
-  Family Tree Builder) a udělat z něj plán hledání.
+  Family Tree Builder) a udělat z něj plán hledání. Naopak z vašich dat umí vyrobit **GEDCOM** pro MacFamilyTree,
+  Gramps a další programy (`ged_export.py`).
 - Průběžně sbírá **zajímavosti** (svatby na poslední chvíli, rod sto let v jednom domě…) a s vámi napíše
   **Příběh vašeho rodu** – hlavní článek webu.
 - Claude čte staré písmo dobře, ale ne bezchybně. Proto ke každému zápisu ukládá výřez s vyznačeným místem,
