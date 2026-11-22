@@ -9,7 +9,7 @@ Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to 
 ## 0.9.2 – 22. 11. 2026
 
 **Nové**
-- `ged_export.py`: z `data/osoby.py` vyrobí GEDCOM (5.5.1 nebo 7.0) pro MacFamilyTree 11, Gramps a další programy – osoby, rodiny, data, místa se souřadnicemi, zdroje ze zápisů. Bez ISSUES a HYPOTEZ, `--bez-zivych` vynechá možná žijící.
+- `ged_export.py`: z `data/osoby.py` vyrobí GEDCOM (5.5.1 nebo 7.0) pro MacFamilyTree 11, Gramps a další programy – osoby, rodiny, data, místa se souřadnicemi, zdroje ze zápisů a k nim výřezy zápisů z matrik. Výstup je jedna složka `pracovni/gedcom/` (`rodokmen.ged` a `media/`). Bez ISSUES a HYPOTEZ, `--bez-zivych` vynechá možná žijící, `--bez-obrazku` výřezy.
 
 ## 0.9.1 – 13. 11. 2026
 

@@ -319,7 +319,7 @@ Nedělej to pořád. Postup:
 | `matricula_dl.sh`, `matricula_batch.sh` | snímky z Matriculy (Rakousko…), URL se bere z prohlížeče |
 | `anno.py`, `anno_snap.py`, `kramerius.py` | noviny: ANNO (rakouské; `--ztraty` = seznamy ztrát 1914–1919), Kramerius (české) |
 | `ged_import.py strom.ged "Jméno"` | předci z rodinného stromu (GEDCOM) + fronta zápisů |
-| `ged_export.py [out.ged] [--verze 7] [--bez-zivych]` | opačně: `data/osoby.py` → GEDCOM pro MacFamilyTree, Gramps aj. (`reference/data.md` → Export do GEDCOM) |
+| `ged_export.py [out.ged] [--verze 7] [--bez-zivych]` | opačně: `data/osoby.py` → složka `pracovni/gedcom/` s GEDCOM a výřezy zápisů pro MacFamilyTree, Gramps aj. (`reference/data.md` → Export do GEDCOM) |
 | `ftb_export.py strom.ftb out.ged ["Jméno" rok linie.md [Photos/]]` | záloha z MyHeritage (.ftb) → GEDCOM + přímá linie s původem údajů |
 | `mapa_knihy.py aron/pf/ahmp <kniha> <od> <do> [krok]`, `--vedle --ostre --vyrez …`, `soubory …` | mapa knihy (horní pruhy snímků pod sebou) a montáž sloupce se jmény vedle sebe – orientace v knihách po vsích (`matriky.md`) |
 | `overit.py <snímek> x0,y0,x1,y1 <prefix> [--kontrast]` | zápis na dvě čitelné poloviny – ověření čtení (souřadnice = zlomky 0–1) |

@@ -2,20 +2,22 @@
 """Vyrobí GEDCOM (.ged) z data/osoby.py – pro MacFamilyTree 11, Gramps, Ancestry a další programy.
 
 Použití (z kořene projektu):
-  python3 -I tools/ged_export.py                     -> pracovni/rodokmen.ged (GEDCOM 5.5.1, UTF-8)
-  python3 -I tools/ged_export.py cesta/strom.ged     -> jiný výstupní soubor
+  python3 -I tools/ged_export.py                     -> pracovni/gedcom/rodokmen.ged (GEDCOM 5.5.1, UTF-8) + pracovni/gedcom/media/
+  python3 -I tools/ged_export.py cesta/strom.ged     -> jiný výstupní soubor, media/ vznikne vedle něj
+  … --bez-obrazku                                    -> bez výřezů zápisů (jen .ged)
   … --verze 7                                        -> GEDCOM 7.0 (5.5.1 je kompatibilnější, MacFamilyTree umí obojí)
   … --bez-zivych                                     -> vynechá osoby bez úmrtí narozené před méně než 100 lety
 
 Co se převede: osoby a jejich rodiče podle Kekulého čísel (2n otec, 2n+1 matka), narození (*), sňatek (×) a úmrtí (†)
 s datem a místem, čp. jako adresa události, souřadnice z data/mista.json, řemeslo, poznámky, stav jistoty údaje (st),
-sourozenci a příbuzní ze SIDE jako poznámka a zápisy z data/zaznamy.json jako zdroje (SOUR) osob, které je citují.
-Co se nepřevede: ISSUES a HYPOTEZY (jsou pro web a mohou mít citlivý obsah), obrázky (výřezy), osoby „neuveden“
+sourozenci a příbuzní ze SIDE jako poznámka a zápisy z data/zaznamy.json jako zdroje (SOUR) osob, které je citují;
+k zdroji se připojí výřez zápisu vyrezy/<klic>.jpg (OBJE), zkopírovaný do media/ vedle .ged – celá složka tvoří jeden export.
+Co se nepřevede: ISSUES a HYPOTEZY (jsou pro web a mohou mít citlivý obsah), celé stránky matrik (zdroje/) a ostatní obrázky, osoby „neuveden“
 bez údajů (jejich poznámka jde k rodině dítěte) a příčina úmrtí u osob narozených v posledních 100 letech.
 Nic se neposílá po síti, soubor vznikne jen na disku. Žijící osoby se bez --bez-zivych exportují také – před předáním
 cizí službě (MyHeritage, Ancestry…) použij přepínač.
 """
-import calendar, datetime, json, os, re, sys
+import calendar, datetime, json, os, re, shutil, sys
 
 TOOLS = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(TOOLS)
@@ -178,8 +180,8 @@ def jload(name, default):
         return json.load(f)
 
 
-def build(ns, v7=False, bez_zivych=False, today=None):
-    """Vrátí (řádky GEDCOMu, statistika)."""
+def build(ns, v7=False, bez_zivych=False, today=None, vyrezy=None):
+    """Vrátí (řádky GEDCOMu, statistika). vyrezy = složka s <klic>.jpg; zápisy, k nimž soubor existuje, dostanou OBJE."""
     today = today or datetime.date.today()
     P, SAME = ns.get("P", {}), ns.get("SAME", {})
     SIDE = ns.get("SIDE", [])
@@ -227,6 +229,9 @@ def build(ns, v7=False, bez_zivych=False, today=None):
             elif r not in zaznamy:
                 stat["chybi_zaznam"] += 1
     sid = {r: f"@S{i}@" for i, r in enumerate(used, 1)}
+    obr = [r for r in used if vyrezy and re.fullmatch(r"[\w.-]+", r) and os.path.isfile(os.path.join(vyrezy, r + ".jpg"))]
+    mid = {r: f"@M{i}@" for i, r in enumerate(obr, 1)}
+    stat["media"] = obr
 
     o = Out(v7)
 
@@ -358,7 +363,16 @@ def build(ns, v7=False, bez_zivych=False, today=None):
         url = z.get("odkaz") or sv.get("url", "")
         if url:
             o.add(1, "NOTE", f"Odkaz: {url}")
+        if r in mid:
+            o.add(1, "OBJE", mid[r])
         stat["zdroju"] += 1
+
+    # obrázky (výřezy zápisů z matrik): soubory leží v media/ vedle .ged
+    for r in obr:
+        o.add(0, "OBJE", xref=mid[r])
+        o.add(1, "FILE", f"media/{r}.jpg")
+        o.add(2, "FORM", "image/jpeg" if v7 else "jpg")
+        o.add(2, "TITL", zaznamy[r].get("nazev", r))
 
     o.add(0, "TRLR")
     return o.lines, stat
@@ -380,7 +394,8 @@ def main():
         v7 = v == "7"
         del args[i:i + 2]
     zivi = "--bez-zivych" in args
-    args = [a for a in args if a != "--bez-zivych"]
+    bez_obr = "--bez-obrazku" in args
+    args = [a for a in args if a not in ("--bez-zivych", "--bez-obrazku")]
     if any(a.startswith("--") for a in args) or len(args) > 1:
         sys.exit("Neznámý přepínač nebo víc výstupních souborů – viz --help.")
     path = os.path.join(DATA, "osoby.py")
@@ -390,12 +405,20 @@ def main():
     exec(open(path, encoding="utf-8-sig").read(), ns)
     if not ns.get("P"):
         sys.exit("V data/osoby.py je prázdné P – není co exportovat.")
-    out = args[0] if args else os.path.join(ROOT, "pracovni", "rodokmen.ged")
-    lines, st = build(ns, v7=v7, bez_zivych=zivi)
-    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
+    out = args[0] if args else os.path.join(ROOT, "pracovni", "gedcom", "rodokmen.ged")
+    vyrezy = os.path.join(ROOT, "vyrezy")
+    lines, st = build(ns, v7=v7, bez_zivych=zivi, vyrezy=None if bez_obr else vyrezy)
+    slozka = os.path.dirname(os.path.abspath(out))
+    os.makedirs(slozka, exist_ok=True)
     with open(out, "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(lines) + "\n")
+    if st["media"]:
+        os.makedirs(os.path.join(slozka, "media"), exist_ok=True)
+        for r in st["media"]:
+            shutil.copyfile(os.path.join(vyrezy, r + ".jpg"), os.path.join(slozka, "media", r + ".jpg"))
     print(f"{out}: GEDCOM {'7.0' if v7 else '5.5.1'}, {st['osob']} osob, {st['rodin']} rodin, {st['zdroju']} zdrojů")
+    if st["media"]:
+        print(f"  {len(st['media'])} výřezů zápisů zkopírováno do {os.path.join(slozka, 'media')}")
     if st["vynechano_neuvedeno"]:
         print(f"  vynecháno {st['vynechano_neuvedeno']} osob „neuveden“ bez údajů (jejich poznámka je u rodiny dítěte)")
     if st["vynechano_zive"]:
@@ -406,7 +429,7 @@ def main():
         print(f"  příčina úmrtí vynechána u {st['priciny_vynechany']} osob narozených v posledních 100 letech (zdravotní údaj)")
     if st["chybi_zaznam"]:
         print(f"  POZOR: {st['chybi_zaznam']} citací klíče, který není v zaznamy.json (vynecháno)")
-    print("Import: MacFamilyTree 11 → úvodní obrazovka → Import GEDCOM file.")
+    print("Import: MacFamilyTree 11 → úvodní obrazovka → Import GEDCOM file (složku media/ nech vedle souboru .ged).")
 
 
 if __name__ == "__main__":

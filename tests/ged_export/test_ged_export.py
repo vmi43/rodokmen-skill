@@ -155,6 +155,33 @@ try:
        ev["place"] == "Ostřetín" and ev["addr"] == "čp. 23" and ev["note"] == ["podle stromu"], str(ev))
     ev = m.parse_event("8. 11. 1924 Holice Ludmila Hrubá", "Ludmila Hrubá")
     ma("sňatek: jméno partnera se z místa odstraní", ev["place"] == "Holice" and ev["date"] == "8 NOV 1924", str(ev))
+
+    # 11. výřezy zápisů: složka s .ged a media/, OBJE u zdroje (5.5.1 i 7.0), bez --bez-obrazku nic nekopíruje
+    klic = "ukazka_krest_jan_novak_1890"
+    os.makedirs(os.path.join(tmp, "vyrezy"))
+    with open(os.path.join(tmp, "vyrezy", klic + ".jpg"), "wb") as f:
+        f.write(b"\xff\xd8test\xff\xd9")
+    r = spust(tmp)
+    sl = os.path.join(tmp, "pracovni", "gedcom")
+    ged = open(os.path.join(sl, "rodokmen.ged"), encoding="utf-8").read()
+    ma("výchozí výstup: pracovni/gedcom/rodokmen.ged a media/ s výřezem", r.returncode == 0
+       and os.path.isfile(os.path.join(sl, "media", klic + ".jpg")), r.stdout + r.stderr)
+    zz = zaznamy(ged)
+    obje = [x for x, v in zz.items() if x.startswith("@M") and any(t == "OBJE" for _, t, _ in v)]
+    ma("OBJE: záznam má FILE media/…jpg, FORM jpg a TITL; zdroj na něj odkazuje",
+       len(obje) == 1 and (1, "FILE", f"media/{klic}.jpg") in zz[obje[0]] and (2, "FORM", "jpg") in zz[obje[0]]
+       and any(t == "TITL" for _, t, _ in zz[obje[0]]) and any(v == (1, "OBJE", obje[0]) for z in zz.values() for v in z
+                                                                 if z and z[0][1] == "SOUR"),
+       str(obje))
+    ma("zápisy bez souboru OBJE nedostanou", ged.count("OBJE") == 2, str(ged.count("OBJE")))
+    r = spust(tmp, os.path.join("pracovni", "v7", "strom.ged"), "--verze", "7")
+    g7 = open(os.path.join(tmp, "pracovni", "v7", "strom.ged"), encoding="utf-8").read()
+    ma("--verze 7: FORM image/jpeg a media/ vedle zadaného souboru", r.returncode == 0 and "2 FORM image/jpeg" in g7
+       and os.path.isfile(os.path.join(tmp, "pracovni", "v7", "media", klic + ".jpg")), r.stdout + r.stderr)
+    r = spust(tmp, os.path.join("pracovni", "bez", "strom.ged"), "--bez-obrazku")
+    gb = open(os.path.join(tmp, "pracovni", "bez", "strom.ged"), encoding="utf-8").read()
+    ma("--bez-obrazku: žádné OBJE a žádná složka media/", r.returncode == 0 and "OBJE" not in gb
+       and not os.path.exists(os.path.join(tmp, "pracovni", "bez", "media")), r.stdout + r.stderr)
 finally:
     shutil.rmtree(tmp, ignore_errors=True)
 
