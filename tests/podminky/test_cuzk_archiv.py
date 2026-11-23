@@ -3,7 +3,7 @@
 Z kořene repozitáře:  python3 -I tests/podminky/test_cuzk_archiv.py
 Původ: nový test, nápad z vzoha/dejiny-domu-skill (commit e1cd204).
 """
-import builtins, io, os, shutil, sys, tempfile, unittest
+import builtins, http.client, io, os, shutil, sys, tempfile, unittest
 
 SHARED = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "shared")
 # nástroj odmítne běžet mimo složku projektu (data/STAV.md), proto ho zkopírujeme do dočasného projektu
@@ -84,6 +84,81 @@ class ReliefTest(unittest.TestCase):
         self.assertIn("GrayscaleHillshade", videno["par"]["renderingRule"])
         self.assertEqual(ulozeno["out"], "relief.jpg")
         self.assertEqual(videno["par"]["size"], "800,800")
+
+
+class OdolnostTest(unittest.TestCase):
+    """Přerušený přenos, odmítnutá velikost a chybějící písmo pro popisky (poznámky z projektu 2026-11-23)."""
+
+    def test_get_zopakuje_utrzenou_odpoved(self):
+        from unittest import mock
+        odpovedi = [http.client.IncompleteRead(b"x"), http.client.IncompleteRead(b"x")]
+
+        class R:
+            def __enter__(s): return s
+            def __exit__(s, *a): return False
+            def read(s): return b'{"ok": 1}'
+
+        def urlopen(*a, **k):
+            if odpovedi:
+                raise odpovedi.pop()
+            return R()
+        with mock.patch.object(cuzk_archiv.urllib.request, "urlopen", urlopen), mock.patch.object(cuzk_archiv.time, "sleep"):
+            self.assertEqual(cuzk_archiv.get("https://ags.cuzk.gov.cz/x"), {"ok": 1})
+
+    def test_get_po_tretim_pokusu_skonci_lidskou_zpravou(self):
+        from unittest import mock
+
+        def urlopen(*a, **k):
+            raise http.client.IncompleteRead(b"x")
+        with mock.patch.object(cuzk_archiv.urllib.request, "urlopen", urlopen), mock.patch.object(cuzk_archiv.time, "sleep"):
+            with self.assertRaises(SystemExit) as c:
+                cuzk_archiv.get("https://ags.cuzk.gov.cz/x")
+        self.assertIn("IncompleteRead", str(c.exception))
+        self.assertIn("ags.cuzk.gov.cz", str(c.exception))
+
+    def test_export_pri_limitu_velikosti_snizi_sirku(self):
+        from unittest import mock
+        sirky = []
+
+        def falesny_archiv(cesta, par, binary=False):
+            if not binary:
+                return {"features": [{"geometry": {"rings": [[[0, 0], [10, 0], [10, 10], [0, 10]]]}}]}
+            sirky.append(par["size"].split(",")[0])
+            return b'{"error": "image exceeds the size limit"}' if len(sirky) == 1 else b"\xff\xd8\xff\xe0jpeg"
+        ulozeno = {}
+        with mock.patch.object(cuzk_archiv, "archiv", falesny_archiv), \
+                mock.patch.object(cuzk_archiv, "save_jpeg", lambda img, out: ulozeno.update(img=img)):
+            cuzk_archiv.export("skici", "1", "x.jpg", "0,0.2,0.2,0.55", 3000)
+        self.assertEqual(sirky, ["3000", "2100"])
+        self.assertTrue(ulozeno["img"].startswith(b"\xff\xd8"))
+
+    def test_prehled_bez_pisma_nepouzije_label(self):
+        from unittest import mock
+        prikazy = []
+        feats = [{"attributes": {"OBJECTID": 7, "Name": "S0X_1"}}]
+        with mock.patch.object(cuzk_archiv.mapa_knihy, "PISMO", None), \
+                mock.patch.object(cuzk_archiv, "najdi_rastry", lambda *a: feats), \
+                mock.patch.object(cuzk_archiv, "export", lambda *a: None), \
+                mock.patch.object(cuzk_archiv.shutil, "which", lambda n: "/usr/bin/magick"), \
+                mock.patch.object(cuzk_archiv.subprocess, "run",
+                                  lambda cmd, **k: prikazy.append(cmd) or mock.Mock(returncode=0)):
+            cuzk_archiv.prehled("skici", "S0X", "p.jpg", 600)
+        self.assertNotIn("-label", prikazy[0])
+        self.assertNotIn("-font", prikazy[0])
+
+    def test_prehled_s_pismem_ho_preda_montage(self):
+        from unittest import mock
+        prikazy = []
+        feats = [{"attributes": {"OBJECTID": 7, "Name": "S0X_1"}}]
+        with mock.patch.object(cuzk_archiv.mapa_knihy, "PISMO", "/p/Arial.ttf"), \
+                mock.patch.object(cuzk_archiv, "najdi_rastry", lambda *a: feats), \
+                mock.patch.object(cuzk_archiv, "export", lambda *a: None), \
+                mock.patch.object(cuzk_archiv.shutil, "which", lambda n: "/usr/bin/magick"), \
+                mock.patch.object(cuzk_archiv.subprocess, "run",
+                                  lambda cmd, **k: prikazy.append(cmd) or mock.Mock(returncode=0)):
+            cuzk_archiv.prehled("skici", "S0X", "p.jpg", 600)
+        self.assertIn("-label", prikazy[0])
+        self.assertEqual(prikazy[0][prikazy[0].index("-font") + 1], "/p/Arial.ttf")
 
 
 if __name__ == "__main__":

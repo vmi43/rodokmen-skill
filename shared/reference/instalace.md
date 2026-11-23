@@ -51,7 +51,7 @@ Bez prohlížeče ať uživatel posílá snímky obrazovky.
    `.claude/settings.json`: dokončí `tools/` a `.skill_verze` a vypíše „NEZAPSÁNO: …“. Pak soubory doplň sám nástrojem
    Write/Edit podle výpisu (cizí hooky v `settings.json` neměň) nebo skript pusť znovu mimo sandbox se souhlasem uživatele.
    Chce-li uživatel nejdřív vidět, jak web vypadá, založ vedle ukázku: `… novy_projekt.py ~/Rodokmen-ukazka --ukazka`,
-   pak `cd web && npm install && npm run nahled` a pošli mu odkaz http://localhost:4321.
+   pak `cd web && npm install && npm run nahled` (v sandboxu Claude Code `npm install --cache "$TMPDIR/npm-cache"` a povolený host `registry.npmjs.org`, viz `web.md`) a pošli mu odkaz http://localhost:4321.
 2. Zeptej se, jestli zapnout **hlídač sítě** (`… novy_projekt.py <složka> --hlidac`, vypnutí `--bez-hlidace`).
    Vysvětli jednou větou: archivy blokují IP adresu po sérii rychlých dotazů. Hlídač je malý skript v projektu
    (`tools/hlidac_site.py`), který před každým příkazem zkontroluje, že stahování jde přes brzdu, a jinak ho zamítne.

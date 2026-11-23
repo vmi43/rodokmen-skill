@@ -24,6 +24,7 @@ CACHE = os.path.join(os.environ.get("LOCALAPPDATA") or os.path.expanduser("~/.ca
 DEN = 24 * 3600
 ROOT = os.getcwd()
 DATA = os.path.join(ROOT, "data")
+VYPADEK = []   # adresy, které neodpověděly (síť, sandbox bez povoleného hostu) – jiné než „neexistuje“ (404)
 
 
 # ---------- síť (přes brzdu) a mezipaměť ----------
@@ -45,9 +46,11 @@ def stahni(url, max_stari=DEN):
         if e.code == 404:
             return None
         print(f"sdileni: {url} odpověděl {e.code}", file=sys.stderr)
+        VYPADEK.append(url)
         return open(path, encoding="utf-8").read() if os.path.exists(path) else None
     except (OSError, http.client.HTTPException, UnicodeDecodeError) as e:   # i přerušené čtení (IncompleteRead)
         print(f"sdileni: {url} neodpovídá ({e!r})", file=sys.stderr)
+        VYPADEK.append(url)
         return open(path, encoding="utf-8").read() if os.path.exists(path) else None
     try:
         with open(path, "w", encoding="utf-8") as f:
@@ -145,6 +148,10 @@ def pokryva(ref, rok, druh):
 
 def najdi(obec, rok=None, druh=None):
     refs = json_z(f"{MAPA}/obce/{slug(obec)}.json")
+    if refs is None and VYPADEK:
+        print(f"Mapa matrik neodpověděla ({VYPADEK[0]}), o obci „{obec}“ nic nevím. Zkontroluj síť; v sandboxu Claude Code musí být "
+              "povolené hosty ondrnovy.github.io a pe-pan.github.io. Nepovažuj to za „obec v mapě není“.")
+        return 0
     if refs is None:
         print(f"Mapa matrik obec „{obec}“ nezná (zatím). Najdi knihu obvyklou cestou (portaly.md).")
         return 0

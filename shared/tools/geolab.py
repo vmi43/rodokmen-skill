@@ -13,11 +13,12 @@ Použití:
   geolab.py export <dílo> <list> <výstup.jpg> [x0,y0,x1,y1] [--redukce N]
       celý list bez výřezu je náhled (redukce 4, asi 700 px); výřez v podílech 0–1 jako u vyrez.py, výchozí plné rozlišení.
       Vadná dlaždice na serveru (obrázek nejde přečíst) → nástroj sám zkusí poloviční rozlišení (redukce + 1) a řekne to.
+V sandboxu Claude Code (`allowed_domains`) potřebuje dva hosty: `geolab.cz` (stránka díla) a `oldmaps.geolab.cz` (dlaždice).
 Příklad (Hlína u Ivančic): klad 2vm-mo → list O_10_I (sekce 10, východní kolona I) → náhled → výřez
   geolab.py export 2vm-mo O_10_I hlina.jpg 0.185,0.80,0.32,0.885
 
 Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/tools/geolab.py), commit 32bef07; úprava: slusne.py se u nás zapíná importem (bez instaluj())."""
-import io, math, os, re, sys, urllib.error, urllib.request
+import http.client, io, math, os, re, sys, time, urllib.error, urllib.parse, urllib.request
 for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
@@ -42,8 +43,17 @@ def citace(dilo, list_):
 
 def stahni(url):
     req = urllib.request.Request(url, headers={"User-Agent": slusne.UA})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        return r.read()
+    for pokus in range(2):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                return r.read()
+        except urllib.error.HTTPError:
+            raise   # 404 apod. řeší volající (vadná dlaždice → nižší rozlišení)
+        except (OSError, http.client.HTTPException) as e:   # i useknutý přenos (IncompleteRead), v sandboxu časté
+            if pokus:
+                sys.exit(f"Geolab ({urllib.parse.urlsplit(url).netloc}): odpověď se dvakrát nepodařilo stáhnout celou "
+                         f"({type(e).__name__}) – zkus to za chvíli znovu")
+            time.sleep(2)
 
 
 def nacti_dilo(html):

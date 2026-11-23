@@ -24,7 +24,7 @@ jako „Další místa“. Vzhled mapy a prolínání map zatím není ověřen�
 ## Příkazy (ve složce `web/`)
 | příkaz | co dělá |
 |---|---|
-| `npm install` | jednou na začátku (stáhne knihovny, ~1 minuta) |
+| `npm install` | jednou na začátku (stáhne knihovny, ~1 minuta). **V sandboxu Claude Code** musí být povolený host `registry.npmjs.org` a sandbox smí psát jen do `~/.npm/_logs`, takže jinak padne na `EACCES` v `~/.npm`: pusť `npm install --cache "$TMPDIR/npm-cache"` |
 | `npm run data` | převede data do webu (vždy po změně dat; funkční Python 3 vyhledá `scripts/data.mjs`) |
 | `npm run build` | sestaví web do `dist/` |
 | `npm run nahled` | data + build + náhled na http://localhost:4321 (Ctrl+C ukončí) |
@@ -139,5 +139,5 @@ nebo složku na místě zálohy skript odmítne s hláškou POZOR a soubory za n
 2. **Přepsáno, původní verze v záloze:** porovnej `puvodni/<soubor>` s novou verzí. Jsou-li v ní vlastní úpravy
    (ne jen starší stav šablony), nabídni jejich převzetí do nové verze.
 3. **Sloučeno:** prohlédni výsledek (`git diff`), jestli dává smysl.
-4. Ve `web/` `npm install`, `npm run data` a `npm run build`, pak `python3 -I tools/kontrola.py`.
+4. Ve `web/` `npm install` (v sandboxu s `--cache "$TMPDIR/npm-cache"`, viz tabulka výš), `npm run data` a `npm run build`, pak `python3 -I tools/kontrola.py`.
 Starou šablonu přihlášení `export_web.py` odmítne s výzvou k aktualizaci.

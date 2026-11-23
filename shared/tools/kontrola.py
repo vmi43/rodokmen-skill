@@ -112,6 +112,23 @@ def kontrola_domu(ns, P, keys):
     return err, warn, cited
 
 
+def chybejici_nastroje():
+    """Jména `něco.py` v textech projektu (data/STAV.md, todo.md, docs/todo.md), která nejsou v tools/ ani v data/ –
+    po aktualizaci tam zůstávají přejmenované nástroje (omezovac.py → slusne.py). → [(soubor, jméno)]"""
+    tools = os.path.join(ROOT, "tools")
+    znama = {f for d in (tools, DATA) if os.path.isdir(d) for f in os.listdir(d)}
+    nalezy = []
+    for rel in ("data/STAV.md", "todo.md", "docs/todo.md"):
+        cesta = os.path.join(ROOT, *rel.split("/"))
+        if not os.path.exists(cesta):
+            continue
+        text = open(cesta, encoding="utf-8-sig").read()
+        for jmeno in sorted(set(re.findall(r"(?<![\w./-])([A-Za-z][\w]*\.py)\b", text))):
+            if jmeno not in znama:
+                nalezy.append((rel, jmeno))
+    return nalezy
+
+
 def main():
     err, warn = [], []
     ns = {}
@@ -383,6 +400,10 @@ def main():
         if n >= 6:
             warn.append(f"rod {jmeno} má už {n} generací – je čas napsat příběh rodu "
                         f"(data/pribeh.md, reference/pribehy.md); koncept nejdřív ukaž uživateli v chatu")
+
+    for rel, jmeno in chybejici_nastroje():
+        warn.append(f"{rel} zmiňuje {jmeno}, ale v tools/ ani data/ není (přejmenovaný nebo odstraněný nástroj? "
+                    "oprav text, viz tools/ ve skillu)")
 
     log = os.path.join(DATA, "research_log.md")
     rows = sum(1 for l in open(log, encoding="utf-8-sig") if re.match(r"^\| \d+ \|", l)) if os.path.exists(log) else 0

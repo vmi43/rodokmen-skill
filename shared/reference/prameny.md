@@ -218,6 +218,9 @@ majetek zkonfiskovaly a stát ho přidělil novým obyvatelům. Úřady se děli
 
 ## Stabilní katastr (Archiv ČÚZK, `cuzk_archiv.py`)
 Archiv ČÚZK je na https://ags.cuzk.gov.cz/archiv/ (staré archivnimapy.cuzk.cz už neexistuje). Nástroj ho čte bez prohlížeče.
+**V sandboxu Claude Code** povol hosty `ags.cuzk.gov.cz` (archiv, token) a `ags.cuzk.cz` (vrstva `pk`, adresní body RÚIAN);
+`mapa cenia50` a `vm3` chtějí `gis.cenia.cz`, `geolab.py` hosty `geolab.cz` a `oldmaps.geolab.cz` (dlaždice). Přerušený přenos nástroje
+zopakují sami; výřez, který server odmítne pro velikost (u skici šířka 3000 px), nástroj znovu zkusí s menší šířkou.
 1. `python3 -I tools/cuzk_archiv.py listy "Osada čp"` → katastrální obec v době stabilního katastru (**malá ves bývá součástí
    katastru sousední obce**) a předpony rastrů originální mapy, otisku, evidenční mapy a skici.
 2. `cuzk_archiv.py prehled stable <om_SIGN_INV> pracovni/katastr/prehled.jpg` → všechny listy v jednom náhledu
@@ -253,6 +256,8 @@ Archiv ČÚZK je na https://ags.cuzk.gov.cz/archiv/ (staré archivnimapy.cuzk.cz
   „N° 22“ = patří majiteli domu čp. 22** (Zruč nad Sázavou 1838 celé náměstí bez jmen). Jméno pak dá písemný operát
   (parcelní protokol), nebo matriky a gruntovní kniha podle čp. **Číslo bez „N°“ (N., N) je číslo parcely**, ne čp.:
   pozemková parcela 29 může ležet vedle „N° 29“ a zahrady 22–18 za domy čp. 76–80 (Zruč) vypadají jako „patří čp. 22“.
+  **Pro konkrétní dům je skica klíčová:** do dvorů jsou červeně vepsána čísla popisná a k pozemkům „N° <čp.>“, takže
+  **ztotožní čp. se stavební parcelou i bez parcelního protokolu**. Začni jí (`listy` → `rastry skici <S0X>` → `export`).
 - **Pozemkový katastr** (`mapa pk "Osada čp" výstup.jpg`) je georeferencovaný v S-JTSK: sedí na dnešní mapu, takže
   přes RÚIAN budovy jde ztotožnit starou parcelu s dnešním domem, zpravidla do pár metrů. (Posun 60–100 m k SV, který
   tu dřív stál, byl chybou nástroje: výřez se zadával ve WGS 84 a server ho do S-JTSK převedl bez transformace datumu.
@@ -262,7 +267,7 @@ Archiv ČÚZK je na https://ags.cuzk.gov.cz/archiv/ (staré archivnimapy.cuzk.cz
   vždy ztotožni, než napíšeš, kde stojí** – ne podle čísla parcely nalezeného na skice nebo otisku (stejné číslo může
   mít pozemková parcela jinde ve vsi). Čísla stavebních parcel se často drží od stabilního katastru dodnes. Spojené
   vrstvy `originalni_mapy` a `cisarske_otisky` malé obce ani města (Olomouc) často nepokrývají: bílý obrázek nástroj
-  neuloží, vypíše listy a postup `rastry` → `prehled` → `export`.
+  neuloží, vypíše listy a postup `rastry` → `prehled` → `export`. Vrstva `pk` malé obce zpravidla pokrývá, zkus ji první.
   Dům na mapě pro čtenáře označ elipsou, a to na všech mapách stejně: `elipsa.py <čistá mapa.jpg> <klíč> cx,cy,a,b,úhel`
   (pixely mapy, elipsa přes celou parcelu, čistou mapu nech v `pracovni/mapy/`), příkaz s čísly do `poznamka` v `mapy.json`,
   do popisu mapy „Dům je v modré elipse.“
@@ -289,6 +294,14 @@ Archiv ČÚZK je na https://ags.cuzk.gov.cz/archiv/ (staré archivnimapy.cuzk.cz
   Do textu napiš, co se mezi ročníky změnilo („mezi 2004 a 2007 zmizela stodola ve dvoře“), s citací snímků.
 - Ulož výřez se vsí a s domem do `dokumenty/`, pak `vyrez.py` a `data/mapy.json` (zdroj „ČÚZK, Archiv ČÚZK,
   <mapa, signatura, list>“, url https://ags.cuzk.gov.cz/archiv/). Na stránce domu se ukáže v galerii, porovnání viz `web.md`.
+- **Mapa jako doklad v `domy.py`:** událost, držitel nebo obyvatel se stavem `doc` musí citovat zápis (`r`), `kontrola.py`
+  odkaz na `mapy.json` nepřijme (ten je jen pro prolínání na webu). Mapu proto zapiš i jako zápis v `data/zaznamy.json`:
+  `druh` `J`, `klic` `obec_mapa_skica_1838`, `datum` = rok mapy, `nazev` („Indikační skica, list …“), `shrnuti` = co a na kterém
+  místě mapy stojí (přepis nápisů: „v budově červeně 22, černě parcela 27“), `svazek` = záznam v `data/svazky.json` (`archiv`
+  „ÚAZK“ / „NA“ / „MZA“, `portal` „Archiv ČÚZK“, `svazek` = mapa, signatura, list; `url` https://ags.cuzk.gov.cz/archiv/),
+  `snimek` = list. Výřez udělej `vyrez.py` (`vyrezy/<klic>.jpg`), rámeček kolem čteného místa `ramecek.py`, přepis do
+  `prepisy.json`; pak `"r": ["obec_mapa_skica_1838"]` u události v `domy.py`. Skica a letecké snímky na veřejný web nepatří
+  (viz následující odrážka a `podminky.md`).
 - Mapy ÚAZK (stabilní katastr, císařské otisky) se smí zveřejnit bez souhlasu a poplatku s citací „Ústřední archiv
   zeměměřictví a katastru“. Indikační skici a archivní letecké snímky ne – viz `podminky.md`. U map z jiných zdrojů
   vždy uveď zdroj. Na neveřejném webu to stačí.

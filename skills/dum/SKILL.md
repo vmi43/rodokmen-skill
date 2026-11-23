@@ -42,6 +42,8 @@ Co je jen o domě, je níže. Kde se obě pravidla liší, platí tento skill pr
 2. Projekt ještě není → **Fáze 0**. Zeptej se napřed na rodokmen (bod 3) a podle odpovědi založ projekt:
    `python3 -I SHARED_DIR/tools/novy_projekt.py <složka> --dum` (dům i rodokmen) nebo `--jen-dum` (jen obec a domy,
    bez `data/osoby.py`). `--dum` jde spustit i na existující projekt, kde `data/domy.py` chybí; upravený `domy.py` nepřepíše.
+   Nejde-li skript pustit (sandbox mu zakazuje zápis do `.claude/`), stačí do existujícího projektu zkopírovat
+   `SHARED_DIR/template/dum/data/domy.py` do `data/`; `web/` a `tools/` se pak doplní až při další aktualizaci.
 3. Zeptej se (ještě před založením, viz bod 2), jestli k domu patří i **rodokmen** (lidé z domu jsou často něčí předci). Má-li ho, držitelé a obyvatelé
    se na osoby odkazují polem `os` (číslo osoby v `data/osoby.py`, viz `domy.py`).
 

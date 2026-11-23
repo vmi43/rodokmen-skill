@@ -26,5 +26,30 @@ class PanoramaTest(unittest.TestCase):
         self.assertIn("panorama (prochází uživatel)", out.getvalue())
 
 
+class TvarAdresyTest(unittest.TestCase):
+    A = "Biskupice 14, 53852 Biskupice u Ronova"
+
+    def test_cela_adresa_z_vypisu_ruian(self):
+        self.assertEqual(mista.adresa_a_obec(self.A), ("Biskupice 14", "53852 Biskupice u Ronova"))
+        self.assertEqual(mista.adresa_a_obec("Ulice 12/3, Část, 12345 Obec"), ("Ulice 12/3", "12345 Obec"))
+        self.assertEqual(mista.adresa_a_obec("Biskupice 14"), ("Biskupice 14", ""))
+
+    def test_v_obci_s_psc(self):
+        self.assertTrue(mista.v_obci(self.A, "53852 Biskupice u Ronova"))
+        self.assertTrue(mista.v_obci(self.A, "53852"))
+        self.assertTrue(mista.v_obci(self.A, "538 52"))
+        self.assertFalse(mista.v_obci(self.A, "53853"))
+        self.assertFalse(mista.v_obci(self.A, "53852 Jiná obec"))
+        self.assertTrue(mista.v_obci(self.A, "Biskupice u Ronova"))   # beze změny
+        self.assertFalse(mista.v_obci(self.A, "Ronov nad Doubravou"))
+
+    def test_ruian_bez_nalezu_s_obci_vypise_jine_nalezy(self):
+        jinde = [{"attributes": {"adresa": self.A}, "geometry": {"y": 1, "x": 2}}]
+        with mock.patch.object(mista, "adresni_mista", side_effect=lambda d, p, o="": [] if o else jinde):
+            with self.assertRaises(SystemExit) as e:
+                mista.ruian("Biskupice 14, Ronov nad Doubravou")
+        self.assertIn("53852 Biskupice u Ronova", str(e.exception))
+
+
 if __name__ == "__main__":
     unittest.main()
