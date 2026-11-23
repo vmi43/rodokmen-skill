@@ -6,6 +6,15 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.9.4 – 23. 11. 2026
+
+**Nové**
+- `data/ke_stazeni.md`: jediný seznam knih, které musí uživatel stáhnout ručně (kniha, roky, snímky, proč, odkaz). `zarad.py` po zařazení knihy odškrtne její řádek. Starší projekt soubor nemá, Claude ho zkopíruje ze šablony.
+
+**Návody**
+- Pomocníci: čtení kurentu před ~1830 patří Opusu, ne Sonnetu (Sonnet přehlédl zápisy a přečetl „Panna“ jako „Anna“); u příjmení v tabulce chtít přečtené jméno každého ženicha a nevěsty ze zvětšení a „nenalezeno“ od Sonneta brát jako „bez zásahu“.
+- Rychlé hledání v knize zemřelých a oddaných: půlstrany, montáž sloupců vedle sebe, past s posunem stránky.
+
 ## 0.9.3 – 23. 11. 2026
 
 **Nové**

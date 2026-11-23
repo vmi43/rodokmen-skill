@@ -14,6 +14,8 @@ Co udělá (postup v reference/portaly.md, „Ručně stažené knihy“):
   - `obsah.md` (koncept z obsah.txt; doplň, co kniha obsahuje), záznam ve svazky.json s `"upload": "manual"` (přes zapis.py);
   - hlásí rozpory: počet snímků × údaj v obsah.txt, název × záznam ve svazky.json, jiný klíč v názvu složky;
   - vypíše strojové kopie téhož svazku (nemaže je) a místa v textech projektu, kde zůstaly staré cesty (přepiš přes /replace).
+  - je-li v projektu `data/ke_stazeni.md` (seznam knih, které stahuje uživatel), odškrtne po zařazení řádek té knihy
+    (najde ho podle čísla knihy v odkazu na matriku nebo ZIP; řádek s `[ ]` v prvním sloupci dostane `[x]`).
 Nic nemaže. Strojové kopie smaž ručně až po shodě počtů a po diffu toho, co zmizelo.
 """
 import glob, json, os, re, subprocess, sys, unicodedata
@@ -179,6 +181,29 @@ def obsah_md(p):
             "Co kniha obsahuje (rejstříky a na kterých snímcích, rozsah let, farnost): **doplnit z `obsah.txt`**.\n")
 
 
+def odskrtni(p):
+    """Odškrtne v data/ke_stazeni.md řádek zařazené knihy; vrátí větu do výpisu (None, když soubor v projektu není)."""
+    cesta = os.path.join(ROOT, "data", "ke_stazeni.md")
+    if not os.path.exists(cesta):
+        return None
+    if p["portal"] == "ARON":
+        vzor = re.compile(rf"/apu/{re.escape(p['ident'])}")
+    else:
+        vzor = re.compile(rf"{'archivalieId' if p['typ'] == 'archivalie' else 'matrikaId'}/{re.escape(p['ident'])}(?!\d)")
+    with open(cesta, encoding="utf-8", newline="") as f:
+        radky = f.read().split("\n")
+    n = 0
+    for i, r in enumerate(radky):
+        if r.lstrip().startswith("|") and "[ ]" in r and vzor.search(r):
+            radky[i] = r.replace("[ ]", f"[x] zařazeno `{p['klic']}`", 1)
+            n += 1
+    if not n:
+        return "data/ke_stazeni.md: není tam neodškrtnutý řádek s odkazem na tuto knihu, nic neodškrtnuto"
+    with open(cesta, "w", encoding="utf-8", newline="") as f:
+        f.write("\n".join(radky))
+    return f"data/ke_stazeni.md: odškrtnuto {n} ř."
+
+
 def proved(p):
     z = p["slozka_nova"]
     for n, f in enumerate(p["obrazky"], 1):   # dvoufázově, aby se nové názvy nepotkaly se starými
@@ -205,6 +230,10 @@ def proved(p):
     ok = sv.get(p["klic"], {}).get("upload") == "manual" and all(os.path.exists(os.path.join(z, f"s{n}.jpg"))
                                                                for n in range(1, len(p["obrazky"]) + 1))
     print("  hotovo, ověřeno zpětným čtením" if ok else "  POZOR: zpětné čtení nesedí, zkontroluj složku a svazky.json")
+    if ok:
+        veta = odskrtni(p)
+        if veta:
+            print("  " + veta)
     return ok
 
 

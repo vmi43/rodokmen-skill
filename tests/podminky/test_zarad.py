@@ -109,6 +109,53 @@ class Zarad(unittest.TestCase):
         self.assertEqual(self.cti_sv()["archivalie_1349"]["upload"], "manual")
         self.assertEqual(self.cti_sv()["archivalie_1349"]["archiv"], "SOA Praha")   # stará pole zůstala
 
+    def ke_stazeni(self, radky):
+        cesta = os.path.join(self.d, "data", "ke_stazeni.md")
+        open(cesta, "w", encoding="utf-8").write("# Knihy ke stažení\n\n| Stav | Kniha | Matrika |\n|---|---|---|\n" + "\n".join(radky) + "\n")
+        return cesta
+
+    def test_ke_stazeni_odskrtne_jen_zarazenou_knihu(self):
+        cesta = self.ke_stazeni([
+            "| [ ] | Loučeň | https://ebadatelna.soapraha.cz/pages/MatrikaPage/matrikaId/8084 |",
+            "| [ ] | jiná Loučeň | https://ebadatelna.soapraha.cz/pages/MatrikaPage/matrikaId/80841 |",
+            "| [ ] | Biskupice | https://aron.vychodoceskearchivy.cz/apu/620ba073-6edf-496f-bb7e-e389cb8fcd24 |"])
+        self.slozka("loucen-05", MATRIKA, ["a.jpg", "b.jpg"])
+        rc, out = self.spust("--proved")
+        self.assertEqual(rc, 0, out)
+        self.assertIn("odškrtnuto 1", out)
+        r = open(cesta, encoding="utf-8").read().split("\n")
+        self.assertIn("[x] zařazeno `ebad_8084`", [x for x in r if "| Loučeň |" in x][0])
+        self.assertIn("[ ]", [x for x in r if "jiná Loučeň" in x][0])   # 80841 není 8084
+        self.assertIn("[ ]", [x for x in r if "Biskupice" in x][0])
+
+    def test_ke_stazeni_aron_podle_apu(self):
+        cesta = self.ke_stazeni(["| [ ] | Biskupice | https://aron.vychodoceskearchivy.cz/apu/620ba073-6edf-496f-bb7e-e389cb8fcd24 |"])
+        self.slozka("biskupice", ARON, ["a.jpg"])
+        rc, out = self.spust("--proved", "--ignoruj-pocet")
+        self.assertEqual(rc, 0, out)
+        self.assertIn("[x] zařazeno `620ba073`", open(cesta, encoding="utf-8").read())
+
+    def test_ke_stazeni_bez_souboru_a_bez_radku(self):
+        self.slozka("loucen-05", MATRIKA, ["a.jpg", "b.jpg"])
+        rc, out = self.spust("--proved")
+        self.assertEqual(rc, 0, out)
+        self.assertNotIn("ke_stazeni", out)                      # projekt bez souboru: nic se nehlásí ani nezakládá
+        self.assertFalse(os.path.exists(os.path.join(self.d, "data", "ke_stazeni.md")))
+        shutil.rmtree(os.path.join(self.d, "pracovni", "ebad_8084_loucen_05_manual"))
+        cesta = self.ke_stazeni(["| [ ] | cizí | https://ebadatelna.soapraha.cz/pages/MatrikaPage/matrikaId/1 |"])
+        self.slozka("loucen-05", MATRIKA, ["a.jpg", "b.jpg"])
+        rc, out = self.spust("--proved")
+        self.assertEqual(rc, 0, out)
+        self.assertIn("nic neodškrtnuto", out)
+        self.assertNotIn("[x]", open(cesta, encoding="utf-8").read())
+
+    def test_nahled_neodskrtava(self):
+        cesta = self.ke_stazeni(["| [ ] | Loučeň | https://ebadatelna.soapraha.cz/pages/MatrikaPage/matrikaId/8084 |"])
+        self.slozka("loucen-05", MATRIKA, ["a.jpg", "b.jpg"])
+        rc, out = self.spust()
+        self.assertEqual(rc, 0, out)
+        self.assertNotIn("[x]", open(cesta, encoding="utf-8").read())
+
     def test_pocet_nesedi(self):
         p = self.slozka("jikev-pozemkova-kniha", ARCHIVALIE.format(n=5), ["a1.jpg", "a2.jpg"])
         rc, out = self.spust("--proved")
