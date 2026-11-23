@@ -241,7 +241,7 @@ Podrobně `reference/web.md`. Ve zkratce:
 1. `cd web && npm install` (jednou), pak `npm run nahled` → http://localhost:4321 – ukaž uživateli. V cloudovém prostředí
    (claude.ai) localhost neuvidí – pošli mu snímky stránek (headless prohlížeč) nebo nasaď náhled.
 2. Nastav `data/web.json`: název, úvod, kontakt a **přihlašovací otázku a odpověď** (web je jen pro rodinu).
-3. Po každé změně dat: `npm run data && npm run build` (nebo znovu `npm run nahled`). Hlášky `POZOR: nefunkční odkaz`
+3. Po každé změně dat (vždy ve složce `web/`, ne v kořeni projektu – tam `package.json` není): `cd web && npm run data && npm run build` (nebo znovu `npm run nahled`). Hlášky `POZOR: nefunkční odkaz`
    oprav hned (adresa osoby se mění, když se jí doplní rok narození).
    Po každém větším kole hledání zkontroluj i texty úvodu ve `web.json` (`uvod`, `zajimavosti_na_uvodu`) –
    zastarávají („nejstarší předek je…“, počty generací).
@@ -250,7 +250,7 @@ Podrobně `reference/web.md`. Ve zkratce:
    co na webu nechat smí, zapiš úryvkem textu do `web.json` → `citlive_schvaleno` (pak se už nehlásí).
 
 ## Fáze 5 – Zveřejnění (volitelné, jen se souhlasem)
-Výchozí cesta je **Netlify** (zdarma): `npm run nasadit`. Přihlášení k Netlify a první propojení webu jsou interaktivní –
+Výchozí cesta je **Netlify** (zdarma): `cd web && npm run nasadit`. Přihlášení k Netlify a první propojení webu jsou interaktivní –
 dej je uživateli jako `! npx netlify-cli login` atd. (postup v `reference/web.md`). Pokročilá varianta: vlastní server (kontejner v Podmanu/CapRover, `Containerfile` na UBI bez root – ne Docker).
 Nic nezveřejňuj bez výslovného souhlasu uživatele.
 
