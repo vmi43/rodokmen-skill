@@ -85,5 +85,3 @@ Rešerše: stažen a přečten celý upstream `dejiny-domu-skill` (0.5.0, větev
 
 ## Parkované v session
 
-- **Poznámky z projektu 2026-11-22: hotovo, nic nezbývá** (zapracováno v kódu i návodech, viz `docs/decisions.md`, „Poznámky z uživatelova projektu 2026-11-22“). Další dávka (šest mapových poznámek z 2026-11-23: písmo v `prehled`, šířka výřezu, opakování přenosu, hosty, skica, mapa jako doklad) je zapracovaná taky, viz `docs/decisions.md`; živě neověřeno. Zbývá jen vydání (verze, changelog) a PR; smazat tuto položku po mergi.
-- **Export do GEDCOM (`ged_export.py`) – vydání 0.9.2 čeká na tag a release.** Větev `feat/ged-export` je od 2026-11-23 sloučená do `main` (PR 6); verze 0.9.2 a changelog jsou připravené; import včetně výřezů ověřen v MacFamilyTree 11 (2026-11-22 a 23). **Zbývá:** tag `v0.9.2` a release s textem sekce z `CHANGELOG.md` (postup v `CLAUDE.md`). Pak tuto položku smazat. **Odložené:** `GEDZIP`, ověření importu v Gramps.

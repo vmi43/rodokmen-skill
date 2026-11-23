@@ -6,10 +6,24 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
-## 0.9.2 – 22. 11. 2026
+## 0.9.3 – 23. 11. 2026
 
 **Nové**
 - `ged_export.py`: z `data/osoby.py` vyrobí GEDCOM (5.5.1 nebo 7.0) pro MacFamilyTree 11, Gramps a další programy – osoby, rodiny, data, místa se souřadnicemi, zdroje ze zápisů a k nim výřezy zápisů z matrik. Výstup je jedna složka `pracovni/gedcom/` (`rodokmen.ged` a `media/`). Bez ISSUES a HYPOTEZ, `--bez-zivych` vynechá možná žijící, `--bez-obrazku` výřezy.
+- `kontrola.py` upozorní, když `STAV.md` nebo `todo.md` projektu zmiňují nástroj `něco.py`, který v projektu není.
+- `mista.py` přijme celou adresu tak, jak ji vypíše `ruian` (včetně PSČ), a při nenalezení řekne, co k adrese zná jinde.
+
+**Opravy**
+- `cuzk_archiv.py prehled` a `adresy` padaly na „unable to read font“; teď si písmo najdou, a když ne, vypíšou pořadí listů.
+- `cuzk_archiv.py export` při odpovědi „image exceeds the size limit“ sníží šířku výřezu a zkusí znovu.
+- `cuzk_archiv.py` a `geolab.py` zopakují i useknutý přenos a po neúspěchu napíšou větu s hostem, ne traceback.
+- `sdileni.py` rozliší výpadek sítě nebo nepovolený host od „obec v mapě není“.
+- `verze.py` vypíše cestu instalace skillu, kterou porovnává (výstup se lišil podle místa spuštění).
+
+**Návody**
+- Sandbox: `npm install --cache "$TMPDIR/npm-cache"`, seznam hostů ke schválení (`registry.npmjs.org`, `ags.cuzk.gov.cz`, `ags.cuzk.cz`, `gis.cenia.cz`, `geolab.cz`, `oldmaps.geolab.cz`) a poznámka, že npm příkazy webu se pouštějí z `web/`.
+- Indikační skica jako klíč k čp. a stavební parcele, vrstva `pk` u malých obcí a postup, jak zapsat mapu jako doklad, který `kontrola.py` přijme.
+- Číslo deníku se píše až po zápisu řádku; ruční kopie `domy.py` do existujícího projektu.
 
 ## 0.9.1 – 13. 11. 2026
 
