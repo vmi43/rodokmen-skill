@@ -20,7 +20,7 @@ projektu [vzoha/dejiny-domu-skill](https://github.com/vzoha/dejiny-domu-skill) a
 
 **Autor a správce původního projektu:** Jindřich Šaršon ([sarsonj@gmail.com](mailto:sarsonj@gmail.com), [GitHub](https://github.com/sarsonj))
 
-**Aktuální verze: 0.9.1 (vydána 13. 11. 2026).** Skill se průběžně vyvíjí – opravuji chyby a doplňuji postupy pro další archivy
+**Aktuální verze: 0.9.2 (vydána 22. 11. 2026).** Skill se průběžně vyvíjí – opravuji chyby a doplňuji postupy pro další archivy
 podle toho, na co narazíte vy. Jak aktualizovat, najdete v části [Instalace](#instalace), přehled změn
 po verzích v [CHANGELOG.md](CHANGELOG.md).
 
@@ -75,7 +75,7 @@ s přepisem a překladem, „Co hledáme“ a deník hledání. **[Podívejte se
 AI se vyvíjí rychle a za pár měsíců může skill dávat lepší, nebo jen jiné výsledky. Proto je tu uvedeno, s čím byl
 vyzkoušený.
 
-- **Stav k 13. 11. 2026 (verze 0.9.1):** Claude Code s hlavním modelem **Claude Opus 5.5**. Pomocníci, kteří hledají
+- **Stav k 22. 11. 2026 (verze 0.9.2):** Claude Code s hlavním modelem **Claude Opus 5.5**. Pomocníci, kteří hledají
   a čtou matriky jako první, běží na **Claude Sonnet 5.5**. Každý jejich nález pak hlavní model ověřuje na snímku.
 - Vyzkoušeno na několika skutečných rodokmenech (největší má 243 předků v 11 generacích a 192 matričních zápisů).
   Výsledek se porovnával s větví, kterou jsme léta dělali ručně.
@@ -167,7 +167,8 @@ shared/              společné soubory skillů
   pomalejší.
 - U úředníků, vojáků a lékařů hledá i v **dobových novinách** (ANNO, Kramerius) – kariéra, vyznamenání, parte.
 - Umí načíst **rodinný strom z MyHeritage** a dalších služeb (export GEDCOM, z MyHeritage i zálohu stromu z programu
-  Family Tree Builder) a udělat z něj plán hledání.
+  Family Tree Builder) a udělat z něj plán hledání. Naopak z vašich dat umí vyrobit **GEDCOM** pro MacFamilyTree,
+  Gramps a další programy (`ged_export.py`).
 - Průběžně sbírá **zajímavosti** (svatby na poslední chvíli, rod sto let v jednom domě…) a s vámi napíše
   **Příběh vašeho rodu** – hlavní článek webu.
 - Claude čte staré písmo dobře, ale ne bezchybně. Proto ke každému zápisu ukládá výřez s vyznačeným místem,

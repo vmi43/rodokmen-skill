@@ -108,7 +108,7 @@ pak `data/pribeh.md` a `web.json`. Víc příběhů (dům, obec, výměnek) jde 
 (čp. 12 → `cp12`, ev. 3 → `cpev-3`) přidá na stránku domu tlačítko „Přečíst příběh domu“, slug `obec` totéž na stránku obce.
 
 ## Fáze 6 – Web a zveřejnění
-Šablona webu má stránky `obec`, `domy` a `dum/[slug]` (zapnou se, když je `data/domy.py`); `npm run data` a `npm run build`
+Šablona webu má stránky `obec`, `domy` a `dum/[slug]` (zapnou se, když je `data/domy.py`); `npm run data` a `npm run build` (ve složce `web/`)
 jako u rodokmenu, postup a přehled stránek domu v `reference/web.md` (*Dům, obec a staré mapy*). Mapa domu se ukáže u domu s `lat`/`lon`, stránka `mapy` jen když je `data/mapy.json`. Před zveřejněním projdi `reference/soukromi.md` (dnešní majitelé, žijící lidé,
 fotky sousedů). **Nic nezveřejňuj bez výslovného souhlasu uživatele.**
 
