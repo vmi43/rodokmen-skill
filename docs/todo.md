@@ -84,4 +84,4 @@ Rešerše: stažen a přečten celý upstream `dejiny-domu-skill` (0.5.0, větev
 
 ## Parkované v session
 
-- **Poznámky z projektu 2026-11-22: hotovo, nic nezbývá** (zapracováno v kódu i návodech, viz `docs/decisions.md`, „Poznámky z uživatelova projektu 2026-11-22“). Zbývá jen vydání (verze, changelog) a PR; smazat tuto položku po mergi.
+- **Poznámky z projektu 2026-11-22: hotovo, nic nezbývá** (zapracováno v kódu i návodech, viz `docs/decisions.md`, „Poznámky z uživatelova projektu 2026-11-22“). Další dávka (šest mapových poznámek z 2026-11-23: písmo v `prehled`, šířka výřezu, opakování přenosu, hosty, skica, mapa jako doklad) je zapracovaná taky, viz `docs/decisions.md`; živě neověřeno. Zbývá jen vydání (verze, changelog) a PR; smazat tuto položku po mergi.

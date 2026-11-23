@@ -44,14 +44,18 @@ Použití (z kořene projektu):
   cuzk_archiv.py lms "Horní Lhota 12" | lat,lon
       které ročníky leteckých měřických snímků z 30.–60. let (armáda, © MO ČR) místo pokrývají – jen seznam.
       Snímky si uživatel prohlédne v aplikaci Archiv ČÚZK; soubor je placený a jen pro vlastní potřebu (reference/podminky.md).
+V sandboxu Claude Code (`allowed_domains`) potřebuje dva hosty ČÚZK: `ags.cuzk.gov.cz` (archiv, token) a `ags.cuzk.cz`
+(adresní body RÚIAN, vrstva `pk` v `mapa`), u `mapa cenia50|vm3` ještě `gis.cenia.cz`. Server občas utne přenos nebo odmítne
+velký výřez (šířka přes ~2000 px): nástroj zopakuje dotaz a u odmítnuté velikosti sám sníží šířku.
 Ber ohled na server: stahuj jen listy a výřezy, které čteš. Výsledek ulož do dokumentů a dál vyrez.py + mapy.json.
 """
-import glob, json, math, os, re, shutil, subprocess, sys, time, urllib.parse, urllib.request
+import glob, http.client, json, math, os, re, shutil, subprocess, sys, time, urllib.parse, urllib.request
 for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))   # -I nepřidá složku skriptu sama
 import mista  # noqa: E402
+import mapa_knihy  # noqa: E402 – písmo pro popisky ImageMagicku (macOS z Homebrew výchozí písmo nemá)
 import slusne  # noqa: E402 – brzda proti zablokování archivem (společný limit dotazů, tools/slusne.py)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -86,9 +90,10 @@ def get(url, params=None, binary=False):
             with urllib.request.urlopen(req, timeout=120) as r:
                 d = r.read()
                 return d if binary else json.loads(d)
-        except OSError:
+        except (OSError, http.client.HTTPException) as e:   # i useknutý přenos (IncompleteRead), v sandboxu časté
             if pokus == 2:
-                raise
+                sys.exit(f"{urllib.parse.urlsplit(url).netloc}: odpověď se třikrát nepodařilo stáhnout celou "
+                         f"({type(e).__name__}) – zkus to za chvíli znovu")
             time.sleep(2)
 
 
@@ -183,12 +188,17 @@ def export(sluzba, rid, out, vyrez="0,0,1,1", sirka=4000):
     a, b, c, e = (float(x) for x in vyrez.split(","))
     bbox = (X0 + a * (X1 - X0), Y1 - e * (Y1 - Y0), X0 + c * (X1 - X0), Y1 - b * (Y1 - Y0))   # y roste nahoru
     sirka = int(sirka)
-    vyska = round(sirka * (bbox[3] - bbox[1]) / (bbox[2] - bbox[0]))
-    img = archiv(f"archiv_nespojene_{sluzba}/ImageServer/exportImage", {
-        "f": "image", "bbox": ",".join(f"{v:.4f}" for v in bbox), "size": f"{sirka},{vyska}", "format": "jpg",
-        "compressionQuality": 92,
-        "mosaicRule": json.dumps({"ascending": True, "lockRasterIds": [int(rid)], "mosaicMethod": "esriMosaicLockRaster"})},
-        binary=True)
+    while True:
+        vyska = round(sirka * (bbox[3] - bbox[1]) / (bbox[2] - bbox[0]))
+        img = archiv(f"archiv_nespojene_{sluzba}/ImageServer/exportImage", {
+            "f": "image", "bbox": ",".join(f"{v:.4f}" for v in bbox), "size": f"{sirka},{vyska}", "format": "jpg",
+            "compressionQuality": 92,
+            "mosaicRule": json.dumps({"ascending": True, "lockRasterIds": [int(rid)], "mosaicMethod": "esriMosaicLockRaster"})},
+            binary=True)
+        if b"size limit" not in img[:1000] or sirka <= 500:   # server odmítá velký obrázek (výřez šířky 3000 px u skici)
+            break
+        sirka = round(sirka * .7)
+        print(f"Server odmítl velikost obrázku (image exceeds the size limit) – zkouším šířku {sirka} px.", file=sys.stderr)
     save_jpeg(img, out)
     print(f"{out} {sirka}×{vyska}")
 
@@ -204,22 +214,31 @@ def prehled(sluzba, vzor, out, sirka=600):
         sys.exit("nic – zkus kratší vzor")
     tmp = tempfile.mkdtemp(prefix="prehled_")
     try:
-        soubory = []
+        listy_ = []   # (popisek, soubor)
         for f in feats:
             jmeno = f["attributes"]["Name"]
             if re.search(r"obalka|obálka", jmeno, re.I):
                 continue
-            cil = os.path.join(tmp, f"{len(soubory) // 3:02d}.jpg")
+            cil = os.path.join(tmp, f"{len(listy_):02d}.jpg")
             import contextlib, io
             with contextlib.redirect_stdout(io.StringIO()):
                 export(sluzba, f["attributes"]["OBJECTID"], cil, "0,0,1,1", sirka)
-            soubory += ["-label", f'{f["attributes"]["OBJECTID"]} {jmeno}', cil]
+            listy_.append((f'{f["attributes"]["OBJECTID"]} {jmeno}', cil))
+        if mapa_knihy.PISMO:
+            soubory = [x for popisek, cil in listy_ for x in ("-label", popisek, cil)]
+        else:   # montage s -label bez písma končí „unable to read font“ (macOS bez výchozího písma)
+            print("Písmo pro popisky se nenašlo – listy nejsou popsané. Pořadí (zleva doprava, po řádcích): "
+                  + " | ".join(p for p, _ in listy_), file=sys.stderr)
+            soubory = [cil for _, cil in listy_]
         cmd = ([m, "montage"] if os.path.basename(m).lower().startswith("magick") else [m]) + soubory + [
-            "-tile", "4x", "-geometry", f"{int(sirka)}x{int(sirka)}+6+6", "-pointsize", "18", out]
-        subprocess.run(cmd, check=True)
+            "-tile", "4x", "-geometry", f"{int(sirka)}x{int(sirka)}+6+6"] + (
+            ["-font", mapa_knihy.PISMO, "-pointsize", "18"] if mapa_knihy.PISMO else []) + [out]
+        if subprocess.run(cmd).returncode:
+            sys.exit("ImageMagick přehled neposkládal (výpis výš). Stáhni listy po jednom: "
+                     "rastry → export <id> list.jpg 0,0,1,1 1200")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
-    print(f"{out} – {len(soubory) // 3} listů; pod náhledem je id pro export")
+    print(f"{out} – {len(listy_)} listů; pod náhledem je id pro export")
 
 
 BILA = 245            # jas, od kterého je pixel „bílý“
@@ -328,7 +347,8 @@ def adresy(bbox, px, out):
                    "-stroke", "white", "-strokewidth", "4", "-annotate", f"+{x + 8}+{y - 6}", c,
                    "-stroke", "none", "-annotate", f"+{x + 8}+{y - 6}", c]
     cil = os.path.splitext(out)[0] + "_adresy.jpg"
-    if subprocess.run([mg, out, "-pointsize", "22"] + kresba + [cil]).returncode:
+    pismo = ["-font", mapa_knihy.PISMO] if mapa_knihy.PISMO else []   # bez písma „unable to read font“ a body se nezakreslí
+    if subprocess.run([mg, out] + pismo + ["-pointsize", "22"] + kresba + [cil], stderr=subprocess.DEVNULL).returncode:
         return print("(ImageMagick body nezakreslil, polohy výše)")
     print(f"{cil} – modře dnešní čísla domů (pracovní obrázek; vrstva sedí na dnešní mapu zpravidla do pár metrů)")
 
