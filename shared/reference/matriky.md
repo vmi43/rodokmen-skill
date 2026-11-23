@@ -89,6 +89,12 @@ vsi a sňatek byl v oddílu městyse; ves měla oddíl až na snímcích 380–4
    strany, užší usekne jména) ze 4–8 snímků a slep vedle sebe (`mapa_knihy.py … <od> <do> 1 --vedle --ostre --vyrez
    x0,y0,x1,y1`); celý zápis čti jen u kandidátů. U vybledlých knih se
    zápisy snadno přehlédnou – tam raději celé strany.
+   Snímek bývá dvoustrana: rozděl ji na půlstrany (`magick s<N>.jpg -crop 50%x100% +repage p%d.jpg`), z každé vyřízni
+   sloupec a slep vedle sebe (`+append`). V knize zemřelých řazené po číslech domů tak šest stran se sloupcem „čp. + jméno“
+   na jednom obrázku znamenalo 18 let jedné vsi ve třech obrázcích (mapa záhlaví `mapa_knihy.py soubory`, každý 8. snímek,
+   našla oddíl vsi). **Ořez sloupce nesedí na všech stranách stejně** (stránka je na snímku posunutá): u každého výřezu
+   zkontroluj, že je sloupec celý a čísla nepřetínají okraj, jinak výřez rozšiř, než napíšeš „nenalezeno“. Kniha oddaných
+   má jména ženicha a nevěsty v levých ~62 % strany: `magick s<N>.jpg -crop 62%x100%+0+0 -resize 1400x`.
 5. **Pasti:** sňatek bývá v oddílu vsi nevěsty, ale některé fary řadily podle ženicha (Držkov); starší knihy mají
    narozené, oddané a zemřelé proložené a bez obsahu; čísla stran v samostatném rejstříku nemusí sedět se stránkováním
    knihy. Než napíšeš „nenalezeno“, zmapuj **všechny** oddíly.

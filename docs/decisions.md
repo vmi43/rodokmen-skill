@@ -321,3 +321,12 @@ Deset poznámek z aktualizace 0.8.0 → 0.9.1 v sandboxu (macOS). Větev `fix/po
 - **Rozhodnutí:** GEDCOM export, opravy z poznámek z 22. a 23. 11. a dokumentace jdou do jednoho vydání 0.9.3. Verze 0.9.2 v tomto forku nevyšla (tag nevznikl), její sekce v `CHANGELOG.md` je sloučená do 0.9.3.
 - **Proč:** tag `v0.9.2` už existuje v upstreamu (`sarsonj/rodokmen-skill`, jiné vydání: kontrola verze, MZA přes Playwright), takže stejné číslo u nás by označovalo dvě různé věci. Upstream mezitím vydal i 0.10.0; převzetí je v `docs/todo.md`.
 
+## Poznámky z uživatelova projektu 2026-11-23: čtyři poznámky o knihách a pomocnících (2026-11-23)
+
+Větev `fix/poznamky-2026-11-23-dalsi`, bez změny verze (vydání zvlášť).
+
+- **Seznam knih ke stažení: `data/ke_stazeni.md` v šabloně projektu.** Jeden soubor s tabulkou (stav, kniha, roky, snímky, proč, odkaz na matriku, ZIP z pomůcky), ostatní místa na něj jen odkazují. `zarad.py … --proved` po úspěšném zařazení odškrtne řádek (`[ ]` → `[x] zařazeno <klíč>`); řádek najde podle čísla knihy v odkazu na matriku (`matrikaId/<id>` s hranicí čísla, `archivalieId/<id>`, `apu/<apu8>`), jiný nedotkne. **Soubor v projektu chybí → nástroj mlčí a nic nezakládá** (starší projekty ho nemají; aktualizace projektu mění jen `tools/` a `web/`, ne `data/`, a návod říká, že ho má Claude zkopírovat ze šablony). **Zavržené:** odškrtávat podle názvu knihy (nespolehlivé), zakládat soubor automaticky v `zarad.py` (zásah do projektu bez vyžádání).
+- **Model pomocníka:** čtení kurentu před ~1830 zadávat Opusu, ne Sonnetu (`SKILL.md`, README). Opírá se o jednu knihu oddaných z přelomu 18./19. stol.: Sonnet přehlédl zápisy a „Panna“ přečetl jako „Anna“, Opus tutéž knihu přečetl spolehlivě. Pro kurent po roce 1830 zkušenost chybí a návod to říká. Zavržené: pravidlo „kurent vždy Opus“ bez data (nepodložené).
+- **Sonnet „čte z přehledu“:** v zadání chtít přečtené jméno **každého** ženicha a nevěsty ze zvětšení do `postup.md`; „nenalezeno“ od Sonneta platí jako „bez zásahu“. Starší věta „na špatně čitelné knihy (kurent 1. poloviny 19. století) pomocníky nepouštěj“ je zúžená na vybledlé snímky, protože s přesným zadáním na Opusu kurent funguje.
+- **Rychlé hledání v oddílu knihy zemřelých:** už popsané mapa knihy a montáž sloupců (`matriky.md`, bod 3 a 4) se doplnilo o půlstrany, příklad (18 let jedné vsi ve třech obrázcích), past s posunem stránky a ořez pro knihu oddaných. **Kód se nemění:** `--vedle` se zarovnáním podle linek tabulky je nápad bez ověření, jde do `docs/todo.md`.
+

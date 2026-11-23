@@ -111,7 +111,7 @@ Základní smyčka pro každou osobu:
    zapiš do `data/archivni_dotazy.md` a jdi dál.
 3. **Najdi svazek**: podle obce → farnost → archiv. ARON: `python3 -I tools/aron_search.py "Obec"`, SOA Plzeň:
    `python3 -I tools/portafontium.py obec "Obec"`, Praha: `tools/ahmp_search.sh`;
-   SOA Praha (střední Čechy), MZA Brno a SOA Třeboň jen v prohlížeči (nebo knihu stáhne uživatel ručně – složka s `obsah.txt`, viz `portaly.md`), ostatní a Rakousko viz `reference/portaly.md`. Sňatek hledej nejdřív
+   SOA Praha (střední Čechy), MZA Brno a SOA Třeboň jen v prohlížeči (nebo knihu stáhne uživatel ručně – složka s `obsah.txt`, viz `portaly.md`; takovou knihu zapiš do `data/ke_stazeni.md`), ostatní a Rakousko viz `reference/portaly.md`. Sňatek hledej nejdřív
    ve farnosti nevěsty.
    Je-li ke svazku index (rejstřík), začni jím. Starší matriky (před ~1784) bývají ve faře sousedního města.
 4. **Stáhni snímek** do `pracovni/<svazek>/` a nech ho tam – před dalším stažením se podívej, jestli ho už nemáš
@@ -196,8 +196,10 @@ model. Jde o princip čtyř očí a pomocník nemá kontext (dvě rodiny stejné
 Prohlížeč může mít najednou jen jeden pomocník, proto dávej přednost nástrojům bez prohlížeče.
 **Pomocníky spouštěj na levnějším modelu a odstupňuj ho podle úlohy:** výchozí je Sonnet (`model: "sonnet"`: hledání a první
 čtení zvládne a stojí zlomek kreditů); mechanika bez čtení písma (stahování snímků, seznamy svazků, kontrola dat) zvládne
-Haiku; složitější úlohy (rekonstrukce domácností, sporné ztotožnění) patří Opusu a jednotlivá nejtěžší čtení (kurent,
-latina) Fable. Ověření na snímku a zápis do dat dělá vždy hlavní model (ty). Uživateli to řekni, ať ví, proč kredity
+Haiku; složitější úlohy (rekonstrukce domácností, sporné ztotožnění) patří Opusu, a **čtení ručně psaného kurentu
+z doby před ~1830 také Opusu, ne Sonnetu** (zkušenost z jedné knihy oddaných z přelomu 18./19. stol.: Sonnet přehlédl
+zápisy a „Panna“ přečetl jako „Anna“, Opus tutéž knihu přečetl spolehlivě); jednotlivá nejtěžší čtení (latina, nečitelný
+kurent) Fable. Ověření na snímku a zápis do dat dělá vždy hlavní model (ty). Uživateli to řekni, ať ví, proč kredity
 tolik neubývají.
 Osvědčilo se 3–4 pomocníci na různé větve a archivy současně, jedno kolo ≈ 15–25 nových předků.
 Pomocníci stojí hodně kreditů – před velkým kolem řekni uživateli, co plánuješ a proč, a nech si to schválit.
@@ -215,10 +217,19 @@ a pravidla brzdy výše (síť jen přes `tools/slusne.py`, při hlášce „zas
 - místa uváděj v základním tvaru (Vinaře, okr. Kutná Hora), ne jen v tvaru z přepisu („z Vinař“),
 - knihy po vsích (kniha oddaných z přelomu 18./19. stol. v SOA Praha bývá členěná po vsích) před čtením rozděl na sekce,
   roky nekalibruj,
-- delegovaní pomocníci nemusí mít povolený `aron_img.py`: dej ho předem do projektového `.claude/settings.json`.
+- delegovaní pomocníci nemusí mít povolený `aron_img.py`: dej ho předem do projektového `.claude/settings.json`,
+- **hledá-li se příjmení v tabulce** (kniha oddaných po vsích, rejstřík), chtěj do `postup.md` přečtené jméno **každého**
+  ženicha a nevěsty ze zvětšení, ne jen kandidátů vybraných z celostránkového přehledu. Sonnet „četl z přehledu“,
+  zvětšoval jen zápisy, které si vybral, a hlásil „hledané příjmení nenalezeno“, přitom na jediném snímku byly dva hledané
+  zápisy. **„Nenalezeno“ od Sonneta ber jako „bez zásahu“**; příjmení v kurentu čti raději sám nebo je dej Opusu.
 **V zadání chtěj u každého prošlého snímku, co na něm skutečně přečetl** (rok, první jméno), ne jen „prošel jsem
-sn. 20–40“ – pomocník jinak přehlédne, že se mu část snímků nenačetla. Na špatně čitelné knihy (kurent 1. poloviny
-19. století, vybledlé snímky) pomocníky nepouštěj, nebo jim dej přesný snímek; ARON a Porta fontium zvládají dobře.
+sn. 20–40“ – pomocník jinak přehlédne, že se mu část snímků nenačetla. Na vybledlé snímky pomocníky nepouštěj, nebo jim
+dej přesný snímek; ARON a Porta fontium zvládají dobře.
+**Kurent z doby před ~1830 zadávej pomocníkovi na Opusu a takhle:** každý zápis zvětšit přes `overit.py`, po každém
+snímku řádek do `postup.md`, nejvýš asi 25 zvětšenin na pomocníka a rovnou připravit do `pracovni/pom_<větev>/` JSONy
+pro `zapis.py` (záznam a přepis) se zlomky výřezu a rámečku. Ty pak u každého zápisu prohlédneš 1–2 zvětšeniny, ověříš
+a nástroje spustíš sám (do `data/` nezapisuje pomocník). Takhle to u zkoušené knihy fungovalo; na kurentu po roce 1830
+zkušenost zatím není.
 
 ### Kdy přestat
 Linie končí, když matriky mlčí (nemanželské dítě bez otce, shořelé knihy, chybějící svazky) nebo když jsi

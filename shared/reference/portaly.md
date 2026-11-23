@@ -465,10 +465,16 @@ potřebné je v `obsah.txt`.
   `matrikaId`, klíč je `ebad_a_<archivalieId>` (jako u `ebadatelna.py a-svazek`), ve `svazky.json` pole `typ: "archivalie"`;
   `obsah.txt` má jiný formát než u matrik, přečti ho celý.
 
+**Seznam knih ke stažení je jediný: `data/ke_stazeni.md`** (tabulka: stav, kniha, roky, snímky, proč, odkaz na matriku, ZIP z
+pomůcky). Každou knihu, kterou má uživatel stáhnout, zapiš tam hned a v `todo.md`, `STAV.md` i v chatu na ni jen odkaž;
+jinak se seznam rozběhne na tři místa a nedá se z něj poznat, co už je stažené. Odkaz na matriku (s `matrikaId`,
+`archivalieId` nebo `apu`) je v řádku povinný, podle něj se řádek odškrtá. Starší projekt soubor nemá: zkopíruj ho ze
+skillu (`shared/template/data/ke_stazeni.md`) do `data/`.
+
 Zařazení dělá **`python3 -I tools/zarad.py [pracovni/<složka> …]`** (bez sítě, bez složek vezme všechny s `obsah.txt`): nejdřív
 náhled s klíčem, novým názvem a rozpory (počet snímků × `obsah.txt`, název × `svazky.json`, jiný klíč ve jménu složky);
 ukaž ho uživateli, po potvrzení pusť znovu s `--proved`. Nástroj provede kroky 1–5, vypíše strojové kopie a staré cesty
-v textech (kroky 6 a 7 děláš ty, nic nemaže) a `obsah.md` zapíše jako koncept, který doplň. U archiválie použije klíč
+v textech (kroky 6 a 7 děláš ty, nic nemaže), odškrtne řádek knihy v `data/ke_stazeni.md` (je-li soubor v projektu) a `obsah.md` zapíše jako koncept, který doplň. U archiválie použije klíč
 `archivalie_<id>`, je-li už ve `svazky.json`, jinak `ebad_a_<id>`. Postup, který nástroj dělá:
 1. Přečti `obsah.txt`. Klíč svazku je číslo z odkazu: eBadatelna `ebad_<matrikaId>`, ARON `aron_<apu8>` (prvních 8 znaků
    apu; ve `svazky.json` je klíč bez předpony, jak ho zapisuje `aron_img.py … svazek`), Porta fontium `pf_<kniha>`.
