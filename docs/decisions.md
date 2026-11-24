@@ -382,3 +382,12 @@ Zkouška 0.9.5 na uživatelově projektu a vydání (PR #10, tag a vydání `v0.
 - **Návody:** `docs/vydani.md` (vydání) a `docs/aktualizace.md` (plugin a projekt); `CLAUDE.md` jen odkazuje (jedno místo pravdy). V návodu k vydání jsou pasti ze zkoušky: `gh` a `git push` v sandboxu jdou mimo něj, text PR do scratchpadu (ne `$TMPDIR`), zrušený `gh pr merge` mohl proběhnout (ověřit stav před opakováním).
 - **Fork:** `plugin.json` a `marketplace.json` mají autora „Vaclav Miller“ a v popisu větu o forku (rozhodl uživatel). `LICENSE` zůstává s copyrightem původního autora (MIT to vyžaduje); druhý řádek s uživatelovým copyrightem se nepřidal (viz `todo.md`).
 - **Číslo verze se nezvedlo** u PR #13: aplikace ukáže nového autora a popis až po aktualizaci pluginu; cache se bez nového čísla nepřeinstaluje.
+
+## Vydání 0.9.6: klíč shody v indexu, rejstřík pomocníky, „index před knihou“ (2026-11-24)
+
+**Rozhodnuto 2026-11-24** na podnětech z uživatelova projektu (kurent 1784–1834, rejstřík zemřelých 1834–1894).
+
+- **Klíč shody v `indexy.py pridej` má i `obec` a `strana`.** Bez nich se v rejstříku bez dat zahodili stejnojmenní lidé z různých vsí na jednom snímku (35 ze 602 řádků). **Zavržené:** připisovat ves do `osoby`, jak to udělal uživatel jako obejití (ztíží hledání podle jména a ves má vlastní sloupec).
+- **Značku knihy `pridej` nekontroluje, jen po zápisu vypíše různé značky.** Tvar se mezi knihami liší („N 1850–1870“, „Z lit. L.P“), pevný vzor by odmítal platné zápisy. Hlídá to zadání pomocníkovi a výpis; sjednocení je ruční. **Zavržené:** pevný vzor značky v kódu; vrátit se k němu, až bude víc knih a ustálí se tvary.
+- **Krok „index před knihou“ je v `SKILL.md` a `matriky.md` bez opakované zkoušky** (rozhodl uživatel; původně se měla zkouška zopakovat před zápisem). Ověření při příštím hledání v projektu s indexem je v `docs/todo.md`.
+- **Čísla ceny pomocníků** (0,7 % / 1,25 % okna na snímek) jsou z jednoho projektu a plánu Team; v návodu jsou jako řád, ne slib.
