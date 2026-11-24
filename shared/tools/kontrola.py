@@ -5,7 +5,7 @@ Použití: kontrola.py
 Vypíše CHYBY (rozbijí web nebo jsou věcně špatně) a UPOZORNĚNÍ (něco chybí, doplnit).
 Návratový kód 1, pokud jsou chyby.
 """
-import datetime, json, os, re, sys, unicodedata
+import datetime, glob, json, os, re, sys, unicodedata
 if sys.argv[1:2] in (["-h"], ["--help"]):   # nápověda místo pádu
     sys.exit(__doc__.strip())
 try:
@@ -112,17 +112,28 @@ def kontrola_domu(ns, P, keys):
     return err, warn, cited
 
 
+HISTORIE = re.compile(r"odstraněn|zrušen|nahrazen|nahradil|smazán", re.I)
+
+
 def chybejici_nastroje():
     """Jména `něco.py` v textech projektu (data/STAV.md, todo.md, docs/todo.md), která nejsou v tools/ ani v data/ –
     po aktualizaci tam zůstávají přejmenované nástroje (omezovac.py → slusne.py). → [(soubor, jméno)]"""
     tools = os.path.join(ROOT, "tools")
     znama = {f for d in (tools, DATA) if os.path.isdir(d) for f in os.listdir(d)}
+    znama.add("novy_projekt.py")   # je jen ve skillu, do projektu se nekopíruje (aktualizace se spouští ze skillu)
+    try:   # historická jména, která uživatel v textu nechává: data/web.json → "nastroje_historie": ["trebon.py"]
+        hist = json.load(open(os.path.join(DATA, "web.json"), encoding="utf-8-sig")).get("nastroje_historie")
+        znama.update(hist if isinstance(hist, list) else [])
+    except (OSError, ValueError, AttributeError):
+        pass
     nalezy = []
     for rel in ("data/STAV.md", "todo.md", "docs/todo.md"):
         cesta = os.path.join(ROOT, *rel.split("/"))
         if not os.path.exists(cesta):
             continue
         text = open(cesta, encoding="utf-8-sig").read()
+        text = re.sub(r"~~.*?~~", " ", text)   # přeškrtnuté = vyřízené
+        text = "\n".join(l for l in text.split("\n") if not HISTORIE.search(l))   # „odstraněn“ atd. je historie, ne odkaz
         for jmeno in sorted(set(re.findall(r"(?<![\w./-])([A-Za-z][\w]*\.py)\b", text))):
             if jmeno not in znama:
                 nalezy.append((rel, jmeno))
@@ -152,6 +163,22 @@ def main():
     if dup:
         err.append(f"zápisy se stejným klíčem: {sorted(dup)}")
     keys = set(keys)
+    # indexy knih (data/indexy/<klíč svazku>.tsv, tools/indexy.py): klíč musí být ve svazky.json, záhlaví a snímky v pořádku
+    for cesta in sorted(glob.glob(os.path.join(DATA, "indexy", "*.tsv"))):
+        ik = os.path.basename(cesta)[:-4]
+        radky = [r.rstrip("\n").split("\t") for r in open(cesta, encoding="utf-8") if r.strip()]
+        if ik not in svazky:
+            err.append(f"index data/indexy/{ik}.tsv: klíč '{ik}' není v data/svazky.json")
+        if not radky or radky[0] != ["snimek", "datum", "typ", "obec", "osoby", "ostatni", "jistota", "cetl", "odkaz", "strana", "kniha"]:
+            err.append(f"index data/indexy/{ik}.tsv: chybí nebo nesedí záhlaví (viz tools/indexy.py --help)")
+            continue
+        mx = svazky.get(ik, {}).get("snimku")
+        for i, r in enumerate(radky[1:], 2):
+            r += [""] * (11 - len(r))
+            if r[2] not in ("N", "O", "Z", "I") or not r[0].isdigit() or not r[4] or r[6] not in ("vysoká", "střední", "nízká"):
+                err.append(f"index data/indexy/{ik}.tsv, řádek {i}: typ N/O/Z/I, číselný snímek, osoby a jistota (vysoká/střední/nízká) jsou povinné")
+            elif mx and int(r[0]) > int(mx):
+                warn.append(f"index data/indexy/{ik}.tsv, řádek {i}: snímek {r[0]} je za koncem svazku ({mx})")
 
     cited_domy = set()
     if domy:
@@ -403,7 +430,7 @@ def main():
 
     for rel, jmeno in chybejici_nastroje():
         warn.append(f"{rel} zmiňuje {jmeno}, ale v tools/ ani data/ není (přejmenovaný nebo odstraněný nástroj? "
-                    "oprav text, viz tools/ ve skillu)")
+                    "oprav text, přeškrtni ho, nebo jméno zapiš do data/web.json „nastroje_historie“)")
 
     log = os.path.join(DATA, "research_log.md")
     rows = sum(1 for l in open(log, encoding="utf-8-sig") if re.match(r"^\| \d+ \|", l)) if os.path.exists(log) else 0

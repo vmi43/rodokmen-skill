@@ -425,6 +425,9 @@ def main():
         copy_tree(os.path.join(SKILL, "template", "data"), os.path.join(dst, "data"), vynech={"osoby.py"})
     else:
         copy_tree(os.path.join(SKILL, "template", "ukazka" if demo else "data"), os.path.join(dst, "data"))
+    if os.path.isfile(os.path.join(dst, "ke_stazeni.md")) and os.path.isfile(os.path.join(dst, "data", "ke_stazeni.md")):
+        print("POZOR: projekt má ke_stazeni.md v kořeni i v data/ (nová šablona). Převeďte vlastní seznam do data/ke_stazeni.md "
+              "(sloupce Stav, ZIP z pomůcky) a kořenový soubor smažte, ať nezůstanou dva seznamy.")
     if dum:
         copy_tree(os.path.join(SKILL, "template", "dum"), dst)
     if demo:

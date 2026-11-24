@@ -1,10 +1,26 @@
 # Co je nového
 
 Změny ve skillu rodokmen, nejnovější verze nahoře. Každá verze má na GitHubu i
-[vydání (Releases)](https://github.com/sarsonj/rodokmen-skill/releases) – kdo chce dostávat upozornění,
+[vydání (Releases)](https://github.com/vmi43/rodokmen-skill/releases) – kdo chce dostávat upozornění,
 dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
+
+## 0.9.5 – 24. 11. 2026
+
+**Nové**
+- Index knihy: `indexy.py` (`pridej`, `hledej`, `stav`) a složka `data/indexy/` – přepsaný rejstřík nebo rychlý průchod knihou, aby se k téže knize nešlo vracet kvůli každému jménu. Index je vodítko, ne doklad; na web nejde. `kontrola.py` hlídá, že klíč indexu je ve `svazky.json`. Sloupce jsou stejné jako v komunitním indexu matrik.
+- `prispevek.py`: po tvém výslovném souhlasu pošle přepisy z `data/indexy/` do komunitního indexu matrik přes sběrnou schránku Mapy matrik (cizí služba, výsledek je veřejný). Jen zápisy N, O, Z starší zákonných lhůt; `navrh` nic neposílá a ukáže přesně, co odejde.
+
+**Opravy**
+- `indexy.py hledej`: „Fiala“ najde i „Fialová“ (porovnává kmen příjmení bez koncovky). `pridej` odmítne sloupec `cetl`, který není ve tvaru „model/effort RRRR-MM-DD“ (jinak by řádky `prispevek.py` vyřadil).
+- `kontrola.py`: zmínky nástrojů v `STAV.md`/`todo.md` už nehlásí u řádků s „odstraněn/zrušen/nahrazen“, u přeškrtnutého textu ani u `novy_projekt.py` (ten je jen ve skillu); jména, která mají v textu zůstat jako historie, jdou zapsat do `data/web.json` → `nastroje_historie`.
+- `novy_projekt.py`: má-li projekt `ke_stazeni.md` v kořeni, upozorní, že vedle nového `data/ke_stazeni.md` by zůstaly dva seznamy.
+- `zarad.py`: ARON svazek, který má ve `svazky.json` název bez obce („Sbírka matrik …, sign.: 148“), už nehlásí falešný PROBLÉM (shoda podle klíče a signatury) a složku pojmenuje z `obsah.txt`; čte počet snímků z pole „Snímky“ (archiválie z eBadatelny); archiv a popis archiválie bere z polí „Místo uložení“, „Archivní fond“ a „Popis archiválie“; u strojové kopie vypíše hotový příkaz `rm -r` pro uživatele.
+- `aron_img.py` doplní krátký 8znakový klíč ze `svazky.json` na celé apu id (dřív hlásil „Svazek v ARONu není“).
+
+**Návody**
+- Úmrtí starého člověka, které se ve vlastní vsi nenajde: nejdřív rejstřík zemřelých celé farnosti.
 
 ## 0.9.4 – 23. 11. 2026
 

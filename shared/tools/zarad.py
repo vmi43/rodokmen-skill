@@ -13,7 +13,8 @@ Co udělá (postup v reference/portaly.md, „Ručně stažené knihy“):
   - složka → `pracovni/<klíč>_<název>_manual/`, snímky → `s<n>.jpg` podle pořadí (čísla z názvů souborů jen třídí);
   - `obsah.md` (koncept z obsah.txt; doplň, co kniha obsahuje), záznam ve svazky.json s `"upload": "manual"` (přes zapis.py);
   - hlásí rozpory: počet snímků × údaj v obsah.txt, název × záznam ve svazky.json, jiný klíč v názvu složky;
-  - vypíše strojové kopie téhož svazku (nemaže je) a místa v textech projektu, kde zůstaly staré cesty (přepiš přes /replace).
+  - vypíše strojové kopie téhož svazku (nemaže je; je-li kopie jen snímky a `stahovani.log` a počty sedí, vypíše hotový
+    příkaz `rm -r`, který pustí uživatel) a místa v textech projektu, kde zůstaly staré cesty (přepiš přes /replace).
   - je-li v projektu `data/ke_stazeni.md` (seznam knih, které stahuje uživatel), odškrtne po zařazení řádek té knihy
     (najde ho podle čísla knihy v odkazu na matriku nebo ZIP; řádek s `[ ]` v prvním sloupci dostane `[x]`).
 Nic nemaže. Strojové kopie smaž ručně až po shodě počtů a po diffu toho, co zmizelo.
@@ -25,7 +26,7 @@ for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PRAC = os.path.join(ROOT, "pracovni")
-SCANS = re.compile(r"(?im)^(?:number of scans|scans|počet snímků)[ \t]*[:\n][ \t]*(\d+)")
+SCANS = re.compile(r"(?im)^(?:number of scans|scans|počet snímků|snímky)[ \t]*[:\n][ \t]*(\d+)")
 OBRAZEK = re.compile(r"\.jpe?g$", re.I)
 
 
@@ -99,7 +100,8 @@ def plan(slozka, svazky):
     stary = svazky.get(klic, {})
     if url == "" and stary.get("url"):
         url = stary["url"]
-    jmeno_svazku = (stary.get("svazek") or prvni).split(",")[0]
+    # ARON: svazky.json mívá název bez obce („Sbírka matrik …, sign.: 148“), obsah.txt „Ronov 148“ – složku pojmenuj z obsah.txt
+    jmeno_svazku = (prvni if portal == "ARON" and prvni else (stary.get("svazek") or prvni)).split(",")[0]
     p["slozka_nova"] = os.path.join(PRAC, f"{predpona}_{slug(jmeno_svazku)}_manual")
     obr, upoz = obrazky(slozka)
     p["obrazky"] = obr
@@ -114,7 +116,9 @@ def plan(slozka, svazky):
     if not obr:
         p["problemy"].append("ve složce nejsou žádné snímky (.jpg)")
     sa, sb = slug(prvni), slug(stary.get("svazek", ""))
-    if stary.get("svazek") and prvni and not (sb.startswith(sa) or sa.startswith(sb)):   # „loucen-05“ × „Loučeň 05, N 1800–…“ je shoda
+    sign = re.search(r"sign\.?:\s*([\w/.-]+)", stary.get("svazek", ""))
+    aron_shoda = portal == "ARON" and sign and sign[1] in txt   # klíč (apu) sedí a signatura je v obsah.txt = týž svazek
+    if stary.get("svazek") and prvni and not aron_shoda and not (sb.startswith(sa) or sa.startswith(sb)):   # „loucen-05“ × „Loučeň 05, N 1800–…“ je shoda
         p["problemy"].append(f"název z obsah.txt „{prvni}“ se liší od svazky.json „{stary['svazek']}“: ověř, že složka patří ke svazku")
     m = re.search(r"(?:ebad_a?_?|archivalie_|aron_)(\d+|[0-9a-f]{8})", jmeno)
     if m and m[1] != ident:
@@ -133,7 +137,11 @@ def plan(slozka, svazky):
             zaznam["svazek"] = ", ".join(x for x in (prvni, nazev_aron(txt)) if x)
             zaznam["popis"] = pole(txt, "MATRIČNÍ MÍSTO")[:300]
         elif typ:
-            zaznam["archiv"] = "SOA Praha – " + (pole(txt, "Archival fund") or "archiválie")
+            misto, fond = pole(txt, "Místo uložení", "Storage place"), pole(txt, "Archivní fond", "Archival fund")
+            zaznam["archiv"] = " – ".join(x for x in (misto or "SOA Praha", fond or "archiválie") if x)
+            popis = pole(txt, "Popis archiválie", "Description")
+            if popis:
+                zaznam["popis"] = popis[:300]
             zaznam["svazek"] = ", ".join(x for x in (pole(txt, "Original title") or prvni, roky(txt),
                                                       "inv. č. " + pole(txt, "Inventory number") if pole(txt, "Inventory number") else "",
                                                       "sign. " + pole(txt, "Signature") if pole(txt, "Signature") else "") if x)
@@ -158,8 +166,16 @@ def kopie_a_odkazy(p):
         if d.rstrip("/\\") in (p["zdroj"].rstrip("/\\"), p["slozka_nova"].rstrip("/\\")) or n.endswith("_manual"):
             continue
         if any(n == k or n.startswith(k + "_") for k in klice):
-            out.append(f"strojová kopie: pracovni/{n} ({len(glob.glob(os.path.join(d, 's*.jpg')))} snímků) – nemažu")
-    stare = {p["jmeno"]} | {re.sub(r"^.*pracovni/", "", x.split(": ")[1].split(" (")[0]) for x in out}
+            nk = len(glob.glob(os.path.join(d, 's*.jpg')))
+            out.append(f"strojová kopie: pracovni/{n} ({nk} snímků) – nemažu")
+            jine = sorted(f for f in os.listdir(d) if not re.fullmatch(r"s\d+\.jpg|stahovani\.log", f))
+            if jine:
+                out.append(f"  v kopii jsou i jiné soubory ({', '.join(jine[:5])}{' …' if len(jine) > 5 else ''}): nemazat bez prohlídky")
+            elif nk != len(p["obrazky"]):
+                out.append(f"  počet snímků kopie ({nk}) a nové knihy ({len(p['obrazky'])}) nesedí: nemazat, dokud se to nevysvětlí")
+            else:
+                out.append(f"  smazání po kontrole (spustí uživatel, ne Claude): rm -r 'pracovni/{n}'")
+    stare = {p["jmeno"]} | {re.sub(r"^.*pracovni/", "", x.split(": ")[1].split(" (")[0]) for x in out if x.startswith("strojová kopie")}
     hity = []
     for f in glob.glob(os.path.join(ROOT, "*.md")) + glob.glob(os.path.join(ROOT, "data", "*.md")) \
             + glob.glob(os.path.join(ROOT, "data", "*.json")) + glob.glob(os.path.join(ROOT, "docs", "*.md")):

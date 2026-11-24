@@ -1,0 +1,214 @@
+#!/usr/bin/env python3
+"""Indexy knih: přepsaný rejstřík nebo rychlý průchod celou knihou, aby se k téže knize nešlo vracet kvůli každému jménu.
+Bez sítě. Index je VODÍTKO (stav „index“), ne doklad: zásah se vždy ověří na snímku a uloží šesti kroky (zapis.py).
+
+Použití (z kořene projektu `python3 -I tools/indexy.py …`):
+  indexy.py pridej <klíč svazku> <vstup.json|-> [--cetl model/effort]
+                                                  přidá řádky do data/indexy/<klíč>.tsv (soubor s JSON polem objektů
+                                                  se sloupci níže; napiš ho nástrojem Write do pracovni/). Klíč musí být
+                                                  ve data/svazky.json. Shodný řádek (typ, snímek, osoby, datum) se nepřidá podruhé.
+                                                  Řádek bez `cetl` dostane „<model/effort> <dnešní datum>“ z --cetl.
+  indexy.py hledej <část jména> [--ves V] [--klic K] [--typ N|O|Z|I]
+                                                  najde řádky ve všech indexech (bez ohledu na diakritiku a velikost písmen);
+                                                  u každého indexu řekne, co pokrývá, takže „jinde nejsou“ má váhu
+  indexy.py stav                                  přehled indexů: svazek, počet řádků, rozsah snímků, kolik řádků je „?“
+
+Sloupce TSV (pevné pořadí, UTF-8, LF, první řádek je záhlaví). Prvních devět je totéž jako v komunitním indexu matrik
+(pe-pan/matriky-index, `precteno.tsv`), poslední dva jsou naše:
+  snimek   snímek TOHOTO svazku, na kterém je řádek přečtený (u rejstříku snímek rejstříku)
+  datum    datum události (RRRR-MM-DD, neúplné RRRR-MM nebo RRRR), je-li
+  typ      N narození | O oddaní | Z zemřelí | I řádek rejstříku (jen náš; komunitní index rejstříky nemá)
+  obec     ves a číslo popisné: „Lhota 12“
+  osoby    role a jména: „zemřelý: Josef Fiala; otec: Jan Fiala“, „dítě: …; otec: …; matka: … roz. …; kmotr: …“,
+           „ženich: …; nevěsta: …; otec ženicha: …“; nejisté kusy s [?] přímo v textu; u rejstříku jen jméno
+  ostatni  volný text: věk, příčina, kdo pohřbíval, poznámky; ŽÁDNÉ závěry o tom, kdo osoba je a čí je příbuzný
+  jistota  vysoká | střední | nízká  (vybledlé a nečitelné řádky piš s nízkou)
+  cetl     kdo a čím četl: „claude-opus-5-5/high 2026-11-24“ (model/effort a datum; pomocník na Opusu to uvede do vstupu,
+           nebo ho doplní `--cetl model/effort` při pridej)
+  odkaz    adresa snímku, je-li (volitelné; vyplňuje ji až export)
+  strana   strana/folio v knize (u rejstříku strana, na kterou odkazuje) – jen náš
+  kniha    jen u typu I: značka knihy, do které rejstřík odkazuje (např. „N 1850–1870“) – jen náš
+"""
+import datetime, glob, json, os, re, sys, unicodedata
+for _s in (sys.stdout, sys.stderr):
+    if hasattr(_s, "reconfigure"):
+        _s.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdin, "reconfigure"):
+    sys.stdin.reconfigure(encoding="utf-8-sig")
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ADR = os.path.join(ROOT, "data", "indexy")
+SLOUPCE = ["snimek", "datum", "typ", "obec", "osoby", "ostatni", "jistota", "cetl", "odkaz", "strana", "kniha"]
+TYPY = ("N", "O", "Z", "I")
+JISTOTY = ("vysoká", "střední", "nízká")
+
+
+def norm(s):
+    s = unicodedata.normalize("NFKD", str(s).lower())
+    return "".join(c for c in s if not unicodedata.combining(c))
+
+
+def kmen(slovo):
+    """Kmen příjmení bez koncovky, aby „Fiala“ našlo i „Fialová“ a „Černý“ i „Černá“ (v rejstříku stojí ženy jako -ová)."""
+    s = norm(slovo)
+    for k in ("ova", "a", "y", "i", "e"):
+        if s.endswith(k) and len(s) - len(k) >= 3:
+            return s[:-len(k)]
+    return s
+
+
+CETL = re.compile(r"[a-z][a-z0-9.-]+/[a-z0-9]+ \d{4}-\d{2}-\d{2}")
+
+
+def cisti(v):
+    return re.sub(r"[\t\r\n]+", " ", str(v if v is not None else "")).strip()
+
+
+def svazky():
+    try:
+        return json.load(open(os.path.join(ROOT, "data", "svazky.json"), encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def cti(cesta):
+    """(záhlaví ok?, řádky jako slovníky)."""
+    with open(cesta, encoding="utf-8") as f:
+        radky = [r.rstrip("\n").split("\t") for r in f if r.strip()]
+    if not radky or radky[0] != SLOUPCE:
+        return False, []
+    return True, [dict(zip(SLOUPCE, r + [""] * (len(SLOUPCE) - len(r)))) for r in radky[1:]]
+
+
+def pridej(klic, vstup, cetl=""):
+    sv = svazky()
+    if klic not in sv:
+        sys.exit(f"Klíč {klic} není v data/svazky.json: index patří ke svazku, nejdřív ho zapiš (aron_img.py … svazek, zarad.py, zapis.py svazky).")
+    if cetl and not re.fullmatch(r"[a-z][a-z0-9.-]+/[a-z0-9]+", cetl):
+        sys.exit("--cetl: zadej model/effort, např. claude-opus-5-5/high")
+    data = json.load(sys.stdin if vstup == "-" else open(vstup, encoding="utf-8-sig"))
+    if not isinstance(data, list) or not all(isinstance(x, dict) for x in data):
+        sys.exit("Vstup musí být JSON pole objektů, jeden objekt = jeden řádek indexu.")
+    dnes = datetime.date.today().isoformat()
+    nove, chyby = [], []
+    for i, x in enumerate(data, 1):
+        r = {c: cisti(x.get(c)) for c in SLOUPCE}
+        if not r["cetl"] and cetl:
+            r["cetl"] = f"{cetl} {dnes}"
+        if r["cetl"] and not CETL.fullmatch(r["cetl"]):
+            chyby.append(f"řádek {i}: cetl musí být „model/effort RRRR-MM-DD“, např. claude-opus-5-5/high 2026-11-24 "
+                         f"(je „{r['cetl']}“); neznáš-li model nebo effort, nech cetl prázdné a dej --cetl")
+        if r["typ"] not in TYPY:
+            chyby.append(f"řádek {i}: typ musí být N, O, Z nebo I (je „{r['typ']}“)")
+        if not r["snimek"].isdigit():
+            chyby.append(f"řádek {i}: snimek musí být číslo snímku (je „{r['snimek']}“)")
+        if not r["osoby"]:
+            chyby.append(f"řádek {i}: chybí osoby")
+        if r["jistota"] not in JISTOTY:
+            chyby.append(f"řádek {i}: jistota musí být vysoká, střední nebo nízká (je „{r['jistota']}“)")
+        if r["typ"] == "I" and not r["kniha"]:
+            chyby.append(f"řádek {i}: řádek rejstříku (typ I) musí mít knihu, do které odkazuje")
+        if r["snimek"].isdigit() and sv[klic].get("snimku") and int(r["snimek"]) > int(sv[klic]["snimku"]):
+            chyby.append(f"řádek {i}: snímek {r['snimek']} je za koncem svazku ({sv[klic]['snimku']} snímků)")
+        nove.append(r)
+    if chyby:
+        sys.exit("Nic se nezapsalo:\n  " + "\n  ".join(chyby))
+    os.makedirs(ADR, exist_ok=True)
+    cesta = os.path.join(ADR, klic + ".tsv")
+    mam, stavajici = set(), []
+    if os.path.exists(cesta):
+        ok, stavajici = cti(cesta)
+        if not ok:
+            sys.exit(f"{cesta} nemá záhlaví podle indexy.py (viz --help): neopravuji ho naslepo.")
+        mam = {(r["typ"], r["snimek"], norm(r["osoby"]), r["datum"]) for r in stavajici}
+    pridano = 0
+    for r in nove:
+        k = (r["typ"], r["snimek"], norm(r["osoby"]), r["datum"])
+        if k not in mam:
+            mam.add(k)
+            stavajici.append(r)
+            pridano += 1
+    stavajici.sort(key=lambda r: (int(r["snimek"]), r["typ"]))
+    with open(cesta, "w", encoding="utf-8", newline="\n") as f:
+        f.write("\t".join(SLOUPCE) + "\n")
+        for r in stavajici:
+            f.write("\t".join(r[c] for c in SLOUPCE) + "\n")
+    ok, zpet = cti(cesta)   # zpětné čtení: co jsme zapsali, musí jít přečíst
+    if not ok or len(zpet) != len(stavajici):
+        sys.exit(f"POZOR: zpětné čtení {cesta} nesedí, zkontroluj soubor.")
+    print(f"{klic}: přidáno {pridano} ř., přeskočeno {len(nove) - pridano} shodných, v indexu celkem {len(zpet)} ř.")
+
+
+def vsechny():
+    for cesta in sorted(glob.glob(os.path.join(ADR, "*.tsv"))):
+        ok, radky = cti(cesta)
+        yield os.path.basename(cesta)[:-4], ok, radky
+
+
+def pokryti(radky):
+    sn = sorted({int(r["snimek"]) for r in radky if r["snimek"].isdigit()})
+    roky = sorted({r["datum"][:4] for r in radky if re.match(r"\d{4}", r["datum"])})
+    return (f"snímky {sn[0]}–{sn[-1]} ({len(sn)} s řádky)" if sn else "žádné snímky") + (f", roky {roky[0]}–{roky[-1]}" if roky else "")
+
+
+def hledej(args):
+    cast = [a for a in args if not a.startswith("--")]
+    opt = {}
+    for i, a in enumerate(args):
+        if a in ("--ves", "--klic", "--typ") and i + 1 < len(args):
+            opt[a[2:]] = args[i + 1]
+            cast = [c for c in cast if c != args[i + 1]]
+    if not cast:
+        sys.exit("hledej: zadej část jména, např. indexy.py hledej Fiala")
+    q = " ".join(kmen(w) for w in " ".join(cast).split())
+    sv, nalez, pocet = svazky(), 0, 0
+    for klic, ok, radky in vsechny():
+        if not ok:
+            print(f"{klic}: soubor nemá správné záhlaví, přeskakuji (indexy.py --help)")
+            continue
+        if opt.get("klic") and opt["klic"] != klic:
+            continue
+        pocet += 1
+        hity = [r for r in radky if (q in norm(r["osoby"]) or q in norm(r["ostatni"]))
+                and (not opt.get("ves") or norm(opt["ves"]) in norm(r["obec"]))
+                and (not opt.get("typ") or r["typ"] == opt["typ"].upper())]
+        print(f"\n{klic} – {sv.get(klic, {}).get('svazek', '?')}: {len(radky)} ř., {pokryti(radky)}; shod {len(hity)}")
+        for r in hity:
+            kam = f" → {r['kniha']}" if r["kniha"] else ""
+            print("  " + " | ".join(x for x in (f"{r['typ']} sn. {r['snimek']}" + (f" str. {r['strana']}" if r["strana"] else "") + kam,
+                  r["osoby"], r["datum"], r["obec"], r["ostatni"], r["jistota"] if r["jistota"] != "vysoká" else "") if x))
+        nalez += len(hity)
+    if not pocet:
+        print("Žádný index (data/indexy/*.tsv) zatím není.")
+        return
+    print(f"\nCelkem {nalez} shod. Index je vodítko, ne doklad: zásah ověř na snímku a ulož šesti kroky. "
+          "Neshoda platí jen pro pokrytí uvedené výše.")
+
+
+def stav():
+    nic = True
+    sv = svazky()
+    for klic, ok, radky in vsechny():
+        nic = False
+        if not ok:
+            print(f"{klic}: ŠPATNÉ ZÁHLAVÍ")
+            continue
+        celkem = sv.get(klic, {}).get("snimku")
+        print(f"{klic} – {sv.get(klic, {}).get('svazek', 'NENÍ VE svazky.json')}: {len(radky)} ř., {pokryti(radky)}"
+              + (f" z {celkem} snímků knihy" if celkem else "") + f", s nízkou jistotou {sum(1 for r in radky if r['jistota'] == 'nízká')}")
+    if nic:
+        print("Žádný index zatím není.")
+
+
+if __name__ == "__main__":
+    a = sys.argv[1:]
+    if not a or a[0] in ("-h", "--help"):
+        sys.exit(__doc__)
+    if a[0] == "pridej" and len(a) in (3, 5):
+        pridej(a[1], a[2], a[4] if len(a) == 5 and a[3] == "--cetl" else "")
+    elif a[0] == "hledej":
+        hledej(a[1:])
+    elif a[0] == "stav":
+        stav()
+    else:
+        sys.exit(__doc__)

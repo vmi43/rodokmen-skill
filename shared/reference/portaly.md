@@ -464,6 +464,9 @@ potřebné je v `obsah.txt`.
 - **Archiválie z eBadatelny** (pozemková kniha, kronika; odkaz `…/ArchivaliePage/archivalieId/N`): číslo není
   `matrikaId`, klíč je `ebad_a_<archivalieId>` (jako u `ebadatelna.py a-svazek`), ve `svazky.json` pole `typ: "archivalie"`;
   `obsah.txt` má jiný formát než u matrik, přečti ho celý.
+  Nástroj bere název svazku a složky z **prvního řádku `obsah.txt`** (u archiválií bývá bez diakritiky a s překlepem v čísle):
+  před `--proved` ho přepiš na „Obec – druh knihy, roky“. Archiv uloží `zarad.py` jako „Místo uložení – Archivní fond“
+  (např. „SOkA Mladá Boleslav – Farní úřad Krnsko“), popis z pole „Popis archiválie“; počet snímků čte z pole „Snímky“ i „Scans“.
 
 **Seznam knih ke stažení je jediný: `data/ke_stazeni.md`** (tabulka: stav, kniha, roky, snímky, proč, odkaz na matriku, ZIP z
 pomůcky). Každou knihu, kterou má uživatel stáhnout, zapiš tam hned a v `todo.md`, `STAV.md` i v chatu na ni jen odkaž;
@@ -473,7 +476,12 @@ skillu (`shared/template/data/ke_stazeni.md`) do `data/`.
 
 Zařazení dělá **`python3 -I tools/zarad.py [pracovni/<složka> …]`** (bez sítě, bez složek vezme všechny s `obsah.txt`): nejdřív
 náhled s klíčem, novým názvem a rozpory (počet snímků × `obsah.txt`, název × `svazky.json`, jiný klíč ve jménu složky);
-ukaž ho uživateli, po potvrzení pusť znovu s `--proved`. Nástroj provede kroky 1–5, vypíše strojové kopie a staré cesty
+ukaž ho uživateli, po potvrzení pusť znovu s `--proved`.
+U ARON svazku, který už je ve `svazky.json` (název typu „Sbírka matrik Východočeského kraje, sign.: 148 …“, bez obce), nástroj
+shodu poznává podle klíče (apu) a signatury z `obsah.txt` a složku pojmenuje z prvního řádku `obsah.txt`; název ve `svazky.json`
+můžeš sjednotit na „Ronov 148, sign.: …“ (`zapis.py --sloucit`). U strojové kopie téhož svazku nástroj, je-li v ní jen snímky
+a `stahovani.log` a počty sedí, vypíše hotový příkaz `rm -r`: **ten pustí uživatel ve svém terminálu**, automatická kontrola
+oprávnění ho Claudovi zamítá i tehdy, když to pravidlo projektu ukládá. Nástroj provede kroky 1–5, vypíše strojové kopie a staré cesty
 v textech (kroky 6 a 7 děláš ty, nic nemaže), odškrtne řádek knihy v `data/ke_stazeni.md` (je-li soubor v projektu) a `obsah.md` zapíše jako koncept, který doplň. U archiválie použije klíč
 `archivalie_<id>`, je-li už ve `svazky.json`, jinak `ebad_a_<id>`. Postup, který nástroj dělá:
 1. Přečti `obsah.txt`. Klíč svazku je číslo z odkazu: eBadatelna `ebad_<matrikaId>`, ARON `aron_<apu8>` (prvních 8 znaků
