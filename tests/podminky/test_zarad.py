@@ -193,5 +193,35 @@ class Zarad(unittest.TestCase):
         rc, out = self.spust("pracovni/prazdna"); self.assertEqual(rc, 1); self.assertIn("chybí obsah.txt", out)
 
 
+    def test_aron_svazek_bez_obce_neni_problem(self):
+        self.sv({"620ba073": {"archiv": "SOA Hradec Králové", "portal": "ARON", "snimku": 2,
+                              "svazek": "Sbírka matrik Východočeského kraje, sign.: 9775 (poř.č. 9501), 3.1862-11.1921",
+                              "url": "https://aron.vychodoceskearchivy.cz/apu/620ba073-6edf-496f-bb7e-e389cb8fcd24"}})
+        self.slozka("aron-biskupice", ARON, ["a-1.jpg", "a-2.jpg"])
+        rc, out = self.spust("pracovni/aron-biskupice")
+        self.assertEqual(rc, 0, out); self.assertNotIn("PROBLÉM", out)
+        self.assertIn("aron_620ba073_biskupice_9775_manual", out)   # název složky z obsah.txt, ne ze svazky.json
+        # jiná signatura ve svazky.json = opravdu jiný svazek
+        self.sv({"620ba073": {"portal": "ARON", "snimku": 2, "svazek": "Sbírka matrik, sign.: 1234"}})
+        rc, out = self.spust("pracovni/aron-biskupice")
+        self.assertEqual(rc, 1); self.assertIn("se liší od svazky.json", out)
+
+    def test_pocet_snimku_ebadatelna_archivalie(self):
+        obsah = ARCHIVALIE.format(n=3).replace("Scans\n3", "Snímky\n3")
+        self.slozka("jikev-pozemkova-kniha", obsah, ["a-1.jpg", "a-2.jpg"])
+        rc, out = self.spust()
+        self.assertEqual(rc, 1); self.assertIn("počet snímků: ve složce 2, podle obsah.txt 3", out)
+
+    def test_prikaz_ke_smazani_kopie(self):
+        self.slozka("aron-biskupice", ARON, ["a-1.jpg", "a-2.jpg"])
+        k = self.slozka("aron_620ba073", None, ["s1.jpg", "s2.jpg", "stahovani.log"])
+        rc, out = self.spust("pracovni/aron-biskupice")
+        self.assertIn("rm -r 'pracovni/aron_620ba073'", out)
+        open(os.path.join(k, "poznamky.txt"), "w").write("x")
+        rc, out = self.spust("pracovni/aron-biskupice")
+        self.assertNotIn("rm -r", out); self.assertIn("jiné soubory", out)
+        self.assertTrue(os.path.isdir(k))   # nic nemaže
+
+
 if __name__ == "__main__":
     unittest.main()

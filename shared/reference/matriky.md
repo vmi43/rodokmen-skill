@@ -46,6 +46,9 @@ zhruba po roce 1910 často online nebudou (kniha pokračuje za rok 1926, lhůta 
    rychle až do 17. století. Rejstříky bývají podle **německého pravopisu**: česká jména na O a V hledej i pod W
    (Otava = Wotawa, Vávra = Wawra). Knihy pro více obcí bývají řazené po obcích, rejstřík na konci (viz níže).
    Velké fary mají rejstříky i jako **samostatné svazky** (např. rejstřík oddaných přes 300 let) – hledej je nejdřív.
+   **Úmrtí starého člověka, které se ve vlastní vsi nenajde:** nepročítej další roky, otevři nejdřív **rejstřík zemřelých
+   celé farnosti**. Výměnkář bývá zapsaný u příbuzných v sousední vsi téže farnosti (v jednom projektu: kniha jeho vsi, 18 let,
+   bez zásahu; rejstřík farnosti ho našel hned a dal stranu i oddíl jiné obce). Rejstřík se může splést v měsíci – platí matrika.
    **Když matrika chybí** (není online nebo se nedochovala), zkus rejstřík – bývá vedený zvlášť a přežil i tam, kde kniha
    ne. Zápis v rejstříku dokládá datum, místo a otce; zapiš ho jako `prob` (opis, ne originál) a matriku zkus později.
 4. **Bez indexu: listuj chronologicky** – ale nejdřív ověř, že kniha není řazená po vsích (níže). Odhadni pozici podle let na prvních a posledních snímcích svazku (půlení intervalu).
@@ -152,6 +155,21 @@ vsi a sňatek byl v oddílu městyse; ves měla oddíl až na snímcích 380–4
   matky (dítě se často narodilo u jejích rodičů).
 - Nevěsta mívala 18–28, ženich 22–32; děti po 1,5–3 letech.
 - „Vdovec“ u ženicha = hledej první manželství a děti z něj.
+
+## Index knihy místo opakovaného hledání jednoho jména
+Hledání jedné osoby přeskočí všechny ostatní zápisy, a u „domácí“ knihy (kniha oddaných vsi, zemřelých farnosti) se k ní
+pak vracíš pro další a další jméno a znovu čteš totéž. Proto dvě úrovně (`tools/indexy.py`, soubory `data/indexy/<klíč svazku>.tsv`):
+1. **Rejstřík přepiš celý hned při prvním otevření** (pár snímků, abecední, levné): řádky druhu `I` se jménem, datem, stranou
+   a značkou knihy, kam odkazuje. Zapiš i příjmení, která v něm nejsou: „F: Fialů je 5, jinde nejsou“ je užitečná odpověď.
+2. **Celou knihu projdi rychlým průchodem jen tam, kam se čeká návrat:** narození (datum, ves, čp., dítě, otec, matka s rodným
+   příjmením, příjmení kmotrů), sňatky (ženich, nevěsta, jejich otcové, odkud), úmrtí (jméno, věk, čp., u dětí otec).
+   Jednorázovou knihu neindexuj. Kurent před ~1830 indexuje pomocník na Opusu (zadání jako u čtení kurentu v `SKILL.md`).
+**Pravidla:** řádky zapisuj dávkou přes `indexy.py pridej <klíč> <soubor.json>` (JSON pole z `pracovni/`), vybledlé nebo
+jistotu piš slovy (`vysoká`, `střední`, `nízká`; nejisté kusy textu s `[?]`) a ke každému řádku model a datum do `cetl` (`--cetl claude-opus-5-5/high`). Než hledáš v knize, zeptej se indexu: `indexy.py hledej <příjmení> [--ves V]`; výstup říká,
+co index pokrývá (snímky, roky), takže „nenalezeno“ platí jen pro to. **Zásah z indexu není `doc`:** otevři snímek, přečti zápis
+ze zvětšení (`overit.py`) a ulož ho šesti kroky. Index patří ke svazku (klíč ze `svazky.json`), ne do složky knihy v `pracovni/`
+(ta je v `.gitignore` a nástroj `zarad.py` ji přejmenovává); do `obsah.md` knihy dej jen řádek s odkazem na index.
+Sloupce jsou stejné jako v komunitním indexu matrik (`sdileni.py`, `precteno.tsv`) a navíc `strana` a `kniha` pro rejstříky; náš index je tvůj vlastní, na web nejde a ven jde jen přes `prispevek.py` po tvém souhlasu (`sdileni.md`).
 
 ## Stavy údajů v datech
 | stav | kdy |

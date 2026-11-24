@@ -450,7 +450,12 @@
     "pe-pan.github.io": {
       "nazev": "Index matrik (komunitní)", "dotazy": true, "obrazky": false, "vyrez": "ne",
       "proc": "veřejné přepisy zápisů z GitHub Pages, licence CC BY 4.0 podle návodu upstreamu (neověřeno na stránce indexu), většinu přečetl jazykový model (13. 11. 2026)",
-      "jinak": "Jen čtení nástrojem sdileni.py kniha; zápis je vodítko, ne doklad. Do dat jde jen to, co přečteš sám na snímku. Nic se do indexu neodesílá."
+      "jinak": "Jen čtení nástrojem sdileni.py kniha; zápis je vodítko, ne doklad. Do dat jde jen to, co přečteš sám na snímku. Do indexu se neodesílá tímto nástrojem, ale prispevek.py po souhlasu uživatele (přes sběrnou schránku)."
+    },
+    "mapa-matrik-schranka.schranka.workers.dev": {
+      "nazev": "Sběrná schránka Mapy matrik (komunitní)", "dotazy": true, "obrazky": false, "vyrez": "ne",
+      "proc": "Cloudflare Worker autora Mapy matrik, přijímá příspěvky do komunitního indexu a zakládá z nich pull requesty; cizí služba bez záruky provozu (24. 11. 2026)",
+      "jinak": "Jen příspěvek POST /v1/prispevek z prispevek.py, výhradně po výslovném souhlasu uživatele a nad dávkou, kterou uživatel viděl. Nic jiného z projektu se neposílá."
     }
   }
 }

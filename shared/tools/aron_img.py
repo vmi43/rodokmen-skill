@@ -195,11 +195,21 @@ if __name__ == "__main__":
     if len(sys.argv) < 3 or sys.argv[1] in ("-h", "--help"):
         sys.exit(__doc__)
     apu = sys.argv[1]
+    if re.fullmatch(r"[0-9a-f]{8}", apu):   # krátký klíč ze svazky.json → celé apu id z pole url
+        try:
+            u = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "svazky.json"), encoding="utf-8")).get(apu, {}).get("url", "")
+        except (OSError, ValueError):
+            u = ""
+        m = re.search(r"/apu/([0-9a-f]{8}-[0-9a-f-]{27})", u)
+        if m:
+            apu = m[1]
+        else:
+            sys.exit(f"{apu} je jen krátký klíč a ve data/svazky.json k němu není odkaz: použij celé apu id (aron_search.py).")
     try:
         vol = volume(apu)
     except urllib.error.HTTPError as e:
         if e.code == 404:
-            sys.exit(f"Svazek {apu} v ARONu není (HTTP 404) – zkontroluj apu_id (celé id z aron_search.py); "
+            sys.exit(f"Svazek {apu} v ARONu není (HTTP 404) – zkontroluj apu_id (celé id z aron_search.py, krátký 8znakový klíč se doplní ze svazky.json); "
                      "některé svazky z hledání ARON samotný nezveřejňuje, zkus jiný svazek fary.")
         chyba_archivu(e)
     except SIT + (ValueError,) as e:
