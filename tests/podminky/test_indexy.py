@@ -8,8 +8,8 @@ SKILL = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abs
 OSOBY = 'P = {1: {"n": "Jan Novák", "st": "doc", "r": ["z1"], "f": ["* 1900 Lhota 1"]}}\nSIDE = []\nLINES = {}\nSAME = {}\n'
 ZAZNAMY = [{"klic": "z1", "druh": "N", "datum": "1900-01-01", "nazev": "Křest", "shrnuti": "x"}]
 RADKY = [
-    {"typ": "Z", "snimek": 1, "datum": "1840-03-02", "obec": "Lhota 4", "osoby": "zemřelý: Jan Fiala; otec: Josef Fiala", "ostatni": "70 let", "jistota": "střední"},
-    {"typ": "I", "snimek": 3, "strana": "12", "kniha": "Z 1836–1882", "osoby": "Fiala Josef", "datum": "1850", "jistota": "nízká"},
+    {"typ": "Z", "snimek": 1, "datum": "1840-03-02", "obec": "Lhota 4", "osoby": "zemřelý: Jan Hora; otec: Josef Hora", "ostatni": "70 let", "jistota": "střední"},
+    {"typ": "I", "snimek": 3, "strana": "12", "kniha": "Z 1836–1882", "osoby": "Hora Josef", "datum": "1850", "jistota": "nízká"},
 ]
 
 
@@ -42,12 +42,12 @@ class Indexy(unittest.TestCase):
         self.assertIn("claude-opus-5-5/high 20", open(os.path.join(self.d, "data", "indexy", "abc12345.tsv"), encoding="utf-8").read())
         rc, out = self.spust("indexy.py", "pridej", "abc12345", "pracovni/radky.json")   # podruhé nic nepřidá
         self.assertEqual(rc, 0, out); self.assertIn("přidáno 0", out); self.assertIn("celkem 2", out)
-        rc, out = self.spust("indexy.py", "hledej", "FIALA")   # bez ohledu na velikost
+        rc, out = self.spust("indexy.py", "hledej", "HORA")   # bez ohledu na velikost
         self.assertIn("shod 2", out); self.assertIn("→ Z 1836–1882", out); self.assertIn("vodítko, ne doklad", out)
-        rc, out = self.spust("indexy.py", "hledej", "Fiala", "--typ", "Z")
+        rc, out = self.spust("indexy.py", "hledej", "Hora", "--typ", "Z")
         self.assertIn("Celkem 1 shod", out)
         rc, out = self.spust("indexy.py", "hledej", "josef")   # i ve vazbách
-        self.assertIn("zemřelý: Jan Fiala", out)
+        self.assertIn("zemřelý: Jan Hora", out)
         rc, out = self.spust("indexy.py", "hledej", "Novák")
         self.assertIn("Celkem 0 shod", out); self.assertIn("snímky 1–3", out)   # „nenalezeno“ nese pokrytí
         rc, out = self.spust("indexy.py", "stav")
@@ -73,16 +73,16 @@ class Indexy(unittest.TestCase):
         self.assertIn("nesedí záhlaví", out)
 
     def test_prechylena_jmena_a_cetl(self):
-        self.zapis("pracovni/zeny.json", json.dumps([{"typ": "I", "snimek": 2, "kniha": "Z", "osoby": "Fialová Josefa", "jistota": "vysoká", "cetl": "claude-opus-5-5/medium 2026-11-23"}]))
+        self.zapis("pracovni/zeny.json", json.dumps([{"typ": "I", "snimek": 2, "kniha": "Z", "osoby": "Horová Josefa", "jistota": "vysoká", "cetl": "claude-opus-5-5/medium 2026-11-23"}]))
         rc, out = self.spust("indexy.py", "pridej", "abc12345", "pracovni/zeny.json")
         self.assertEqual(rc, 0, out)
-        rc, out = self.spust("indexy.py", "hledej", "Fiala")   # „Fiala“ najde i „Fialová“
+        rc, out = self.spust("indexy.py", "hledej", "Hora")   # „Hora“ najde i „Horová“
         self.assertIn("Celkem 1 shod", out)
-        rc, out = self.spust("indexy.py", "hledej", "Fialová")
+        rc, out = self.spust("indexy.py", "hledej", "Horová")
         self.assertIn("Celkem 1 shod", out)
-        rc, out = self.spust("indexy.py", "hledej", "Fialek")   # jiné příjmení se nespojí
+        rc, out = self.spust("indexy.py", "hledej", "Horák")   # jiné příjmení se nespojí
         self.assertIn("Celkem 0 shod", out)
-        self.zapis("pracovni/zly_cetl.json", json.dumps([{"typ": "I", "snimek": 2, "kniha": "Z", "osoby": "Fiala X", "jistota": "vysoká", "cetl": "claude-opus (hlavní session) 2026-11-23"}]))
+        self.zapis("pracovni/zly_cetl.json", json.dumps([{"typ": "I", "snimek": 2, "kniha": "Z", "osoby": "Hora X", "jistota": "vysoká", "cetl": "claude-opus (hlavní session) 2026-11-23"}]))
         rc, out = self.spust("indexy.py", "pridej", "abc12345", "pracovni/zly_cetl.json")
         self.assertNotEqual(rc, 0); self.assertIn("cetl musí být", out)
 

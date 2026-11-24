@@ -160,7 +160,7 @@ vsi a sňatek byl v oddílu městyse; ves měla oddíl až na snímcích 380–4
 Hledání jedné osoby přeskočí všechny ostatní zápisy, a u „domácí“ knihy (kniha oddaných vsi, zemřelých farnosti) se k ní
 pak vracíš pro další a další jméno a znovu čteš totéž. Proto dvě úrovně (`tools/indexy.py`, soubory `data/indexy/<klíč svazku>.tsv`):
 1. **Rejstřík přepiš celý hned při prvním otevření** (pár snímků, abecední, levné): řádky druhu `I` se jménem, datem, stranou
-   a značkou knihy, kam odkazuje. Zapiš i příjmení, která v něm nejsou: „F: Fialů je 5, jinde nejsou“ je užitečná odpověď.
+   a značkou knihy, kam odkazuje. Zapiš i příjmení, která v něm nejsou: „H: Horů je 5, jinde nejsou“ je užitečná odpověď.
 2. **Celou knihu projdi rychlým průchodem jen tam, kam se čeká návrat:** narození (datum, ves, čp., dítě, otec, matka s rodným
    příjmením, příjmení kmotrů), sňatky (ženich, nevěsta, jejich otcové, odkud), úmrtí (jméno, věk, čp., u dětí otec).
    Jednorázovou knihu neindexuj. Kurent před ~1830 indexuje pomocník na Opusu (zadání jako u čtení kurentu v `SKILL.md`).

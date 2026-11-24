@@ -73,8 +73,8 @@ Zapisuje `ramecek.py`. Rámeček má obepnout celý čtený zápis (ne jen jmén
 ve faktech osob (kmen slova, aby sedělo skloňování: „Holic“ najde Holice i v Holicích). Spravuje `mista.py`.
 Pozor na kolize (Hradec Králové × Nový Hradec Králové – použij `(?<!Nový )Hradec`; krátká jména jako `\bBuku?\b`).
 **Souřadnice jdou z Mapy.com** (REST API, geokódování), ne z OpenStreetMap – a to nejen u obcí, ale i u **každé adresy
-s číslem popisným** ve faktech osob („Biskupice čp. 14“). Bod domu je v `mista.json` v klíči `"adresy"`:
-`{"Biskupice": {…, "adresy": {"14": {"lat": 49.879, "lon": 15.516, "mapy": "Biskupice 14, …"}}}}`; web ho ukáže jako malou tečku
+s číslem popisným** ve faktech osob („Lhota čp. 14“). Bod domu je v `mista.json` v klíči `"adresy"`:
+`{"Lhota": {…, "adresy": {"14": {"lat": 49.500, "lon": 15.500, "mapy": "Lhota 14, …"}}}}`; web ho ukáže jako malou tečku
 v barvě rodu (vidět po přiblížení), u obce zůstává větší tečka za rod. `mista.py` bere jen shodu čísla a dům dál než 8 km
 od středu obce zahodí (jiná obec stejného jména). Dům, který Mapy.com nezná (zaniklý), vypíše `ADRESA NENALEZENA` – doplň
 bod ručně a přidej `"rucne": true` (nástroj ho nepřepíše). Starý projekt s body z OpenStreetMap převeď `mista.py znovu`.

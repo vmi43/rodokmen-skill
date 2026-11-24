@@ -10,8 +10,8 @@ Použití (z kořene projektu: python3 -I tools/slusne.py tools/mista.py …):
       dům podle RÚIAN (ČÚZK, bez klíče; najde i malé osady): adresa s dnešní obcí, lat/lon, parcela pod domem a katastrální
       území. Dotaz = "Osada čp", "Ulice čp", "Ulice čp/čo" nebo ve městě i "Ulice čo"; obec za čárkou zúží výběr
       ("Husova 66, Beroun"). Dnešní obec a k. ú. se často liší od toho, co uživatel čeká.
-      Za čárkou smí být dnešní obec, obec s PSČ, nebo jen PSČ („Biskupice 14, 53852“): „Biskupice 14, Ronov nad Doubravou“
-      nic nenajde (Biskupice jsou samostatné k. ú.), nástroj pak vypíše, co k adrese zná jinde. `okoli` a `parcely` přijmou
+      Za čárkou smí být dnešní obec, obec s PSČ, nebo jen PSČ („Lhota 14, 12399“): „Lhota 14, Dubá nad Lesem“
+      nic nenajde (Lhota je samostatné k. ú.), nástroj pak vypíše, co k adrese zná jinde. `okoli` a `parcely` přijmou
       i celou adresu z výpisu `ruian` (nebo „lat,lon“).
       V sandboxu Claude Code musí být povolený host `ags.cuzk.cz`.
   mista.py okoli <"Ulice čp/čo" | lat,lon> [polomer_m=80]
@@ -20,17 +20,17 @@ Použití (z kořene projektu: python3 -I tools/slusne.py tools/mista.py …):
       dnešní stavební parcely kolem domu s odstupem v metrech (E/N): podle čísel stavebních parcel najdeš dům na staré mapě.
       „vse“ = i ostatní pozemkové parcely.
   mista.py nova
-      projde události osob (fakta začínající * × †, např. „† 4. 8. 1891 Biskupice čp. 14“), najde místa, která na mapě chybí
+      projde události osob (fakta začínající * × †, např. „† 4. 8. 1891 Lhota čp. 14“), najde místa, která na mapě chybí
       (u osob, které tam mají událost), přidá je (výraz = prvních 5 písmen) a dohledá souřadnice. Co se nenajde, vypíše;
       nic se nepřidá naslepo – když dotaz vyjde jinde než ve zdejší krajině, zkontroluj okres ve výpisu a oprav.
       Pouští se po každé změně osob (viz data/STAV.md); `chybejici()` používá i kontrola.py jako varování.
   mista.py
-      dohledá souřadnice obcí, které je ještě nemají, a **přesný bod každé adresy** („Biskupice čp. 14“) uvedené
+      dohledá souřadnice obcí, které je ještě nemají, a **přesný bod každé adresy** („Lhota čp. 14“) uvedené
       ve faktech osob; vypíše seznam. Adresa, kterou Mapy.com nezná (zaniklé domy), se vypíše – bod doplň ručně.
   mista.py znovu
       zahodí dosavadní souřadnice (kromě těch s "rucne": true) a dohledá je znovu z Mapy.com – pro převod starého projektu.
 
-Souřadnice pro adresu jsou v mista.json v klíči "adresy": {"14": {"lat": …, "lon": …, "mapy": "Biskupice 14, …"}}.
+Souřadnice pro adresu jsou v mista.json v klíči "adresy": {"14": {"lat": …, "lon": …, "mapy": "Lhota 14, …"}}.
 Ruční bod (např. zaniklý dům podle mapy z rodinné kroniky): přidej "rucne": true, nástroj ho nepřepíše.
 Původ bloku RÚIAN (`ruian`, `okoli`, `parcely`, odkazy na panorama): vzoha/dejiny-domu-skill (skills/dejiny-domu/tools/mista.py), commit 32bef07. Zbytek je náš.
 
@@ -210,8 +210,8 @@ def adresni_mista(dotaz, pole, obec=""):
 
 def adresa_a_obec(misto):
     """„Ulice čp, Obec“ → („Ulice čp“, „Obec“); bez čárky obec prázdná. Přijme i celou adresu z výpisu `ruian`
-    („Biskupice 14, 53852 Biskupice u Ronova“, „Ulice 12/3, Část, 12345 Obec“): obec je poslední část a smí mít PSČ;
-    samotné PSČ („Biskupice 14, 53852“) zúží výběr jen podle PSČ."""
+    („Lhota 14, 12399 Lhota u Dubé“, „Ulice 12/3, Část, 12345 Obec“): obec je poslední část a smí mít PSČ;
+    samotné PSČ („Lhota 14, 12399“) zúží výběr jen podle PSČ."""
     dotaz, _, zbytek = misto.partition(",")
     return dotaz.strip(), (zbytek.rsplit(",", 1)[-1].strip() if zbytek else "")
 

@@ -19,7 +19,7 @@ Sloupce TSV (pevné pořadí, UTF-8, LF, první řádek je záhlaví). Prvních 
   datum    datum události (RRRR-MM-DD, neúplné RRRR-MM nebo RRRR), je-li
   typ      N narození | O oddaní | Z zemřelí | I řádek rejstříku (jen náš; komunitní index rejstříky nemá)
   obec     ves a číslo popisné: „Lhota 12“
-  osoby    role a jména: „zemřelý: Josef Fiala; otec: Jan Fiala“, „dítě: …; otec: …; matka: … roz. …; kmotr: …“,
+  osoby    role a jména: „zemřelý: Josef Hora; otec: Jan Hora“, „dítě: …; otec: …; matka: … roz. …; kmotr: …“,
            „ženich: …; nevěsta: …; otec ženicha: …“; nejisté kusy s [?] přímo v textu; u rejstříku jen jméno
   ostatni  volný text: věk, příčina, kdo pohřbíval, poznámky; ŽÁDNÉ závěry o tom, kdo osoba je a čí je příbuzný
   jistota  vysoká | střední | nízká  (vybledlé a nečitelné řádky piš s nízkou)
@@ -49,7 +49,7 @@ def norm(s):
 
 
 def kmen(slovo):
-    """Kmen příjmení bez koncovky, aby „Fiala“ našlo i „Fialová“ a „Černý“ i „Černá“ (v rejstříku stojí ženy jako -ová)."""
+    """Kmen příjmení bez koncovky, aby „Hora“ našlo i „Horová“ a „Černý“ i „Černá“ (v rejstříku stojí ženy jako -ová)."""
     s = norm(slovo)
     for k in ("ova", "a", "y", "i", "e"):
         if s.endswith(k) and len(s) - len(k) >= 3:
@@ -159,7 +159,7 @@ def hledej(args):
             opt[a[2:]] = args[i + 1]
             cast = [c for c in cast if c != args[i + 1]]
     if not cast:
-        sys.exit("hledej: zadej část jména, např. indexy.py hledej Fiala")
+        sys.exit("hledej: zadej část jména, např. indexy.py hledej Hora")
     q = " ".join(kmen(w) for w in " ".join(cast).split())
     sv, nalez, pocet = svazky(), 0, 0
     for klic, ok, radky in vsechny():

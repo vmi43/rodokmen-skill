@@ -35,14 +35,14 @@ Number of scans
 
 https://ebadatelna.soapraha.cz/pages/MatrikaPage/matrikaId/8084
 """
-ARON = """Biskupice 9775
+ARON = """Lhota 4321
 
-Státní oblastní archiv v Hradci Králové: Sbírka matrik Východočeského kraje, sign.: 9775 (poř.č. 9501), 3.1862-11.1921
+Státní oblastní archiv v Hradci Králové: Sbírka matrik Východočeského kraje, sign.: 4321 (poř.č. 4301), 3.1862-11.1921
 
 MATRIČNÍ MÍSTO
-Biskupice (Chrudim, Česko), obec v okrese Chrudim
+Lhota (Chrudim, Česko), obec v okrese Chrudim
 
-https://aron.vychodoceskearchivy.cz/apu/620ba073-6edf-496f-bb7e-e389cb8fcd24/dao/620ba073-6edf-496f-bb7e-e389cb8fcd24/file/
+https://aron.vychodoceskearchivy.cz/apu/1a2b3c4d-0000-4000-8000-000000000001/dao/1a2b3c4d-0000-4000-8000-000000000001/file/
 """
 
 
@@ -118,7 +118,7 @@ class Zarad(unittest.TestCase):
         cesta = self.ke_stazeni([
             "| [ ] | Loučeň | https://ebadatelna.soapraha.cz/pages/MatrikaPage/matrikaId/8084 |",
             "| [ ] | jiná Loučeň | https://ebadatelna.soapraha.cz/pages/MatrikaPage/matrikaId/80841 |",
-            "| [ ] | Biskupice | https://aron.vychodoceskearchivy.cz/apu/620ba073-6edf-496f-bb7e-e389cb8fcd24 |"])
+            "| [ ] | Lhota | https://aron.vychodoceskearchivy.cz/apu/1a2b3c4d-0000-4000-8000-000000000001 |"])
         self.slozka("loucen-05", MATRIKA, ["a.jpg", "b.jpg"])
         rc, out = self.spust("--proved")
         self.assertEqual(rc, 0, out)
@@ -126,14 +126,14 @@ class Zarad(unittest.TestCase):
         r = open(cesta, encoding="utf-8").read().split("\n")
         self.assertIn("[x] zařazeno `ebad_8084`", [x for x in r if "| Loučeň |" in x][0])
         self.assertIn("[ ]", [x for x in r if "jiná Loučeň" in x][0])   # 80841 není 8084
-        self.assertIn("[ ]", [x for x in r if "Biskupice" in x][0])
+        self.assertIn("[ ]", [x for x in r if "Lhota" in x][0])
 
     def test_ke_stazeni_aron_podle_apu(self):
-        cesta = self.ke_stazeni(["| [ ] | Biskupice | https://aron.vychodoceskearchivy.cz/apu/620ba073-6edf-496f-bb7e-e389cb8fcd24 |"])
-        self.slozka("biskupice", ARON, ["a.jpg"])
+        cesta = self.ke_stazeni(["| [ ] | Lhota | https://aron.vychodoceskearchivy.cz/apu/1a2b3c4d-0000-4000-8000-000000000001 |"])
+        self.slozka("lhota", ARON, ["a.jpg"])
         rc, out = self.spust("--proved", "--ignoruj-pocet")
         self.assertEqual(rc, 0, out)
-        self.assertIn("[x] zařazeno `620ba073`", open(cesta, encoding="utf-8").read())
+        self.assertIn("[x] zařazeno `1a2b3c4d`", open(cesta, encoding="utf-8").read())
 
     def test_ke_stazeni_bez_souboru_a_bez_radku(self):
         self.slozka("loucen-05", MATRIKA, ["a.jpg", "b.jpg"])
@@ -172,19 +172,19 @@ class Zarad(unittest.TestCase):
         self.assertTrue(os.path.isdir(os.path.join(self.d, "pracovni", "zleby-27")))   # nic se neudělalo
 
     def test_aron_apu8_a_stare_cesty(self):
-        self.slozka("aron-biskupice", ARON, ["CZ_215000010_00190_620ba073_00001_sign-9775.jpg", "CZ_215000010_00190_620ba073_00002_sign-9775.jpg"])
-        self.slozka("aron_620ba073", None, ["s1.jpg"])   # strojová kopie
-        open(os.path.join(self.d, "data", "STAV.md"), "w").write("čti pracovni/aron-biskupice/s1.jpg\n")
-        rc, out = self.spust("pracovni/aron-biskupice")
+        self.slozka("aron-lhota", ARON, ["CZ_215000010_00190_1a2b3c4d_00001_sign-4321.jpg", "CZ_215000010_00190_1a2b3c4d_00002_sign-4321.jpg"])
+        self.slozka("aron_1a2b3c4d", None, ["s1.jpg"])   # strojová kopie
+        open(os.path.join(self.d, "data", "STAV.md"), "w").write("čti pracovni/aron-lhota/s1.jpg\n")
+        rc, out = self.spust("pracovni/aron-lhota")
         self.assertEqual(rc, 0, out)
-        self.assertIn("strojová kopie: pracovni/aron_620ba073", out); self.assertIn("data/STAV.md:1", out)
-        rc, out = self.spust("pracovni/aron-biskupice", "--proved")
+        self.assertIn("strojová kopie: pracovni/aron_1a2b3c4d", out); self.assertIn("data/STAV.md:1", out)
+        rc, out = self.spust("pracovni/aron-lhota", "--proved")
         self.assertEqual(rc, 0, out)
-        self.assertTrue(os.path.isdir(os.path.join(self.d, "pracovni", "aron_620ba073_biskupice_9775_manual")), out)
-        z = self.cti_sv()["620ba073"]
-        self.assertTrue(z["url"].endswith("/apu/620ba073-6edf-496f-bb7e-e389cb8fcd24"))
+        self.assertTrue(os.path.isdir(os.path.join(self.d, "pracovni", "aron_1a2b3c4d_lhota_4321_manual")), out)
+        z = self.cti_sv()["1a2b3c4d"]
+        self.assertTrue(z["url"].endswith("/apu/1a2b3c4d-0000-4000-8000-000000000001"))
         self.assertIn("3.1862-11.1921", z["svazek"])
-        self.assertTrue(os.path.isdir(os.path.join(self.d, "pracovni", "aron_620ba073")))   # strojovou kopii nemaže
+        self.assertTrue(os.path.isdir(os.path.join(self.d, "pracovni", "aron_1a2b3c4d")))   # strojovou kopii nemaže
 
     def test_neznamy_odkaz_a_bez_obsahu(self):
         self.slozka("neco", "bez odkazu\n", ["a.jpg"])
@@ -194,16 +194,16 @@ class Zarad(unittest.TestCase):
 
 
     def test_aron_svazek_bez_obce_neni_problem(self):
-        self.sv({"620ba073": {"archiv": "SOA Hradec Králové", "portal": "ARON", "snimku": 2,
-                              "svazek": "Sbírka matrik Východočeského kraje, sign.: 9775 (poř.č. 9501), 3.1862-11.1921",
-                              "url": "https://aron.vychodoceskearchivy.cz/apu/620ba073-6edf-496f-bb7e-e389cb8fcd24"}})
-        self.slozka("aron-biskupice", ARON, ["a-1.jpg", "a-2.jpg"])
-        rc, out = self.spust("pracovni/aron-biskupice")
+        self.sv({"1a2b3c4d": {"archiv": "SOA Hradec Králové", "portal": "ARON", "snimku": 2,
+                              "svazek": "Sbírka matrik Východočeského kraje, sign.: 4321 (poř.č. 4301), 3.1862-11.1921",
+                              "url": "https://aron.vychodoceskearchivy.cz/apu/1a2b3c4d-0000-4000-8000-000000000001"}})
+        self.slozka("aron-lhota", ARON, ["a-1.jpg", "a-2.jpg"])
+        rc, out = self.spust("pracovni/aron-lhota")
         self.assertEqual(rc, 0, out); self.assertNotIn("PROBLÉM", out)
-        self.assertIn("aron_620ba073_biskupice_9775_manual", out)   # název složky z obsah.txt, ne ze svazky.json
+        self.assertIn("aron_1a2b3c4d_lhota_4321_manual", out)   # název složky z obsah.txt, ne ze svazky.json
         # jiná signatura ve svazky.json = opravdu jiný svazek
-        self.sv({"620ba073": {"portal": "ARON", "snimku": 2, "svazek": "Sbírka matrik, sign.: 1234"}})
-        rc, out = self.spust("pracovni/aron-biskupice")
+        self.sv({"1a2b3c4d": {"portal": "ARON", "snimku": 2, "svazek": "Sbírka matrik, sign.: 1234"}})
+        rc, out = self.spust("pracovni/aron-lhota")
         self.assertEqual(rc, 1); self.assertIn("se liší od svazky.json", out)
 
     def test_pocet_snimku_ebadatelna_archivalie(self):
@@ -213,12 +213,12 @@ class Zarad(unittest.TestCase):
         self.assertEqual(rc, 1); self.assertIn("počet snímků: ve složce 2, podle obsah.txt 3", out)
 
     def test_prikaz_ke_smazani_kopie(self):
-        self.slozka("aron-biskupice", ARON, ["a-1.jpg", "a-2.jpg"])
-        k = self.slozka("aron_620ba073", None, ["s1.jpg", "s2.jpg", "stahovani.log"])
-        rc, out = self.spust("pracovni/aron-biskupice")
-        self.assertIn("rm -r 'pracovni/aron_620ba073'", out)
+        self.slozka("aron-lhota", ARON, ["a-1.jpg", "a-2.jpg"])
+        k = self.slozka("aron_1a2b3c4d", None, ["s1.jpg", "s2.jpg", "stahovani.log"])
+        rc, out = self.spust("pracovni/aron-lhota")
+        self.assertIn("rm -r 'pracovni/aron_1a2b3c4d'", out)
         open(os.path.join(k, "poznamky.txt"), "w").write("x")
-        rc, out = self.spust("pracovni/aron-biskupice")
+        rc, out = self.spust("pracovni/aron-lhota")
         self.assertNotIn("rm -r", out); self.assertIn("jiné soubory", out)
         self.assertTrue(os.path.isdir(k))   # nic nemaže
 

@@ -13,12 +13,12 @@ def radek(snimek, datum, typ, osoby, ostatni="", cetl=CETL, strana="", kniha="",
     return "\t".join([str(snimek), datum, typ, "Lhota 4", osoby, ostatni, jistota, cetl, "", strana, kniha]) + "\n"
 
 
-INDEX = HLAVICKA + radek(1, "1850-03-02", "Z", "zemřelý: Jan Fiala", "70 let", strana="12") \
+INDEX = HLAVICKA + radek(1, "1850-03-02", "Z", "zemřelý: Jan Hora", "70 let", strana="12") \
     + radek(2, "1990-01-01", "N", "dítě: Petr") \
-    + radek(3, "1850-05-05", "Z", "zemřelý: Anna Fiala", cetl="") \
+    + radek(3, "1850-05-05", "Z", "zemřelý: Anna Hora", cetl="") \
     + radek(4, "", "Z", "zemřelý: Karel") \
-    + radek(5, "1850-06-06", "Z", "zemřelý: Josef Fiala", "můj praděd") \
-    + radek(6, "1850", "I", "Fiala Josef", kniha="Z 1836–1882") \
+    + radek(5, "1850-06-06", "Z", "zemřelý: Josef Hora", "můj praděd") \
+    + radek(6, "1850", "I", "Hora Josef", kniha="Z 1836–1882") \
     + radek(7, "1860-01-01", "O", "ženich: Václav; nevěsta: Marie", jistota="nízká")
 
 
@@ -31,7 +31,7 @@ class Prispevek(unittest.TestCase):
         self.zapis("data/STAV.md", "# Stav\n")
         self.zapis("data/svazky.json", json.dumps({
             "pf1": {"svazek": "Lhota Z", "snimku": 50, "url": "https://www.portafontium.eu/register/soap-pn/lhota-1"},
-            "aron1": {"svazek": "ARON kniha", "snimku": 9, "url": "https://aron.vychodoceskearchivy.cz/apu/620ba073-6edf-496f-bb7e-e389cb8fcd24"}}))
+            "aron1": {"svazek": "ARON kniha", "snimku": 9, "url": "https://aron.vychodoceskearchivy.cz/apu/1a2b3c4d-0000-4000-8000-000000000001"}}))
         self.zapis("data/indexy/pf1.tsv", INDEX)
         self.zapis("data/indexy/aron1.tsv", HLAVICKA + radek(1, "1850-03-02", "Z", "zemřelý: Jan"))
 
@@ -65,8 +65,8 @@ class Prispevek(unittest.TestCase):
 
     def test_navrh_vybere_jen_zpusobile(self):
         out, _ = self.otisk()
-        self.assertIn("K odeslání: 2 řádků", out)   # Fiala Jan (1850 Z) a sňatek 1860 (O)
-        self.assertIn("zemřelý: Jan Fiala", out); self.assertNotIn("Anna Fiala", out)
+        self.assertIn("K odeslání: 2 řádků", out)   # Hora Jan (1850 Z) a sňatek 1860 (O)
+        self.assertIn("zemřelý: Jan Hora", out); self.assertNotIn("Anna Hora", out)
         for duvod in ("mladší zákonné lhůty", "chybí sloupec cetl", "řádek bez data", "rejstřík (typ I)", "o příbuzenství", "nepodporuje"):
             self.assertIn(duvod, out)
         dav = json.load(open(os.path.join(self.d, "pracovni", "sdileni", "prispevek.json"), encoding="utf-8"))["zapisy"]
