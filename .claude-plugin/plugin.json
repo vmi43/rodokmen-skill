@@ -1,9 +1,9 @@
 {
   "name": "rodokmen",
   "version": "0.9.5",
-  "description": "Rodokmen z českých matrik a rodinný web – průvodce pro začátečníky (česky).",
+  "description": "Rodokmen z českých matrik a rodinný web – průvodce pro začátečníky (česky). Fork projektu sarsonj/rodokmen-skill s vlastními úpravami.",
   "author": {
-    "name": "Jindřich Šaršon"
+    "name": "Vaclav Miller"
   },
   "license": "MIT"
 }

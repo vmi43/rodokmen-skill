@@ -8,7 +8,7 @@
     {
       "name": "rodokmen",
       "source": "./",
-      "description": "Rodokmen z českých matrik a rodinný web – průvodce pro začátečníky (česky)."
+      "description": "Rodokmen z českých matrik a rodinný web – průvodce pro začátečníky (česky). Fork projektu sarsonj/rodokmen-skill s vlastními úpravami."
     }
   ]
 }

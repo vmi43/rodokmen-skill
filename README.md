@@ -104,6 +104,7 @@ Pak Claude Code restartujte (do běžící relace se nový plugin nenačte).
 
 Po aktualizaci Claude Code restartujte. Rozpracovaný projekt pak Claude při další práci sám nabídne aktualizovat
 na novou verzi (vaše data i vlastní úpravy webu a nástrojů zůstanou, změny šablony se do nich sloučí).
+Podrobný postup včetně výpisu aktualizace a ověření je v [docs/aktualizace.md](docs/aktualizace.md).
 
 ### Varianta B – ručně
 Skill potřebuje celý repozitář (sdílené nástroje, návody a šablona leží vedle skillů), takže kopie jedné
