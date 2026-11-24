@@ -368,3 +368,17 @@ Větev `fix/poznamky-2026-11-23-dalsi`, bez změny verze (CHANGELOG, sekce „Ne
 - **Návod `matriky.md`:** nenajde-li se úmrtí starého člověka v jeho vsi, nejdřív rejstřík zemřelých celé farnosti (výměnkář zemřel u příbuzných v sousední vsi téže farnosti). Opírá se o jeden případ; rejstřík se může splést v měsíci, platí matrika.
 - **Model pomocníka u kurentu před ~1830 (Opus):** už byl v `SKILL.md` z 0.9.4, nic se nepřidávalo.
 
+
+## Vydání 0.9.5: zkouška indexu, opravy před vydáním, návody a fork (2026-11-24)
+
+Zkouška 0.9.5 na uživatelově projektu a vydání (PR #10, tag a vydání `v0.9.5`); následně PR #13 (návody, autor).
+
+- **Zkouška se napoprvé neměla z čeho opřít.** Samotné `claude` v projektu načte plugin 0.9.4 z cache (`--plugin-dir <worktree>` je nutné pro nevydanou verzi), a projekt na 0.9.4 `tools/indexy.py` nemá. Po `novy_projekt.py` z worktree nástroj v projektu byl, `data/indexy/` zůstal prázdný (aktualizace do `data/` nic nepřevádí). Pilotní ruční přepis rejstříku 3823 (písmeno F) převedl skill sám přes `indexy.py pridej` (44 řádků, převodní skript `pracovni/index_3823/prevod_F.py` v projektu). **Zda skill sáhne po `indexy.py hledej` dřív než po knize, zůstává neověřeno** (viz `todo.md`).
+- **Nalezené chyby, opraveno ještě v 0.9.5:**
+  - `indexy.py hledej` nenašel přechýlené příjmení („Fiala“ × „Fialová“, rejstřík má ženy jako -ová). Opraveno porovnáním kmene bez koncovky. **Zavržené:** jen poradit „hledej kmen“ (záplata na straně uživatele).
+  - `pridej` nekontroloval `cetl` ze vstupu; skill zapsal volný text a `prispevek.py` by řádky vyřadil. Nyní se odmítne vše mimo „model/effort RRRR-MM-DD“. Skill si navíc do `cetl` domyslel model (`claude-opus`); správně bylo `claude-opus-5-5/medium` (uživatel to věděl), uživatel opravil 44 řádků v projektu jedním `awk`. **Pravidlo:** model a effort se nehádají, neznámé zůstane prázdné a jde přes `--cetl`.
+  - `kontrola.py` hlásil zmínky nástrojů z historie `todo.md`/`STAV.md` a `novy_projekt.py` (ten je jen ve skillu). Nyní se přeskočí řádky s „odstraněn/zrušen/nahrazen/nahradil/smazán“, přeškrtnutý text a `novy_projekt.py`; zbytek jde umlčet seznamem `nastroje_historie` v `data/web.json`. **Zavržené:** upravovat texty v uživatelově `todo.md` (jeho historie).
+  - `novy_projekt.py` jen **upozorní** na `ke_stazeni.md` v kořeni vedle nového `data/ke_stazeni.md`; **neprovádí** přesun (zásah do dat bez vyžádání).
+- **Návody:** `docs/vydani.md` (vydání) a `docs/aktualizace.md` (plugin a projekt); `CLAUDE.md` jen odkazuje (jedno místo pravdy). V návodu k vydání jsou pasti ze zkoušky: `gh` a `git push` v sandboxu jdou mimo něj, text PR do scratchpadu (ne `$TMPDIR`), zrušený `gh pr merge` mohl proběhnout (ověřit stav před opakováním).
+- **Fork:** `plugin.json` a `marketplace.json` mají autora „Vaclav Miller“ a v popisu větu o forku (rozhodl uživatel). `LICENSE` zůstává s copyrightem původního autora (MIT to vyžaduje); druhý řádek s uživatelovým copyrightem se nepřidal (viz `todo.md`).
+- **Číslo verze se nezvedlo** u PR #13: aplikace ukáže nového autora a popis až po aktualizaci pluginu; cache se bez nového čísla nepřeinstaluje.
