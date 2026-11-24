@@ -479,7 +479,7 @@ náhled s klíčem, novým názvem a rozpory (počet snímků × `obsah.txt`, n�
 ukaž ho uživateli, po potvrzení pusť znovu s `--proved`.
 U ARON svazku, který už je ve `svazky.json` (název typu „Sbírka matrik Východočeského kraje, sign.: 148 …“, bez obce), nástroj
 shodu poznává podle klíče (apu) a signatury z `obsah.txt` a složku pojmenuje z prvního řádku `obsah.txt`; název ve `svazky.json`
-můžeš sjednotit na „Ronov 148, sign.: …“ (`zapis.py --sloucit`). U strojové kopie téhož svazku nástroj, je-li v ní jen snímky
+můžeš sjednotit na „Lhota 148, sign.: …“ (`zapis.py --sloucit`). U strojové kopie téhož svazku nástroj, je-li v ní jen snímky
 a `stahovani.log` a počty sedí, vypíše hotový příkaz `rm -r`: **ten pustí uživatel ve svém terminálu**, automatická kontrola
 oprávnění ho Claudovi zamítá i tehdy, když to pravidlo projektu ukládá. Nástroj provede kroky 1–5, vypíše strojové kopie a staré cesty
 v textech (kroky 6 a 7 děláš ty, nic nemaže), odškrtne řádek knihy v `data/ke_stazeni.md` (je-li soubor v projektu) a `obsah.md` zapíše jako koncept, který doplň. U archiválie použije klíč

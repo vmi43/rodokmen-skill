@@ -13,7 +13,7 @@ Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to 
 - `prispevek.py`: po tvém výslovném souhlasu pošle přepisy z `data/indexy/` do komunitního indexu matrik přes sběrnou schránku Mapy matrik (cizí služba, výsledek je veřejný). Jen zápisy N, O, Z starší zákonných lhůt; `navrh` nic neposílá a ukáže přesně, co odejde.
 
 **Opravy**
-- `indexy.py hledej`: „Fiala“ najde i „Fialová“ (porovnává kmen příjmení bez koncovky). `pridej` odmítne sloupec `cetl`, který není ve tvaru „model/effort RRRR-MM-DD“ (jinak by řádky `prispevek.py` vyřadil).
+- `indexy.py hledej`: „Hora“ najde i „Horová“ (porovnává kmen příjmení bez koncovky). `pridej` odmítne sloupec `cetl`, který není ve tvaru „model/effort RRRR-MM-DD“ (jinak by řádky `prispevek.py` vyřadil).
 - `kontrola.py`: zmínky nástrojů v `STAV.md`/`todo.md` už nehlásí u řádků s „odstraněn/zrušen/nahrazen“, u přeškrtnutého textu ani u `novy_projekt.py` (ten je jen ve skillu); jména, která mají v textu zůstat jako historie, jdou zapsat do `data/web.json` → `nastroje_historie`.
 - `novy_projekt.py`: má-li projekt `ke_stazeni.md` v kořeni, upozorní, že vedle nového `data/ke_stazeni.md` by zůstaly dva seznamy.
 - `zarad.py`: ARON svazek, který má ve `svazky.json` název bez obce („Sbírka matrik …, sign.: 148“), už nehlásí falešný PROBLÉM (shoda podle klíče a signatury) a složku pojmenuje z `obsah.txt`; čte počet snímků z pole „Snímky“ (archiválie z eBadatelny); archiv a popis archiválie bere z polí „Místo uložení“, „Archivní fond“ a „Popis archiválie“; u strojové kopie vypíše hotový příkaz `rm -r` pro uživatele.

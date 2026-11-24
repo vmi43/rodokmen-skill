@@ -100,7 +100,7 @@ def plan(slozka, svazky):
     stary = svazky.get(klic, {})
     if url == "" and stary.get("url"):
         url = stary["url"]
-    # ARON: svazky.json mívá název bez obce („Sbírka matrik …, sign.: 148“), obsah.txt „Ronov 148“ – složku pojmenuj z obsah.txt
+    # ARON: svazky.json mívá název bez obce („Sbírka matrik …, sign.: 148“), obsah.txt „Lhota 148“ – složku pojmenuj z obsah.txt
     jmeno_svazku = (prvni if portal == "ARON" and prvni else (stary.get("svazek") or prvni)).split(",")[0]
     p["slozka_nova"] = os.path.join(PRAC, f"{predpona}_{slug(jmeno_svazku)}_manual")
     obr, upoz = obrazky(slozka)
