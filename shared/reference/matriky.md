@@ -36,7 +36,7 @@ zhruba po roce 1910 často online nebudou (kniha pokračuje za rok 1926, lhůta 
 2. **Svazek podle roku a druhu.** Pozor na překryvy: jedna kniha pro více obcí, zvláštní knihy pro jednotlivé obce.
    **Druhopisy** (duplikáty pro děkanát nebo úřad, např. „T“ svazky v ZA Opava) mívají N, O a Z jednoho roku u sebe –
    hodí se, když originál chybí, je nečitelný nebo velký.
-3. **Index, pak kniha.** Index řazený po písmenech a letech dá stránku/folio; snímek odhadni (snímek ≈ folio × 1 až 2) a dolaď.
+3. **Index, pak kniha.** Nejdřív `python3 -I tools/indexy.py hledej <kmen jména>` (viz *Index knihy* níž) a do odpovědi napiš, co index pokrývá. Rejstřík řazený po písmenech a letech dá stránku/folio; snímek odhadni (snímek ≈ folio × 1 až 2) a dolaď.
    Starší rejstříky (18. stol.) občas ukazují o 1–4 strany vedle – když zápis na udané straně není, listuj kolem.
    Posun „snímek – strana“ se v knize mění (vložené listy, chybějící strany) – přečti číslo strany na náhledu a dopočítej.
    **Posun nikdy nedomýšlej:** přečti „Pag./fol.“ na 2–3 snímcích, spočítej ho a teprve pak skoč (bývá +1, +2, ale i −19).
@@ -170,6 +170,13 @@ co index pokrývá (snímky, roky), takže „nenalezeno“ platí jen pro to. *
 ze zvětšení (`overit.py`) a ulož ho šesti kroky. Index patří ke svazku (klíč ze `svazky.json`), ne do složky knihy v `pracovni/`
 (ta je v `.gitignore` a nástroj `zarad.py` ji přejmenovává); do `obsah.md` knihy dej jen řádek s odkazem na index.
 Sloupce jsou stejné jako v komunitním indexu matrik (`sdileni.py`, `precteno.tsv`) a navíc `strana` a `kniha` pro rejstříky; náš index je tvůj vlastní, na web nejde a ven jde jen přes `prispevek.py` po tvém souhlasu (`sdileni.md`).
+
+**Rejstřík přepisují pomocníci – zadání a kontrola (zkušenost z jednoho projektu: kurent 1784–1834, rejstřík zemřelých 1834–1894):**
+- **Cena, řekni ji uživateli před kolem.** Jeden snímek dvoustrany rejstříku stál na Sonnetu/medium asi 0,7 % pětihodinového okna (plán Team), na Opusu/high asi 1,25 % (≈ 1,8×); 33 snímků a 1729 řádků na Opusu ≈ 41 % okna. Čísla jsou z jediného projektu, ber je jako řád, ne slib.
+- **Model podle doby.** Rejstřík po ~1846 čte Sonnet jako Opus (porovnáno na 44 řádcích). U kurentu kolem 1800 dává Sonnet většině příjmení `[?]` a hledané příjmení přečetl chybně (Nowosad → „Nováček“): rejstřík před ~1830 čte Opus a **hledaná příjmení rodu po importu ověř ze zvětšení**, i když je pomocník nepřečetl s `[?]`.
+- **Značka knihy v jednotném tvaru.** Sloupec „littera matricae“ (značka knihy u řádků po ~1820) patří vždy do `kniha`, ve tvaru `Z lit. L.P` (typ knihy, `lit.`, značka); ne „Lit. P“ ani „Z L–P“ a ne do `ostatni`. Zadání pomocníkovi tvar předepiš, tři pomocníci ho jinak zapsali třemi způsoby. Značky knih bývají různé (rozsah let, písmeno, číslo svazku): pro jednu knihu drž jediný zápis, co v rejstříku stojí, opiš doslova a nic nedomýšlej. `indexy.py pridej` po zápisu vypíše všechny různé značky v souboru – jsou-li dvě totéž psané jinak, sjednoť je (viz `indexy.py --help`).
+- **List a ves neseď podle pořadí.** Čísla listů v rejstřících bývají o půl řádku posunutá a rejstřík se sloupci Místo–Jméno–List (bez dat) má sloupce posunuté vůči řádkům. Do zadání napiš výslovně: ves a list **nepřiřazuj podle obvyklých listů vsi ani podle pořadí**; nesedí-li pár jednoznačně, napiš `[?]` a `jistota` nízká.
+- **Stejnojmenní lidé na jednom snímku** (rejstřík bez dat) se od sebe liší vsí a listem, proto ves patří do `obec` a list do `strana` – `indexy.py pridej` podle nich řádky rozlišuje; do `osoby` ves nepřipisuj.
 
 ## Stavy údajů v datech
 | stav | kdy |

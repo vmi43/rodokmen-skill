@@ -6,7 +6,7 @@ Použití (z kořene projektu `python3 -I tools/indexy.py …`):
   indexy.py pridej <klíč svazku> <vstup.json|-> [--cetl model/effort]
                                                   přidá řádky do data/indexy/<klíč>.tsv (soubor s JSON polem objektů
                                                   se sloupci níže; napiš ho nástrojem Write do pracovni/). Klíč musí být
-                                                  ve data/svazky.json. Shodný řádek (typ, snímek, osoby, datum) se nepřidá podruhé.
+                                                  ve data/svazky.json. Shodný řádek (typ, snímek, osoby, datum, obec, strana) se nepřidá podruhé.
                                                   Řádek bez `cetl` dostane „<model/effort> <dnešní datum>“ z --cetl.
   indexy.py hledej <část jména> [--ves V] [--klic K] [--typ N|O|Z|I]
                                                   najde řádky ve všech indexech (bez ohledu na diakritiku a velikost písmen);
@@ -27,7 +27,13 @@ Sloupce TSV (pevné pořadí, UTF-8, LF, první řádek je záhlaví). Prvních 
            nebo ho doplní `--cetl model/effort` při pridej)
   odkaz    adresa snímku, je-li (volitelné; vyplňuje ji až export)
   strana   strana/folio v knize (u rejstříku strana, na kterou odkazuje) – jen náš
-  kniha    jen u typu I: značka knihy, do které rejstřík odkazuje (např. „N 1850–1870“) – jen náš
+  kniha    jen u typu I: značka knihy, do které rejstřík odkazuje (např. „N 1850–1870“; značka „littera matricae“ jako „Z lit. L.P“) – jen náš
+           Značky knih bývají různé (rozsah let „N 1850–1870“, písmeno „Z lit. L.P“, číslo svazku). Drž v jednom indexu
+           pro jednu knihu jediný zápis: typ knihy (N, O, Z) + rozsah let NEBO „lit.“ + značka. Co v rejstříku opravdu stojí,
+           opiš doslova (nic nepřekládej ani nedomýšlej); nevíš-li, jak značku zapsat, napiš ji tak, jak je, a řekni to
+           uživateli. `pridej` po zápisu vypíše všechny různé značky v souboru: jsou-li dvě z nich totéž psané jinak
+           (např. „Lit. P“ a „Z lit. P“), sjednoť je v dalším `pridej` (stejný řádek s jinou značkou se přidá vedle, starý
+           řádek smaž v TSV ručně).
 """
 import datetime, glob, json, os, re, sys, unicodedata
 for _s in (sys.stdout, sys.stderr):
@@ -46,6 +52,11 @@ JISTOTY = ("vysoká", "střední", "nízká")
 def norm(s):
     s = unicodedata.normalize("NFKD", str(s).lower())
     return "".join(c for c in s if not unicodedata.combining(c))
+
+
+def klic_shody(r):
+    """Dva řádky jsou shodné, jen když sedí i ves a strana: v rejstříku bez dat stojí na jednom snímku stejnojmenní lidé z různých vsí."""
+    return (r["typ"], r["snimek"], norm(r["osoby"]), r["datum"], norm(r["obec"]), norm(r["strana"]))
 
 
 def kmen(slovo):
@@ -120,10 +131,10 @@ def pridej(klic, vstup, cetl=""):
         ok, stavajici = cti(cesta)
         if not ok:
             sys.exit(f"{cesta} nemá záhlaví podle indexy.py (viz --help): neopravuji ho naslepo.")
-        mam = {(r["typ"], r["snimek"], norm(r["osoby"]), r["datum"]) for r in stavajici}
+        mam = {klic_shody(r) for r in stavajici}
     pridano = 0
     for r in nove:
-        k = (r["typ"], r["snimek"], norm(r["osoby"]), r["datum"])
+        k = klic_shody(r)
         if k not in mam:
             mam.add(k)
             stavajici.append(r)
@@ -137,6 +148,13 @@ def pridej(klic, vstup, cetl=""):
     if not ok or len(zpet) != len(stavajici):
         sys.exit(f"POZOR: zpětné čtení {cesta} nesedí, zkontroluj soubor.")
     print(f"{klic}: přidáno {pridano} ř., přeskočeno {len(nove) - pridano} shodných, v indexu celkem {len(zpet)} ř.")
+    knihy = {}
+    for r in zpet:
+        if r["typ"] == "I":
+            knihy[r["kniha"]] = knihy.get(r["kniha"], 0) + 1
+    if len(knihy) > 1:
+        print("Značky knihy v rejstříku (jsou-li dvě totéž psané jinak, sjednoť je, viz indexy.py --help): "
+              + "; ".join(f"{k} ({n})" for k, n in sorted(knihy.items())))
 
 
 def vsechny():

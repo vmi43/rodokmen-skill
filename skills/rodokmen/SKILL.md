@@ -113,7 +113,10 @@ Základní smyčka pro každou osobu:
    `python3 -I tools/portafontium.py obec "Obec"`, Praha: `tools/ahmp_search.sh`;
    SOA Praha (střední Čechy), MZA Brno a SOA Třeboň jen v prohlížeči (nebo knihu stáhne uživatel ručně – složka s `obsah.txt`, viz `portaly.md`; takovou knihu zapiš do `data/ke_stazeni.md`), ostatní a Rakousko viz `reference/portaly.md`. Sňatek hledej nejdřív
    ve farnosti nevěsty.
-   Je-li ke svazku index (rejstřík), začni jím. Starší matriky (před ~1784) bývají ve faře sousedního města.
+   **Index před knihou:** dřív než knihu otevřeš a začneš číst, spusť `python3 -I tools/indexy.py hledej <kmen jména>`
+   (stačí kmen příjmení, „Hora“ najde i „Horová“) a do odpovědi napiš, co index pokrývá a co našel. Index je vodítko:
+   zásah ověř na snímku, „nenalezeno“ platí jen pro pokrytí, které výpis uvádí. Má-li svazek rejstřík, který ještě
+   není přepsaný, začni jím (`reference/matriky.md`, *Index knihy*). Starší matriky (před ~1784) bývají ve faře sousedního města.
 4. **Stáhni snímek** do `pracovni/<svazek>/` a nech ho tam – před dalším stažením se podívej, jestli ho už nemáš
    (šetří čas, archiv i CAPTCHY). Najdi zápis, **přečti ho sám ze snímku** (přiblíž si výřez v plném rozlišení).
 5. **Zapiš nález** (vždy všech 6 kroků, i když to zdržuje):
@@ -203,6 +206,7 @@ kurent) Fable. Ověření na snímku a zápis do dat dělá vždy hlavní model 
 tolik neubývají.
 Osvědčilo se 3–4 pomocníci na různé větve a archivy současně, jedno kolo ≈ 15–25 nových předků.
 Pomocníci stojí hodně kreditů – před velkým kolem řekni uživateli, co plánuješ a proč, a nech si to schválit.
+Přepis **rejstříku** pomocníky má vlastní zadání a ceny (kurent před ~1830 Opus, jednotná značka knihy, `[?]` místo domýšlení listu): `reference/matriky.md`, *Index knihy*.
 Do zadání jim napiš technické pasti z `reference/matriky.md` (macOS: zsh; Windows: `python -I -X utf8`, `magick`)
 a pravidla brzdy výše (síť jen přes `tools/slusne.py`, při hlášce „zastavený“ skončit a ohlásit).
 **Jak zadání psát (z praxe, pomocníci jinak končí po pár snímcích nebo si domýšlejí):**

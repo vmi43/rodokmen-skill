@@ -53,6 +53,21 @@ class Indexy(unittest.TestCase):
         rc, out = self.spust("indexy.py", "stav")
         self.assertIn("s nízkou jistotou 1", out); self.assertIn("z 5 snímků", out)
 
+    def test_stejnojmenni_z_ruznych_vsi_nejsou_shodni(self):
+        r = {"typ": "I", "snimek": 2, "kniha": "Z", "osoby": "Novotný Jan", "jistota": "nízká"}
+        self.zapis("pracovni/n.json", json.dumps([dict(r, obec="Třemošnice", strana="129"), dict(r, obec="Kněžice", strana="88"), dict(r, obec="Ronov", strana="32")]))
+        rc, out = self.spust("indexy.py", "pridej", "abc12345", "pracovni/n.json")
+        self.assertEqual(rc, 0, out); self.assertIn("přidáno 3", out)
+        rc, out = self.spust("indexy.py", "pridej", "abc12345", "pracovni/n.json")   # tentýž řádek podruhé se přeskočí
+        self.assertIn("přidáno 0", out); self.assertIn("celkem 3", out)
+
+    def test_ruzne_znacky_knihy_se_vypisou(self):
+        rc, out = self.spust("indexy.py", "pridej", "abc12345", "pracovni/radky.json")
+        self.assertNotIn("Značky knihy", out)   # jedna značka (Z 1836–1882) – nic k hlášení
+        self.zapis("pracovni/k.json", json.dumps([{"typ": "I", "snimek": 4, "kniha": "Lit. P", "osoby": "Hora Karel", "jistota": "nízká"}]))
+        rc, out = self.spust("indexy.py", "pridej", "abc12345", "pracovni/k.json")
+        self.assertEqual(rc, 0, out); self.assertIn("Značky knihy", out); self.assertIn("Lit. P (1)", out); self.assertIn("Z 1836–1882 (1)", out)
+
     def test_spatny_vstup_nic_nezapise(self):
         self.zapis("pracovni/zly.json", json.dumps([{"typ": "X", "snimek": "a", "osoby": "", "jistota": "?"}, {"typ": "I", "snimek": 9, "osoby": "A", "jistota": "nízká"}]))
         rc, out = self.spust("indexy.py", "pridej", "abc12345", "pracovni/zly.json")
