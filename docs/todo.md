@@ -87,11 +87,10 @@ Rešerše: stažen a přečten celý upstream `dejiny-domu-skill` (0.5.0, větev
 
 ## Po vydání 0.9.5 (2026-11-24): co zbývá (rozhodnuto, viz `docs/decisions.md`, „Vydání 0.9.5: zkouška indexu…“)
 
-- **Krok „index před knihou“ do `SKILL.md` (a `matriky.md`) pro 0.9.6** (rozhodl uživatel). Navržený text: „Před čtením knihy nejdřív spusť `python3 -I tools/indexy.py hledej <kmen jména>` a do odpovědi uveď, co index pokrývá (je vodítko, zásah ověř na snímku).“ Před zapsáním zopakuj zkoušku: v uživatelově projektu s pluginem 0.9.5 (vydaný, `--plugin-dir` už netřeba; projekt má `data/indexy/85cf0e6e.tsv`, 44 řádků) zadat „najdi v Biskupicích úmrtí Fialy okolo roku 1860“ a v přepisu hledat `indexy.py hledej` před čtením knihy. Samo se to dosud neukázalo ani nevyvrátilo.
+- **Krok „index před knihou“ je zapsaný v 0.9.6 (2026-11-24) bez opakované zkoušky; zda ho Claude podle `SKILL.md` opravdu použije, ověř při příštím hledání v projektu s indexem (v přepisu hledej `indexy.py hledej` před čtením knihy) a výsledek dopiš do `decisions.md`.**
 - **`LICENSE`: druhý řádek s uživatelovým copyrightem** (rozhodl uživatel), pod původní „Copyright (c) 2026 Jindřich Šaršon“, který zůstane: `Copyright (c) 2026 Vaclav Miller`. Udělat v dalším PR; číslo verze to nevyžaduje.
 - **Pilotní řádky rejstříku 3823 (F): 44 × 42.** Deník č. 227 uvádí 42 řádků, v `data/indexy/85cf0e6e.tsv` je 44. Skill tvrdí, že pilotní soubor jich měl 44 a deník se spletl; ověřit `awk 'END{print NR-1}' pracovni/index_3823/index_F.tsv` v projektu. Je-li výsledek 42, dohledat dva řádky navíc.
 - **Návrhy z poznámek uživatele, neprovedené:** `indexy.py` s importem z jednoduchého TSV (pilot byl ručně přepsaný TSV a převáděl se skriptem); nápověda k `hledej`: rejstříkové řádky mají typ `I`, ne `Z` (`--typ Z` je vyřadí); hledat kmen příjmení je od 0.9.5 vyřešeno v nástroji.
-- **Autor a popis pluginu** (PR #13) se v aplikaci ukáží až s novým číslem verze; přibalit k 0.9.6.
 
 ## Ověřit index knihy na živém projektu (rozhodnuto 2026-11-24, viz `docs/decisions.md`)
 

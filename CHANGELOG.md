@@ -6,6 +6,17 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.9.6 – 24. 11. 2026
+
+**Opravy**
+- `indexy.py pridej`: dva řádky jsou shodné, jen když sedí i `obec` a `strana`. Dřív se v rejstříku bez dat zahodili stejnojmenní lidé z různých vsí na jednom snímku (v jednom projektu 35 ze 602 řádků). Už zahozené řádky se samy nevrátí, přidej je znovu.
+- `indexy.py pridej` po zápisu vypíše různé značky knihy (`kniha`) v indexu, aby šlo poznat tutéž značku zapsanou dvěma způsoby; pravidla zápisu jsou v `indexy.py --help`.
+- Plugin ukazuje autora a popis tohoto forku.
+
+**Návody**
+- Index před knihou: dřív než Claude začne číst knihu, spustí `indexy.py hledej <kmen jména>` a řekne, co index pokrývá; zásah ověří na snímku.
+- Přepis rejstříku pomocníky: cena (Sonnet/medium zhruba 0,7 % pětihodinového okna na snímek, Opus/high zhruba 1,25 %), rejstřík před ~1830 čte Opus a hledaná příjmení rodu se ověřují ze zvětšení, jednotný tvar značky knihy (`Z lit. L.P`), listy a vsi nedomýšlet podle pořadí, ale psát `[?]`.
+
 ## 0.9.5 – 24. 11. 2026
 
 **Nové**
