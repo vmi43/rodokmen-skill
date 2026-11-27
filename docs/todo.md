@@ -99,6 +99,17 @@ rychlý průchod celou knihou (narození, sňatky, úmrtí) přes pomocníka na 
 použije před hledáním jména. Při příští „domácí“ knize to zkus a dopiš do `decisions.md`, co se ukázalo (cena, přesnost čtení, počet
 „?“). **Odesílání** (`prispevek.py`): živě neověřené. První odeslání udělej malé (pár řádků) a zkontroluj výsledný pull request v `pe-pan/matriky-index`; ověř, že schránka přijme `cetl` s „(z rodokmenu)“ a že přijde odkaz na PR. Zvážit až po zkušenosti: hledání i v komunitním indexu (`sdileni.py kniha`) přímo z `indexy.py hledej`.
 
+## Celé knihy do složky `knihy/` (rozhodnuto 2026-11-27, po drobnostech k indexu)
+
+Podnět z uživatelova projektu (`poznamky_pro_skill.md`, 2026-11-27): v `pracovni/` je 35 GB, 116 složek celých knih (`*_manual`) se mísí s výstupy pomocníků, výřezy a 629 volnými soubory, takže úklid hrozí smazáním knihy. Uživatel rozhodl udělat to jako samostatný krok po drobnostech k indexu (viz `decisions.md`, „Poznámky … cena a kvalita indexu“). Návrh z poznámky, ještě neprojednaný po bodech:
+1. `knihy/` v kořeni projektu, mimo git (šablona `.gitignore`, povolené zápisy v šabloně `.claude/settings.json`); názvy složek beze změny (`<klíč>_<název>[_manual]/`, `s<n>.jpg`, `obsah.txt`, `obsah.md`).
+2. `zarad.py`: cíl `knihy/`, nezařazené složky hledat v `knihy/` i v `pracovni/`; cesta jako konstanta na jednom místě.
+3. Strojové stahování celých knih nebo rozsahů (`aron_img.py rozsah`, případně `portafontium.py`, `ahmp_scan.py`, `matricula_*`) do `knihy/`; jednotlivé snímky, mezipaměti a výstupy pomocníků zůstanou v `pracovni/`.
+4. Migrace v `novy_projekt.py`: jen `mv` (desítky GB, nic nekopírovat ani nemazat), výpis přesunutého, nabídnout přepsání starých cest v `data/*.md`; v sandboxu vypsat příkazy `mv` pro uživatele.
+5. Dokumentace (`SKILL.md` krok 4 Fáze 2 a mapa souborů, `portaly.md`, `data.md`, zadání pomocníků) a `kontrola.py` (kniha ještě v `pracovni/`, svazek `upload: manual` bez složky v `knihy/`).
+6. Testy: zařazení z obou míst, migrace nesahá na `pom_*`, `.cache_*` a volné soubory, druhé spuštění nic nedělá.
+Menší, k tomu: vstupní JSONy pro `zapis.py` do `pracovni/_vstupy/` a po zápisu nabídnout jejich smazání.
+
 ## Parkované v session
 - **`pomucka.py hledej` a stejnojmenné obce** (poznámka uživatele 2026-11-23, do 0.9.5 nezapracovaná): `hledej "<obec>"` vypíše nejdřív stejnojmennou obec z jiné farnosti, hledaná obec je jen pod svou farou. Návrh: u stejnojmenných obcí vypsat faru a okres výrazně.
 - **Úklid starých větví (nabídnuto 2026-11-23, uživatel se nevyjádřil).** Bez vlastních commitů proti `main`, jen zastaralé: `feat/omezovac`, `feat/podman-tools`, `feat/rucni-stazeni`, `merge/upstream-0.8.0`, `claude/rodokmen-4932e3`, `feat/rodokmen-texty-zdravi`; sloučené a už zbytečné: `claude/missing-package-json-614904`, `feat/ged-export` (lokálně i na `origin`). Před smazáním ukázat uživateli seznam a mazat `git branch -d`. Smazat položku po úklidu.

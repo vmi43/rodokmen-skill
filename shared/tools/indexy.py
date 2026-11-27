@@ -16,7 +16,8 @@ Použití (z kořene projektu `python3 -I tools/indexy.py …`):
 Sloupce TSV (pevné pořadí, UTF-8, LF, první řádek je záhlaví). Prvních devět je totéž jako v komunitním indexu matrik
 (pe-pan/matriky-index, `precteno.tsv`), poslední dva jsou naše:
   snimek   snímek TOHOTO svazku, na kterém je řádek přečtený (u rejstříku snímek rejstříku)
-  datum    datum události (RRRR-MM-DD, neúplné RRRR-MM nebo RRRR), je-li
+  datum    datum události (RRRR-MM-DD, neúplné RRRR-MM nebo RRRR), je-li; nic jiného (ne „1832[?]“) – nejistota patří do
+           ostatni a jistoty. `pridej` jiný tvar odmítne, stejně jako `kniha` ve tvaru samotného roku
   typ      N narození | O oddaní | Z zemřelí | I řádek rejstříku (jen náš; komunitní index rejstříky nemá)
   obec     ves a číslo popisné: „Lhota 12“
   osoby    role a jména: „zemřelý: Josef Hora; otec: Jan Hora“, „dítě: …; otec: …; matka: … roz. …; kmotr: …“,
@@ -69,6 +70,8 @@ def kmen(slovo):
 
 
 CETL = re.compile(r"[a-z][a-z0-9.-]+/[a-z0-9]+ \d{4}-\d{2}-\d{2}")
+DATUM = re.compile(r"\d{4}(-\d{2}(-\d{2})?)?")
+JEN_ROK = re.compile(r"\d{4}\s*(\[\?\]|\(\?\)|\?)?")   # „1832“, „1832[?]“: rok ročníku, ne značka knihy
 
 
 def cisti(v):
@@ -117,6 +120,11 @@ def pridej(klic, vstup, cetl=""):
             chyby.append(f"řádek {i}: chybí osoby")
         if r["jistota"] not in JISTOTY:
             chyby.append(f"řádek {i}: jistota musí být vysoká, střední nebo nízká (je „{r['jistota']}“)")
+        if r["datum"] and not DATUM.fullmatch(r["datum"]):
+            chyby.append(f"řádek {i}: datum musí být RRRR-MM-DD, RRRR-MM nebo RRRR (je „{r['datum']}“); "
+                         f"nejistotu piš do ostatni a jistoty, ne do data")
+        if JEN_ROK.fullmatch(r["kniha"]):
+            chyby.append(f"řádek {i}: kniha je jen rok („{r['kniha']}“) – rok patří do datum, kniha je značka knihy (např. „Z 1836–1882“)")
         if r["typ"] == "I" and not r["kniha"]:
             chyby.append(f"řádek {i}: řádek rejstříku (typ I) musí mít knihu, do které odkazuje")
         if r["snimek"].isdigit() and sv[klic].get("snimku") and int(r["snimek"]) > int(sv[klic]["snimku"]):

@@ -76,6 +76,19 @@ class Indexy(unittest.TestCase):
         rc, out = self.spust("indexy.py", "pridej", "nenicklic", "pracovni/radky.json")
         self.assertNotEqual(rc, 0); self.assertIn("není v data/svazky.json", out)
 
+    def test_datum_a_kniha_ve_spatnem_tvaru(self):
+        r = {"typ": "I", "snimek": 2, "osoby": "Hora Jan", "jistota": "nízká"}
+        for zle, hlaska in ((dict(r, kniha="Z", datum="1832[?]"), "datum musí být"), (dict(r, kniha="1832"), "kniha je jen rok"),
+                            (dict(r, kniha="1832[?]"), "kniha je jen rok"), (dict(r, kniha="Z", datum="8. 3. 1832"), "datum musí být")):
+            self.zapis("pracovni/z.json", json.dumps([zle]))
+            rc, out = self.spust("indexy.py", "pridej", "abc12345", "pracovni/z.json")
+            self.assertNotEqual(rc, 0, zle); self.assertIn(hlaska, out)
+        self.assertFalse(os.path.exists(os.path.join(self.d, "data", "indexy")))
+        dobre = [dict(r, kniha="Z 1836–1882", datum=d) for d in ("1832", "1832-03", "1832-03-08", "")] + [dict(r, kniha="Z lit. L.P", snimek=3)]
+        self.zapis("pracovni/d.json", json.dumps(dobre))
+        rc, out = self.spust("indexy.py", "pridej", "abc12345", "pracovni/d.json")
+        self.assertEqual(rc, 0, out); self.assertIn("přidáno 5", out)
+
     def test_kontrola_hlida_klic_a_zahlavi(self):
         self.spust("indexy.py", "pridej", "abc12345", "pracovni/radky.json")
         rc, out = self.spust("kontrola.py")
