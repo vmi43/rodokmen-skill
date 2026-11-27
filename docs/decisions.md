@@ -391,3 +391,19 @@ Zkouška 0.9.5 na uživatelově projektu a vydání (PR #10, tag a vydání `v0.
 - **Značku knihy `pridej` nekontroluje, jen po zápisu vypíše různé značky.** Tvar se mezi knihami liší („N 1850–1870“, „Z lit. L.P“), pevný vzor by odmítal platné zápisy. Hlídá to zadání pomocníkovi a výpis; sjednocení je ruční. **Zavržené:** pevný vzor značky v kódu; vrátit se k němu, až bude víc knih a ustálí se tvary.
 - **Krok „index před knihou“ je v `SKILL.md` a `matriky.md` bez opakované zkoušky** (rozhodl uživatel; původně se měla zkouška zopakovat před zápisem). Ověření při příštím hledání v projektu s indexem je v `docs/todo.md`.
 - **Čísla ceny pomocníků** (0,7 % / 1,25 % okna na snímek) jsou z jednoho projektu a plánu Team; v návodu jsou jako řád, ne slib.
+
+## Poznámky z uživatelova projektu 2026-11-24 až 11-27: cena a kvalita indexu (2026-11-27)
+
+Větev `claude/nove-podnety-zlepseni-bba235`, bez změny verze (CHANGELOG, sekce „Nevydáno“). Pořadí rozhodl uživatel: nejdřív drobnosti k indexu, potom zvlášť složka `knihy/` (viz `todo.md`).
+
+- **`indexy.py pridej` kontroluje tvar `datum` a odmítne `kniha` ve tvaru samotného roku** („1832“, „1832[?]“). Pomocníci psali „1832[?]“ do `datum` a rok ročníku do `kniha` (78 řádků); uživatel to obcházel slučovacím skriptem. Tím se mění rozhodnutí z 0.9.6 jen částečně: **tvar značky knihy se dál nekontroluje**, odmítá se jen značka, která je zjevně rok. **Zavržené:** pevný vzor značky (důvod z 0.9.6 trvá); u `typ` kontrola „I místo O“ v kódu není, protože oddaní (`O`) jsou platný typ – drží to zadání pomocníka.
+- **Cena indexu podle řádků na snímek, ne podle snímků**, a kalibrace první malou dávkou s hlídáním týdenního limitu. Čísla (0,9 / 1,06 / 1,2 / 1,6 / 2,6 % okna na snímek, 0,17 bodu týdne) jsou z jednoho projektu a plánu Team; v návodu jako řád.
+- **Pilot u nepravidelného rejstříku** (76 % nízké jistoty na Opus/medium) a past „list N ve farnosti s víc knihami téhož typu“ jsou návod v `matriky.md`, bez nástroje.
+- **Nepřevzato:** nástroj na pás prvního řádku (`mapa_knihy.py` už podobně dělá mapu záhlaví; stačí věta v návodu).
+
+
+## Vydání 0.9.7 a dotažení 0.9.6 (2026-11-27)
+
+- **0.9.6 se vydala na GitHubu dodatečně** (tag `v0.9.6` na merge `3ce0841` PR #14, 2026-11-27): PR byl přimergovaný 24. 11., ale kroky 8–10 z `docs/vydani.md` se neudělaly. Text vydání je sekce 0.9.6 z CHANGELOGu beze změny.
+- **Bump Astra na 7.4.13 (`5887f2a`) vznikl na větvi `chore/release-0.9.6` až po mergi a do `main` nedošel;** do 0.9.7 se přebral cherry-pickem. Ověřeno: `novy_projekt.py --ukazka`, `npm install`, `npm run data`, `npm run build` rc=0 s Astro 7.4.13.
+- **0.9.7 je oprava (zvedá se `Z`):** bezpečnostní bump šablony, kontrola `datum`/`kniha` v `indexy.py pridej` a návody k indexu. Složka `knihy/` se odkládá do další verze (migrace desítek GB, vlastní kolo; viz `todo.md`).
