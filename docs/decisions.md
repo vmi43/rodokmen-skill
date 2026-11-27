@@ -401,3 +401,9 @@ Větev `claude/nove-podnety-zlepseni-bba235`, bez změny verze (CHANGELOG, sekce
 - **Pilot u nepravidelného rejstříku** (76 % nízké jistoty na Opus/medium) a past „list N ve farnosti s víc knihami téhož typu“ jsou návod v `matriky.md`, bez nástroje.
 - **Nepřevzato:** nástroj na pás prvního řádku (`mapa_knihy.py` už podobně dělá mapu záhlaví; stačí věta v návodu).
 
+
+## Vydání 0.9.7 a dotažení 0.9.6 (2026-11-27)
+
+- **0.9.6 se vydala na GitHubu dodatečně** (tag `v0.9.6` na merge `3ce0841` PR #14, 2026-11-27): PR byl přimergovaný 24. 11., ale kroky 8–10 z `docs/vydani.md` se neudělaly. Text vydání je sekce 0.9.6 z CHANGELOGu beze změny.
+- **Bump Astra na 7.4.13 (`5887f2a`) vznikl na větvi `chore/release-0.9.6` až po mergi a do `main` nedošel;** do 0.9.7 se přebral cherry-pickem. Ověřeno: `novy_projekt.py --ukazka`, `npm install`, `npm run data`, `npm run build` rc=0 s Astro 7.4.13.
+- **0.9.7 je oprava (zvedá se `Z`):** bezpečnostní bump šablony, kontrola `datum`/`kniha` v `indexy.py pridej` a návody k indexu. Složka `knihy/` se odkládá do další verze (migrace desítek GB, vlastní kolo; viz `todo.md`).

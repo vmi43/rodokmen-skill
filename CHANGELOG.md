@@ -6,9 +6,10 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
-## Nevydáno
+## 0.9.7 – 27. 11. 2026
 
 **Opravy**
+- Web: Astro v šabloně zvednuté na 7.4.13 kvůli dvěma bezpečnostním upozorněním `npm audit` (Astro do 7.4.6). Při aktualizaci projektu se změní `web/package-lock.json`, pak stačí `npm install`.
 - `indexy.py pridej` odmítne `datum` v jiném tvaru než `RRRR`, `RRRR-MM` nebo `RRRR-MM-DD` (třeba „1832[?]“) a `kniha` ve tvaru samotného roku; pomocníci tam psali rok ročníku a nejistotu.
 
 **Návody**
