@@ -204,6 +204,17 @@ def main():
                 err.append(f"index data/indexy/{ik}.tsv, řádek {i}: typ N/O/Z/I, číselný snímek, osoby a jistota (vysoká/střední/nízká) jsou povinné")
             elif mx and int(r[0]) > int(mx):
                 warn.append(f"index data/indexy/{ik}.tsv, řádek {i}: snímek {r[0]} je za koncem svazku ({mx})")
+    # evidence písmen rejstříku (data/indexy/<klíč>.pismena.json, indexy.py mapa/prepsano)
+    for cesta in sorted(glob.glob(os.path.join(DATA, "indexy", "*.pismena.json"))):
+        ik = os.path.basename(cesta)[:-len(".pismena.json")]
+        if ik not in svazky:
+            err.append(f"index data/indexy/{ik}.pismena.json: klíč '{ik}' není v data/svazky.json")
+        try:
+            p = json.load(open(cesta, encoding="utf-8"))
+            if not isinstance(p, dict) or not all(isinstance(v, dict) and re.fullmatch(r"\d+-\d+", str(v.get("snimky", ""))) for v in p.values()):
+                raise ValueError
+        except ValueError:
+            err.append(f"index data/indexy/{ik}.pismena.json: není ve tvaru {{písmeno: {{snimky: od-do}}}} (zapisuj přes tools/indexy.py mapa)")
     # celé knihy patří do knihy/ (mimo git, úklid pracovni/ se jí nedotkne); jen upozornění – snímky jdou stáhnout znovu
     warn += kontrola_knih(svazky)
 

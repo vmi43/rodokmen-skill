@@ -17,6 +17,8 @@ Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to 
 - eBadatelna: druh knihy poznáš z obecného popisu (roky po stránkách, paginace), ne z „Register type“; litera z rejstříku odpovídá poli „Original name“.
 - Návod k rejstříkům: mapa rejstříku ze zmenšených náhledů a pruhů nestačí (co funguje místo ní); do zadání pomocníků rozlišení otce a matky podle genitivu.
 - Návod k matrikám: když zápis na snímku spočítaném ze strany rejstříku není, otevřít i sousední snímky.
+- Rejstřík se přepisuje po písmenech, jen podle potřeby: hledáš Nováka, přepíše se písmeno N, Svobodu až později. Nové `indexy.py mapa` (kde je které písmeno) a `indexy.py prepsano`; `hledej` u nepřepsaného písmene řekne, že neshoda nic neznamená a kde písmeno najdeš, a připomene jiné tvary (Vávra = Wawra). `kontrola.py` hlídá tvar evidence písmen.
+- Návod: před knihou nejdřív najít rejstřík (samostatný svazek, konec či začátek knihy, oddíly vsí, roční rejstříky); výchozí stropy limitů při indexaci (týden ~98 %, pětihodinové okno ~90 %) a dotaz na jejich stav před kolem.
 - Vstupy pro `zapis.py` se píší do `pracovni/_vstupy/` a nástroj je odtud po úspěšném zápisu smaže; v `pracovni/` tak nepřibývají volné soubory.
 
 ## 0.9.7 – 27. 11. 2026

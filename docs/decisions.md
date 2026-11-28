@@ -434,3 +434,14 @@ Větev `claude/nove-podnety-zlepseni-bba235`, vydáno v 0.9.7 (do té doby CHANG
 - **Mapa rejstříku:** starší rada v `matriky.md` (pás prvního řádku ukáže začátky písmen) se s novou zkušeností rozchází; ponechány obě zkušenosti v jedné odrážce a doplněno, co fungovalo spolehlivě, místo mazání staré rady.
 - **`montage -label` bez písma:** poznámka uživatele ho doporučovala jako náhradu za `-annotate`, zkouška na ImageMagick 7.1.2 (macOS) ukázala, že bez `-font` padá stejně („unable to read font“, rc=1) a s `-font …/Arial.ttf` projde (rc=0). Návod proto dál chce `-font`; doporučení z poznámky nepřevzato.
 - **Genitiv otec/matka:** do zadání pomocníků (jeden chybný řádek ze ~40 u Sonnetu).
+
+## Rejstřík po písmenech podle potřeby, hlídání limitů (2026-11-28)
+
+**Zadání uživatele:** před hledáním v knize nejdřív najít rejstřík (samostatný svazek nebo přímo v knize) a přepsat z něj jen písmeno hledaného příjmení (Novák → N, Svoboda až později → S). Šetří to cenu, nechává možnost přepsat rejstřík celý později a index slouží dalším hledáním, i když je to dál jen pomůcka. Hlídat pětihodinové okno i týdenní limit.
+
+- **Nahrazuje pravidlo „rejstřík přepiš celý hned při prvním otevření“** (`matriky.md`, *Index knihy*). Celý rejstřík jen na přání uživatele (`prepsano <klíč> vse <od>-<do>`).
+- **Evidence písmen v nástroji, ne jen pravidlem v textu** (rozhodl uživatel podle doporučení): `data/indexy/<klíč>.pismena.json`, příkazy `indexy.py mapa` a `prepsano`. Důvod: `hledej` dřív odvozoval pokrytí jen ze snímků a let, takže po přepsání N by „Svoboda nenalezen“ vypadalo průkazně. Nově u nepřepsaného písmene napíše „neshoda nic neznamená“ a kde písmeno je. **Zavržené:** zápis přepsaných písmen do deníku a `obsah.md` (nástroj by dál ukazoval zavádějící pokrytí). Svazek bez `.pismena.json` (starší index, rychlý průchod knihou) se chová jako dřív.
+- **`prepsano` vyžaduje mapu písmene** (nejdřív zjistit, kde písmeno je) a upozorní na snímky písmene bez řádku `I`; nezastaví, protože prázdný snímek může být skutečně prázdný. Změna snímků písmene v `mapa` přepsání zruší.
+- **Jiné tvary počátečního písmene** (V/W, Č/C/Cz/Tsch, Š/Ž/Sch, I/J/Y …) `hledej` jen připomene, jsou-li zmapované; výčet je vodítko, ne úplný.
+- **Známé omezení:** `mapa` drží jeden rozsah snímků na písmeno. Roční rejstříky (písmeno roztroušené po knize) se řeší deníkem a označením písmene až po projití všech ročníků. Víc rozsahů na písmeno, až to bude potřeba.
+- **Limity:** výchozí stropy týden do ~98 %, pětihodinové okno neplánovat přes ~90 %, nedá-li uživatel jiné (stropy uživatel používá ve svém projektu). Claude stav limitů nevidí (`/usage` ukazuje čísla uživateli), proto se ptá před kolem a po první dávce, nemá-li nástroj. **Zavržené:** pevný strop na kolo bez ptaní (neví, kolik už je vyčerpáno).

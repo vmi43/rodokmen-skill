@@ -115,8 +115,10 @@ Základní smyčka pro každou osobu:
    ve farnosti nevěsty.
    **Index před knihou:** dřív než knihu otevřeš a začneš číst, spusť `python3 -I tools/indexy.py hledej <kmen jména>`
    (stačí kmen příjmení, „Hora“ najde i „Horová“) a do odpovědi napiš, co index pokrývá a co našel. Index je vodítko:
-   zásah ověř na snímku, „nenalezeno“ platí jen pro pokrytí, které výpis uvádí. Má-li svazek rejstřík, který ještě
-   není přepsaný, začni jím (`reference/matriky.md`, *Index knihy*). Starší matriky (před ~1784) bývají ve faře sousedního města.
+   zásah ověř na snímku, „nenalezeno“ platí jen pro pokrytí, které výpis uvádí. Pak **najdi rejstřík** (samostatný svazek,
+   konec nebo začátek knihy, oddíly vsí) a **přepiš z něj písmeno hledaného příjmení**, ne celý rejstřík: Novák → N,
+   Svoboda až při hledání Svobody. Teprve podle něj otevři knihu (`reference/matriky.md`, *Index knihy* a *Kde rejstřík
+   hledat*). Před přepisem odhadni cenu a hlídej limity (týden do ~98 %, pětihodinové okno do ~90 %, nedá-li uživatel jiné). Starší matriky (před ~1784) bývají ve faře sousedního města.
 4. **Stáhni snímek** do `pracovni/<svazek>/` a nech ho tam – před dalším stažením se podívej, jestli ho už nemáš
    (šetří čas, archiv i CAPTCHY). Najdi zápis, **přečti ho sám ze snímku** (přiblíž si výřez v plném rozlišení).
 5. **Zapiš nález** (vždy všech 6 kroků, i když to zdržuje):
@@ -324,7 +326,7 @@ Nedělej to pořád. Postup:
 | `aron_search.py "Obec" [filtr] [max] [--sken]` | najde svazky matrik na ARON (SOA Zámrsk); `"Obec,Fara"` zúží stejnojmenné obce; `--sken` doplní počet snímků nebo „BEZ SNÍMKŮ“ |
 | `aron_img.py <apu> info / <snímek> 1 pracovni/x.jpg / rozsah <od-do> / link <n> / svazek` | stáhne snímek nebo rozsah po jednom (log OK/SELHALO), dá odkaz, zapíše svazek |
 | `zarad.py [složka] [--proved]` | zařadí ručně stažené knihy (složka s `obsah.txt`): náhled, pak přejmenování, `svazky.json`, `obsah.md` (`portaly.md`) |
-| `indexy.py pridej <klíč svazku> <soubor.json>` / `hledej <příjmení> [--ves V]` / `stav` | index knihy v `data/indexy/<klíč>.tsv` (rejstřík přepsaný celý, rychlý průchod knihou, kam se čeká návrat); vodítko, ne `doc`, zásah ověř na snímku (`matriky.md`, „Index knihy“) |
+| `indexy.py pridej <klíč svazku> <soubor.json>` / `hledej <příjmení> [--ves V]` / `stav` / `mapa <klíč> N=21-23` / `prepsano <klíč> N` | index knihy v `data/indexy/<klíč>.tsv` (rejstřík přepsaný po písmenech podle potřeby, evidence písmen v `<klíč>.pismena.json`; rychlý průchod knihou, kam se čeká návrat); vodítko, ne `doc`, zásah ověř na snímku (`matriky.md`, „Index knihy“) |
 | `prispevek.py navrh` / `souhlas ano [jméno]` / `odeslat <otisk>` | z `data/indexy/` vybere, co smí do komunitního indexu matrik (jen N, O, Z starší lhůt, s `cetl`), a po výslovném souhlasu uživatele to pošle přes sběrnou schránku Mapy matrik; `navrh` nic neposílá, `odeslat` jen dávku, kterou uživatel viděl (`sdileni.md`, „Odesílání“) |
 | `pomucka.py rozbor <pdf>`, `pomucka.py hledej <obec> [N\|O\|Z] [rok] [--vse]` | rozebere Archivní pomůcku NAD 190 (východočeské matriky, PDF stažené ručně; potřebuje `qpdf` a `pdftotext`) a najde knihy s odkazy na ARON a ZIP (`portaly.md`) |
 | `sdileni.py najdi "Obec" [rok] [N\|O\|Z]`, `sdileni.py kniha <svazek>` | před otevřením knihy se podívá do komunitní Mapy matrik a indexu matrik: odhad snímku, poznámky ke knize, už přečtené zápisy (jen čtení, nic neodesílá; zápis z indexu je vodítko, ne doklad; `sdileni.md`) |
