@@ -107,5 +107,12 @@ Kód, testy a návody jsou hotové (rozhodnutí i provedení v `decisions.md`, �
 - **neověřeno na živém projektu:** aktualizace uživatelova projektu (116 knih, 35 GB) – po ní zkontrolovat výpis přesunutých knih, `git status` (knihy nesmí být v gitu), upozornění `kontrola.py` a nabídnout přepsání starých cest v `data/`;
 - při příštím zápisu ověřit, že Claude podle `SKILL.md` píše vstupy do `pracovni/_vstupy/`.
 
+## Rejstřík po písmenech: vydat a ověřit na živém projektu (provedeno 2026-11-28, větev `feat/rejstrik-po-pismenech`)
+
+Kód (`indexy.py mapa`/`prepsano`, evidence `<klíč>.pismena.json`, kontrola v `kontrola.py`), test a návody jsou hotové a commitnuté (`3d4e6bf`); rozhodnutí v `decisions.md`, „Rejstřík po písmenech podle potřeby, hlídání limitů“. Větev vychází z `feat/knihy-slozka` (nepushnutá), vydává se tedy spolu s ní (viz předchozí sekce, číslo verze nerozhodnuto). Zbývá:
+- push, PR a vydání (`docs/vydani.md`, `gh` vždy s `--repo vmi43/rodokmen-skill`);
+- **neověřeno na živém projektu:** že Claude podle `SKILL.md` před knihou najde rejstřík, zmapuje písmena a přepíše jen písmeno hledaného příjmení, a že se před kolem zeptá na stav limitů; při první zkoušce zapsat do `decisions.md` cenu mapy a jednoho písmene;
+- **známé omezení:** `mapa` drží jeden rozsah snímků na písmeno; u ročních rejstříků (písmeno po celé knize) doplnit víc rozsahů, až to bude na skutečné knize potřeba.
+
 ## Parkované v session
 - **Ověřit, že nainstalovaný plugin běží ve verzi 0.9.7** (2026-11-27): po `git pull` a `/reload-plugins` má hlavní checkout `shared/VERZE` 0.9.7, ale `~/.claude/plugins/installed_plugins.json` dál uvádí 0.9.6. Nevíme, jestli je to jen zastaralý údaj (plugin se čte ze složky), nebo se nová verze nenačetla. Ověřit v příští session v projektu (Claude by měl hlásit 0.9.7); podle výsledku opravit kontrolu v `docs/vydani.md`, *Ověření*, nebo postup v kroku 9.
