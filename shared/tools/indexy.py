@@ -10,7 +10,9 @@ Použití (z kořene projektu `python3 -I tools/indexy.py …`):
                                                   Řádek bez `cetl` dostane „<model/effort> <dnešní datum>“ z --cetl.
   indexy.py hledej <část jména> [--ves V] [--klic K] [--typ N|O|Z|I]
                                                   najde řádky ve všech indexech (bez ohledu na diakritiku a velikost písmen);
-                                                  u každého indexu řekne, co pokrývá, takže „jinde nejsou“ má váhu
+                                                  u každého indexu řekne, co pokrývá, takže „jinde nejsou“ má váhu;
+                                                  řádky rejstříku mají typ I, ne N/O/Z: `--typ Z` vyřadí i rejstřík
+                                                  zemřelých (nástroj řekne kolik), pro ten zadej `--typ I` nebo nic
   indexy.py stav                                  přehled indexů: svazek, počet řádků, rozsah snímků, kolik řádků je „?“
 
 Sloupce TSV (pevné pořadí, UTF-8, LF, první řádek je záhlaví). Prvních devět je totéž jako v komunitním indexu matrik
@@ -187,7 +189,7 @@ def hledej(args):
     if not cast:
         sys.exit("hledej: zadej část jména, např. indexy.py hledej Hora")
     q = " ".join(kmen(w) for w in " ".join(cast).split())
-    sv, nalez, pocet = svazky(), 0, 0
+    sv, nalez, pocet, rejstrik = svazky(), 0, 0, 0
     for klic, ok, radky in vsechny():
         if not ok:
             print(f"{klic}: soubor nemá správné záhlaví, přeskakuji (indexy.py --help)")
@@ -195,9 +197,11 @@ def hledej(args):
         if opt.get("klic") and opt["klic"] != klic:
             continue
         pocet += 1
-        hity = [r for r in radky if (q in norm(r["osoby"]) or q in norm(r["ostatni"]))
-                and (not opt.get("ves") or norm(opt["ves"]) in norm(r["obec"]))
-                and (not opt.get("typ") or r["typ"] == opt["typ"].upper())]
+        shody = [r for r in radky if (q in norm(r["osoby"]) or q in norm(r["ostatni"]))
+                 and (not opt.get("ves") or norm(opt["ves"]) in norm(r["obec"]))]
+        hity = [r for r in shody if not opt.get("typ") or r["typ"] == opt["typ"].upper()]
+        if opt.get("typ") and opt["typ"].upper() != "I":
+            rejstrik += sum(1 for r in shody if r["typ"] == "I")
         print(f"\n{klic} – {sv.get(klic, {}).get('svazek', '?')}: {len(radky)} ř., {pokryti(radky)}; shod {len(hity)}")
         for r in hity:
             kam = f" → {r['kniha']}" if r["kniha"] else ""
@@ -207,6 +211,9 @@ def hledej(args):
     if not pocet:
         print("Žádný index (data/indexy/*.tsv) zatím není.")
         return
+    if rejstrik:
+        print(f"\nPozor: --typ {opt['typ'].upper()} vyřadil {rejstrik} shod v rejstříku (řádky typu I). "
+              "Ukáže je `--typ I` nebo hledání bez --typ.")
     print(f"\nCelkem {nalez} shod. Index je vodítko, ne doklad: zásah ověř na snímku a ulož šesti kroky. "
           "Neshoda platí jen pro pokrytí uvedené výše.")
 

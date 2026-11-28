@@ -68,6 +68,24 @@ class Pomucka(unittest.TestCase):
         self.assertEqual(len(pomucka.hledej(knihy, "Babice", rok=1850)), 0)
         self.assertEqual(len(pomucka.hledej(knihy, "Babice", typ="Z")), 1)  # kniha zahrnuje i zemřelé
 
+    def test_mista_z_maticniho_mista(self):
+        knihy, _, _ = pomucka.rozeber(TXT, URIS)
+        self.assertEqual(pomucka.mista(knihy[0]["misto"]),
+                         [("Babice", "", "Hradec Králové"), ("Malé Babice", "Babice", "Hradec Králové")])
+
+    def test_stejnojmenne_obce_jsou_ve_skupinach(self):
+        kniha = lambda por, fara, misto: {"por": por, "cesta": ["Římskokatolická církev", "fary X", fara], "misto": misto}
+        nalezy = [kniha(1, "Lhota pod Horou", "Lhota (Chrudim, Česko)"),            # cizí obec první v pomůcce
+                  kniha(2, "Kostelec", "Kostelec (Rychnov nad Kněžnou, Česko); Lhota (Kostelec, Rychnov nad Kněžnou, Česko)"),
+                  kniha(3, "Kostelec", "Lhota (Kostelec, Rychnov nad Kněžnou, Česko : část obce)"),
+                  kniha(4, "Horní Lhota", "Horní Lhota (Náchod, Česko)")]
+        sk = pomucka.skupiny(nalezy, "lhota")
+        self.assertEqual([(p, f, [k["por"] for k in kn]) for p, f, kn in sk], [
+            ("Lhota, okres Chrudim", ["Lhota pod Horou"], [1]),
+            ("Lhota, obec Kostelec, okres Rychnov nad Kněžnou", ["Kostelec"], [2, 3]),
+            ("Horní Lhota, okres Náchod", ["Horní Lhota"], [4])])   # částečná shoda až za přesnou
+        self.assertEqual(len(pomucka.skupiny(nalezy[1:3], "Lhota")), 1)   # jedno místo → bez upozornění
+
     def test_spatne_poradi_odkazu_zastavi(self):
         with contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):

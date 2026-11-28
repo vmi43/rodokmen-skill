@@ -45,7 +45,9 @@ class Indexy(unittest.TestCase):
         rc, out = self.spust("indexy.py", "hledej", "HORA")   # bez ohledu na velikost
         self.assertIn("shod 2", out); self.assertIn("→ Z 1836–1882", out); self.assertIn("vodítko, ne doklad", out)
         rc, out = self.spust("indexy.py", "hledej", "Hora", "--typ", "Z")
-        self.assertIn("Celkem 1 shod", out)
+        self.assertIn("Celkem 1 shod", out); self.assertIn("vyřadil 1 shod v rejstříku", out)   # řádek I nezmizí potichu
+        rc, out = self.spust("indexy.py", "hledej", "Hora", "--typ", "I")
+        self.assertIn("Celkem 1 shod", out); self.assertNotIn("vyřadil", out)
         rc, out = self.spust("indexy.py", "hledej", "josef")   # i ve vazbách
         self.assertIn("zemřelý: Jan Hora", out)
         rc, out = self.spust("indexy.py", "hledej", "Novák")

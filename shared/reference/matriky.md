@@ -38,6 +38,7 @@ zhruba po roce 1910 často online nebudou (kniha pokračuje za rok 1926, lhůta 
    hodí se, když originál chybí, je nečitelný nebo velký.
 3. **Index, pak kniha.** Nejdřív `python3 -I tools/indexy.py hledej <kmen jména>` (viz *Index knihy* níž) a do odpovědi napiš, co index pokrývá. Rejstřík řazený po písmenech a letech dá stránku/folio; snímek odhadni (snímek ≈ folio × 1 až 2) a dolaď.
    Starší rejstříky (18. stol.) občas ukazují o 1–4 strany vedle – když zápis na udané straně není, listuj kolem.
+   Ani snímek spočítaný ze strany nemusí sedět: když na něm zápis není, otevři i sousední snímky (±1), než ho zamítneš.
    Posun „snímek – strana“ se v knize mění (vložené listy, chybějící strany) – přečti číslo strany na náhledu a dopočítej.
    **Posun nikdy nedomýšlej:** přečti „Pag./fol.“ na 2–3 snímcích, spočítej ho a teprve pak skoč (bývá +1, +2, ale i −19).
    U knih **dodatečně přefoliovaných** odkazuje rejstřík na původní ruční číslo listu (vpravo nahoře), ne na archivní

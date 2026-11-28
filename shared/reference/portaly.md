@@ -510,7 +510,9 @@ a odkazy na další, u matričních úřadů je kniha už na úrovni 3 a 1 278 k
 Nástroj `pomucka.py` ji rozebere: PDF stáhni ručně z ARON, pak jednorázově
 `python3 -I tools/pomucka.py rozbor <pomucka.pdf>` (potřebuje `qpdf` a `pdftotext`: `brew install qpdf poppler`; zapíše
 `pracovni/pomucka_190.json`) a hledej `python3 -I tools/pomucka.py hledej "Obec" [N|O|Z] [rok] [--vse]`. Výpis dává ZIP se
-všemi snímky a adresu svazku v ARON (apu_id je její poslední část, dál `aron_img.py <apu_id> info`). Nástroj pomůcku
+všemi snímky a adresu svazku v ARON (apu_id je její poslední část, dál `aron_img.py <apu_id> info`). Výsledky jsou
+seskupené podle místa s okresem a farou; má-li jméno víc obcí, výpis to řekne nahoře – vyber podle okresu a fary, ne
+první knihu. Nástroj pomůcku
 nestahuje a při tvaru, který nezná (odkazy nejsou dvojice ARON a ZIP), skončí, aby nespároval odkazy špatně. Ověřeno
 na verzi z 11. 11. 2026: 14 189 knih, 12 911 odkazů, všechny spárované.
 
