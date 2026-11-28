@@ -14,6 +14,8 @@ Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to 
 - `kontrola.py` upozorní na knihu, která je ještě v `pracovni/`, a na svazek stažený ručně, který v `knihy/` nemá složku.
 - `pomucka.py hledej` seskupí knihy podle místa s okresem a farou a u stejnojmenných obcí z různých farností to řekne hned nahoře; hledaná obec se tak neschová pod cizí obcí stejného jména.
 - `indexy.py hledej --typ N|O|Z` řekne, kolik shod v rejstříku (řádky typu `I`) tím vyřadil; nápověda to vysvětluje.
+- eBadatelna: druh knihy poznáš z obecného popisu (roky po stránkách, paginace), ne z „Register type“; litera z rejstříku odpovídá poli „Original name“.
+- Návod k rejstříkům: mapa rejstříku ze zmenšených náhledů a pruhů nestačí (co funguje místo ní); do zadání pomocníků rozlišení otce a matky podle genitivu.
 - Návod k matrikám: když zápis na snímku spočítaném ze strany rejstříku není, otevřít i sousední snímky.
 - Vstupy pro `zapis.py` se píší do `pracovni/_vstupy/` a nástroj je odtud po úspěšném zápisu smaže; v `pracovni/` tak nepřibývají volné soubory.
 

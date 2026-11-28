@@ -427,3 +427,10 @@ Větev `claude/nove-podnety-zlepseni-bba235`, vydáno v 0.9.7 (do té doby CHANG
 - **`pomucka.py hledej` seskupí výsledky podle místa.** Problém: `hledej "<obec>"` vypsal v pořadí pomůcky nejdřív stejnojmennou obec z cizí farnosti a hledaná byla níž pod svou farou. Okres se bere z „matričního místa“ (`Obec (Okres, Česko)`, u části obce `Část (Obec, Okres, Česko : …)`); skupina = místo + nadřazená obec + okres, v záhlaví fary. Přesná shoda jména jde před částečnou („Lhota“ před „Horní Lhota“), kniha nalezená jen podle názvu fary má skupinu fary. Je-li skupin víc, výpis to řekne nahoře. **Zavržené:** jen přidat okres na řádek knihy (pořadí by dál vedlo k první, cizí knize); ptát se na okres argumentem (uživatel ho často nezná, výpis ho ukáže).
 - **`indexy.py hledej --typ N|O|Z` řekne, kolik řádků rejstříku vyřadil**, místo aby je jen popsala nápověda: rejstřík zemřelých má typ `I`, takže `--typ Z` ho potichu skryl a „nenalezeno“ klamalo. Filtr se nemění (`--typ Z` dál znamená zápisy z knihy).
 - **„Zkus i sousední snímky“ dopsáno do `matriky.md`** (krok 3 hledání), i když se opírá o jediný případ (strana 4 → snímek 7, odhad 6; viz „Index knihy: první zkouška…“): rada je levná a neškodí.
+
+## Poznámky uživatele: eBadatelna, mapa rejstříku, genitiv (2026-11-28)
+
+- **eBadatelna, „Register type“:** zapsáno do `portaly.md` podle jednoho případu (Žleby 16–19, SOA Praha); pravidlo „rozhoduje obecný popis“ je levné a chybu nezpůsobí. Litera ↔ „Original name“ dtto.
+- **Mapa rejstříku:** starší rada v `matriky.md` (pás prvního řádku ukáže začátky písmen) se s novou zkušeností rozchází; ponechány obě zkušenosti v jedné odrážce a doplněno, co fungovalo spolehlivě, místo mazání staré rady.
+- **`montage -label` bez písma:** poznámka uživatele ho doporučovala jako náhradu za `-annotate`, zkouška na ImageMagick 7.1.2 (macOS) ukázala, že bez `-font` padá stejně („unable to read font“, rc=1) a s `-font …/Arial.ttf` projde (rc=0). Návod proto dál chce `-font`; doporučení z poznámky nepřevzato.
+- **Genitiv otec/matka:** do zadání pomocníků (jeden chybný řádek ze ~40 u Sonnetu).

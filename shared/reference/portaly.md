@@ -138,6 +138,11 @@ Adresy u nevyzkoušených portálů ověř při prvním použití (portály se m
   podle roku, ale podle stran vsi; je-li rejstřík, začni jím.
   Archiv popis ořezává asi na 250 znaků (konec rozvržení chybí) – úplný seznam vsí je v poli Lokality, zbytek viz
   `matriky.md` (Knihy řazené po vsích).
+- **Druh knihy poznáš z obecného popisu, ne z „Register type“.** U knih narození psaných po vsích (litery D, I, H…)
+  stál „Register type: the book contains only a register“ a „Births / Index“, ale obecný popis uváděl roky po stránkách
+  a paginaci – byly to knihy zápisů. Roky a paginace v obecném popisu = kniha zápisů, i když typ říká rejstřík.
+- **Litera z rejstříku** (kolonka „Litera“) odpovídá poli „Original name“ v popisu knihy. Číslo knihy v seznamu
+  (Žleby 16, 17…) s literou abecedně nesouvisí: knihu podle litery najdeš jen procházením popisů jeden po druhém.
 - Snímek: `https://ebadatelna.soapraha.cz/d/<matrikaId>/<snímek>` (archiválie `/a/<archivalieId>/<snímek>`, zároveň
   trvalý odkaz, do `odkaz`; šipky „<“ a „>“ v prohlížeči na tuto adresu taky přejdou). Prohlížeč načte celý snímek
   v plném rozlišení. **Ulož ho jednou do mezipaměti a dál pracuj z disku** – archiv už nedostane žádný další dotaz.
