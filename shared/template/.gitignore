@@ -1,5 +1,7 @@
 # pracovní soubory a stažené stránky (nejdou na web ani do historie)
 pracovni/
+# celé stažené knihy (velké, jdou stáhnout znovu; mimo git)
+knihy/
 __pycache__/
 .DS_Store
 Thumbs.db

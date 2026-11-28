@@ -7,7 +7,7 @@ Repozitář vydání je `vmi43/rodokmen-skill` (fork); upstream `sarsonj/rodokme
 
 - Práce je hotová a slučuje se do `main` přes PR. Na `main` se nepracuje přímo.
 - Číslo verze: opravy `Z`, nové funkce `Y`. Tag s číslem, které už upstream vydal, nezakládej
-  (upstream má `v0.9.2` a `v0.10.0`).
+  (upstream má `v0.9.2` a řadu od `v0.10.0`, k 28. 11. 2026 až `v0.11.1`; ověř `git ls-remote --tags upstream`).
 
 ## Postup
 
@@ -90,4 +90,7 @@ Repozitář vydání je `vmi43/rodokmen-skill` (fork); upstream `sarsonj/rodokme
   nenašel.
 - **Souběžná session.** Přebírá-li vydání jiná session, na větvi nic necommituj ani nepushuj a vydání nezakládej podruhé.
   Před každým krokem ověř stav: PR, tag i vydání už mohly vzniknout.
+- **Přimergovaný PR ještě není vydání.** U 0.9.6 se po mergi zapomněly kroky 8–10 (doplněno až 27. 11.). Před další verzí zkontroluj `gh release list --repo vmi43/rodokmen-skill`, jestli má předchozí verze tag i vydání.
+- **`gh release create --target` chce celý hash commitu.** Se zkráceným hashem vrátí HTTP 422 „tag_name is not a valid tag“; použij `--target $(git rev-parse <hash>)`, nebo `main`.
+- **`git branch -d` v sandboxu** větev smaže, ale nemůže zapsat do `.git/config` (`could not lock config file`) a nechá tam sekci `[branch "…"]`. Neškodí; uklidí ji `git config --remove-section branch.<větev>` mimo sandbox.
 - **Merge, který vypadá přerušený.** Zrušený příkaz `gh pr merge` mohl proběhnout. Před opakováním zkontroluj stav PR.

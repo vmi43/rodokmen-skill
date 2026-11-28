@@ -68,8 +68,8 @@ class Zarad(unittest.TestCase):
     def cti_sv(self):
         return json.load(open(os.path.join(self.d, "data", "svazky.json"), encoding="utf-8"))
 
-    def slozka(self, jmeno, obsah, soubory):
-        p = os.path.join(self.d, "pracovni", jmeno)
+    def slozka(self, jmeno, obsah, soubory, kde="pracovni"):
+        p = os.path.join(self.d, kde, jmeno)
         os.makedirs(p)
         if obsah is not None:
             open(os.path.join(p, "obsah.txt"), "w", encoding="utf-8").write(obsah)
@@ -89,11 +89,24 @@ class Zarad(unittest.TestCase):
         self.assertTrue(os.path.isdir(os.path.join(self.d, "pracovni", "jikev-pozemkova-kniha")))
         self.assertEqual(self.cti_sv(), {})
 
+    def test_z_knih_i_z_pracovni(self):
+        # ručně stažené knihy se hledají v knihy/ i ve staré cestě pracovni/; obě skončí v knihy/
+        self.slozka("loucen", MATRIKA, ["a1.jpg", "a2.jpg"], kde="knihy")
+        self.slozka("jikev-pozemkova-kniha", ARCHIVALIE.format(n=1), ["a1.jpg"])
+        rc, out = self.spust("--proved")
+        self.assertEqual(rc, 0, out)
+        knihy = sorted(os.listdir(os.path.join(self.d, "knihy")))
+        self.assertEqual(knihy, ["ebad_8084_loucen_05_manual", "ebad_a_1349_jikev_pozemkova_kniha_manual"], out)
+        self.assertEqual([n for n in os.listdir(os.path.join(self.d, "pracovni")) if not n.startswith(".")], [])
+        self.assertEqual(set(self.cti_sv()), {"ebad_8084", "ebad_a_1349"})
+        rc, out = self.spust()   # zařazené (_manual) už nehledá
+        self.assertEqual(rc, 1, out); self.assertIn("Není co zařadit", out)
+
     def test_archivalie_proved(self):
         self.slozka("jikev-pozemkova-kniha", ARCHIVALIE.format(n=3), ["a-10.jpg", "a-2.jpg", "a-3.jpg"])
         rc, out = self.spust("--proved")
         self.assertEqual(rc, 0, out)
-        cil = os.path.join(self.d, "pracovni", "ebad_a_1349_jikev_pozemkova_kniha_manual")
+        cil = os.path.join(self.d, "knihy", "ebad_a_1349_jikev_pozemkova_kniha_manual")
         self.assertEqual(sorted(os.listdir(cil)), ["obsah.md", "obsah.txt", "s1.jpg", "s2.jpg", "s3.jpg"])
         z = self.cti_sv()["ebad_a_1349"]
         self.assertEqual((z["upload"], z["snimku"], z["typ"], z["portal"]), ("manual", 3, "archivalie", "eBadatelna"))
@@ -105,7 +118,7 @@ class Zarad(unittest.TestCase):
         self.slozka("jikev-pozemkova-kniha", ARCHIVALIE.format(n=1), ["x1.jpg"])
         rc, out = self.spust("--proved")
         self.assertEqual(rc, 0, out)
-        self.assertTrue(os.path.isdir(os.path.join(self.d, "pracovni", "archivalie_1349_jikev_manual")), out)
+        self.assertTrue(os.path.isdir(os.path.join(self.d, "knihy", "archivalie_1349_jikev_manual")), out)
         self.assertEqual(self.cti_sv()["archivalie_1349"]["upload"], "manual")
         self.assertEqual(self.cti_sv()["archivalie_1349"]["archiv"], "SOA Praha")   # stará pole zůstala
 
@@ -141,7 +154,7 @@ class Zarad(unittest.TestCase):
         self.assertEqual(rc, 0, out)
         self.assertNotIn("ke_stazeni", out)                      # projekt bez souboru: nic se nehlásí ani nezakládá
         self.assertFalse(os.path.exists(os.path.join(self.d, "data", "ke_stazeni.md")))
-        shutil.rmtree(os.path.join(self.d, "pracovni", "ebad_8084_loucen_05_manual"))
+        shutil.rmtree(os.path.join(self.d, "knihy", "ebad_8084_loucen_05_manual"))
         cesta = self.ke_stazeni(["| [ ] | cizí | https://ebadatelna.soapraha.cz/pages/MatrikaPage/matrikaId/1 |"])
         self.slozka("loucen-05", MATRIKA, ["a.jpg", "b.jpg"])
         rc, out = self.spust("--proved")
@@ -180,7 +193,7 @@ class Zarad(unittest.TestCase):
         self.assertIn("strojová kopie: pracovni/aron_1a2b3c4d", out); self.assertIn("data/STAV.md:1", out)
         rc, out = self.spust("pracovni/aron-lhota", "--proved")
         self.assertEqual(rc, 0, out)
-        self.assertTrue(os.path.isdir(os.path.join(self.d, "pracovni", "aron_1a2b3c4d_lhota_4321_manual")), out)
+        self.assertTrue(os.path.isdir(os.path.join(self.d, "knihy", "aron_1a2b3c4d_lhota_4321_manual")), out)
         z = self.cti_sv()["1a2b3c4d"]
         self.assertTrue(z["url"].endswith("/apu/1a2b3c4d-0000-4000-8000-000000000001"))
         self.assertIn("3.1862-11.1921", z["svazek"])

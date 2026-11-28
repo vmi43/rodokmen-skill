@@ -19,10 +19,13 @@ Použití: python3 <skill>/tools/novy_projekt.py <cílová složka> [--ukazka] [
                   novou verzi šablony jako základ; soubor v projektu nezmění a další aktualizace ho už nehlásí
 
 Vytvoří: data/ (prázdné kostry nebo ukázka), web/ (Astro web, ne s --bez-webu), tools/ (kopie nástrojů),
-vyrezy/, zdroje/, dokumenty/, pracovni/, CLAUDE.md, .gitignore, .gitattributes (konce řádků LF i na Windows)
+vyrezy/, zdroje/, dokumenty/, pracovni/, knihy/, CLAUDE.md, .gitignore, .gitattributes (konce řádků LF i na Windows)
 a .claude/launch.json (náhled v Claude desktop). Do .claude/settings.json doplní zákaz přímého curl/wget
 (stahování z archivů jde přes brzdu tools/slusne.py); ostatní nastavení v souboru nechá beze změny.
 Existující data nepřepisuje.
+Celé knihy patří do knihy/ (mimo git). Aktualizace doplní `knihy/` do existujícího .gitignore a přesune tam složky
+pracovni/*_manual/ (jen přejmenování, nic nekopíruje ani nemaže; složku, jejíž jméno v knihy/ už je, nechá a ohlásí);
+vypíše místa v textech projektu se starou cestou pracovni/<kniha>, sama je nepřepisuje. Druhý běh nic nedělá.
 Do .skill_sablona/ uloží kopii šablony web/ a tools/, ze které projekt vznikl (patří do gitu s projektem).
 Aktualizace staršího projektu (znovu spustit na stejnou složku) rozhodne o každém souboru web/ a tools/ podle
 tří verzí (uložená šablona, projekt, nová šablona): neupravený soubor přepíše, vlastní úpravu nechá, když se šablona
@@ -35,7 +38,7 @@ junction) mimo projekt a na místě záloh, složku místo souboru a cesty liš�
 Projekt bez .skill_sablona/ (ze starší verze) přepíše a původní verze změněných souborů uloží do
 pracovni/zaloha_<datum>/puvodni/.
 """
-import hashlib, json, os, re, shutil, subprocess, sys, tempfile, time
+import glob, hashlib, json, os, re, shutil, subprocess, sys, tempfile, time
 for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8 (cp1250 neumí třeba „→“)
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
@@ -383,6 +386,61 @@ def nastaveni(dst, hlidac):
     print("Hlídač sítě:", "zapnutý" if zapnuty else "vypnutý (zapnout: --hlidac)")
 
 
+KNIHY = "knihy"   # celé knihy; stejný název drží zarad.py a kontrola.py
+GITIGNORE_KNIHY = "\n# celé stažené knihy (velké, jdou stáhnout znovu; mimo git)\nknihy/\n"
+
+
+def gitignore_knihy(dst):
+    """Doplní knihy/ do .gitignore projektu; True, když je knihy/ z gitu vyloučená (jinak migraci nedělat)."""
+    path = os.path.join(dst, ".gitignore")
+    if os.path.islink(path) or not os.path.isfile(path):
+        return False
+    text = open(path, encoding="utf-8-sig", errors="replace").read()
+    if re.search(r"(?m)^/?knihy/?[ \t]*$", text):
+        return True
+    with open(path, "a", encoding="utf-8", newline="\n") as f:
+        f.write(("" if text.endswith("\n") or not text else "\n") + GITIGNORE_KNIHY)
+    print(".gitignore: doplněno knihy/")
+    return True
+
+
+def presun_knihy(dst):
+    """Přesune pracovni/*_manual/ do knihy/ (os.rename, nic nekopíruje ani nemaže). Vrátí (přesunuté, ponechané)."""
+    prac, knihy = os.path.join(dst, "pracovni"), os.path.join(dst, KNIHY)
+    if not os.path.isdir(prac) or os.path.islink(prac) or os.path.islink(knihy):
+        return [], []
+    presunute, ponechane = [], []
+    for n in sorted(os.listdir(prac)):
+        src = os.path.join(prac, n)
+        if not n.endswith("_manual") or os.path.islink(src) or not os.path.isdir(src):
+            continue
+        if os.path.lexists(os.path.join(knihy, n)):
+            ponechane.append(n)
+            continue
+        os.makedirs(knihy, exist_ok=True)
+        os.rename(src, os.path.join(knihy, n))
+        presunute.append(n)
+    return presunute, ponechane
+
+
+def stare_cesty(dst, jmena):
+    """Místa (soubor:řádek) v textech projektu, kde zůstala cesta pracovni/<kniha>."""
+    if not jmena:
+        return []
+    vzor = re.compile(r"pracovni[/\\](?:" + "|".join(re.escape(j) for j in jmena) + r")(?![\w-])")
+    hity = []
+    for vzorek in ("*.md", os.path.join("data", "*.md"), os.path.join("data", "*.json"), os.path.join("data", "*.py"),
+                   os.path.join("docs", "*.md")):
+        for f in sorted(glob.glob(os.path.join(dst, vzorek))):
+            try:
+                for i, r in enumerate(open(f, encoding="utf-8"), 1):
+                    if vzor.search(r):
+                        hity.append(f"{os.path.relpath(f, dst)}:{i}")
+            except (OSError, UnicodeDecodeError):
+                pass
+    return hity
+
+
 def _verze(text):
     m = re.fullmatch(r"v?(\d+)\.(\d+)\.(\d+)", (text or "").strip())
     return tuple(int(x) for x in m.groups()) if m else None
@@ -460,6 +518,13 @@ def main():
         out = os.path.join(dst, name)
         if not os.path.lexists(out):
             copy(os.path.join(SKILL, "template", name), out)
+    presunute, ponechane = [], []
+    if gitignore_knihy(dst):   # bez vyloučení z gitu by se desítky GB knih dostaly do historie
+        os.makedirs(os.path.join(dst, KNIHY), exist_ok=True)
+        presunute, ponechane = presun_knihy(dst)
+    else:
+        print("POZOR: .gitignore chybí nebo je odkaz – knihy/ jsem nezaložil a knihy z pracovni/ nepřesunul. "
+              "Doplňte do .gitignore řádek knihy/ a spusťte aktualizaci znovu.")
     with open(os.path.join(dst, ".skill_verze"), "w", encoding="utf-8") as f:   # SKILL.md podle něj nabídne aktualizaci
         f.write(open(os.path.join(SKILL, "VERZE"), encoding="utf-8").read())
     # .claude/ chrání sandbox Claude Code (zápis končí PermissionError): chyba nesmí shodit skript, ať je hotová
@@ -499,6 +564,21 @@ def main():
     if vysl["konflikt"] or vysl["odstraneno"]:
         print("Hlásí se při každé aktualizaci, dokud je nevyřešíte. Po ručním převzetí změn spusťte:\n"
               f"  python3 -I {os.path.abspath(__file__)} {dst} --vyreseno <soubor> [--vyreseno <soubor> …]")
+    if presunute:
+        print(f"Knihy přesunuté z pracovni/ do {KNIHY}/, {len(presunute)}:")
+        for n in presunute:
+            print("  " + n)
+        hity = stare_cesty(dst, presunute)
+        if hity:
+            print(f"Stará cesta pracovni/<kniha> zůstala v textech ({len(hity)} míst; nepřepsáno – nabídněte přepsání "
+                  f"na {KNIHY}/<kniha>):")
+            for h in hity:
+                print("  " + h)
+    if ponechane:
+        print(f"Ponecháno v pracovni/ ({KNIHY}/ už má složku stejného jména – porovnejte a jednu smažte ručně), "
+              f"{len(ponechane)}:")
+        for n in ponechane:
+            print("  " + n)
     if any(f.startswith("web/") for k in ("prepsano", "zalohovano", "slouceno") for f in vysl[k]):
         print("Ve web/ pak `npm install` a `npm run data`.")
 

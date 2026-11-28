@@ -36,8 +36,9 @@ zhruba po roce 1910 často online nebudou (kniha pokračuje za rok 1926, lhůta 
 2. **Svazek podle roku a druhu.** Pozor na překryvy: jedna kniha pro více obcí, zvláštní knihy pro jednotlivé obce.
    **Druhopisy** (duplikáty pro děkanát nebo úřad, např. „T“ svazky v ZA Opava) mívají N, O a Z jednoho roku u sebe –
    hodí se, když originál chybí, je nečitelný nebo velký.
-3. **Index, pak kniha.** Nejdřív `python3 -I tools/indexy.py hledej <kmen jména>` (viz *Index knihy* níž) a do odpovědi napiš, co index pokrývá. Rejstřík řazený po písmenech a letech dá stránku/folio; snímek odhadni (snímek ≈ folio × 1 až 2) a dolaď.
+3. **Index, pak rejstřík, pak kniha.** Nejdřív `python3 -I tools/indexy.py hledej <kmen jména>` (viz *Index knihy* níž) a do odpovědi napiš, co index pokrývá. Není-li písmeno příjmení přepsané, najdi rejstřík (*Kde rejstřík hledat*) a přepiš to písmeno. Rejstřík řazený po písmenech a letech dá stránku/folio; snímek odhadni (snímek ≈ folio × 1 až 2) a dolaď.
    Starší rejstříky (18. stol.) občas ukazují o 1–4 strany vedle – když zápis na udané straně není, listuj kolem.
+   Ani snímek spočítaný ze strany nemusí sedět: když na něm zápis není, otevři i sousední snímky (±1), než ho zamítneš.
    Posun „snímek – strana“ se v knize mění (vložené listy, chybějící strany) – přečti číslo strany na náhledu a dopočítej.
    **Posun nikdy nedomýšlej:** přečti „Pag./fol.“ na 2–3 snímcích, spočítej ho a teprve pak skoč (bývá +1, +2, ale i −19).
    U knih **dodatečně přefoliovaných** odkazuje rejstřík na původní ruční číslo listu (vpravo nahoře), ne na archivní
@@ -159,24 +160,55 @@ vsi a sňatek byl v oddílu městyse; ves měla oddíl až na snímcích 380–4
 ## Index knihy místo opakovaného hledání jednoho jména
 Hledání jedné osoby přeskočí všechny ostatní zápisy, a u „domácí“ knihy (kniha oddaných vsi, zemřelých farnosti) se k ní
 pak vracíš pro další a další jméno a znovu čteš totéž. Proto dvě úrovně (`tools/indexy.py`, soubory `data/indexy/<klíč svazku>.tsv`):
-1. **Rejstřík přepiš celý hned při prvním otevření** (pár snímků, abecední, levné): řádky druhu `I` se jménem, datem, stranou
-   a značkou knihy, kam odkazuje. Zapiš i příjmení, která v něm nejsou: „H: Horů je 5, jinde nejsou“ je užitečná odpověď.
+1. **Rejstřík přepisuj po písmenech, jen podle potřeby.** Hledáš Nováka → přepiš celé písmeno N, později Svobodu → S.
+   Celý rejstřík najednou jen na přání uživatele. Ušetří to cenu za písmena, která nikdy nebudeš potřebovat, a přepsané
+   písmeno slouží dalším předkům stejného příjmení i dalším hledáním, takže se ke knize nevracíš. Postup:
+   1. **Najdi rejstřík**, než otevřeš knihu (viz *Kde rejstřík hledat* níž). Bez rejstříku platí bod 2 nebo bod 4 v *Jak vypadá hledání v praxi*.
+   2. **Zmapuj písmena** (levné, jednou na rejstřík): na kterých snímcích je které písmeno, jak ho rejstřík píše (N, Č, Ch,
+      W, Sch). Zapiš `indexy.py mapa <klíč> A=3-4 B=4-6 …` – stačí písmena, která jsi viděl, a doplňuj je postupně.
+   3. **Přepiš všechny snímky písmene** (i sousední písmena na krajních snímcích zapiš, ale přepsané je jen celé písmeno):
+      řádky druhu `I` se jménem, datem, stranou a značkou knihy, kam odkazuje, přes `pridej`. Pak `indexy.py prepsano <klíč> N`
+      (celý rejstřík: `prepsano <klíč> vse <od>-<do>`). Zapiš i příjmení, která v něm nejsou: „N: Nováků je 5, jinde
+      nejsou“ je užitečná odpověď.
+   4. **Jiné tvary jména:** rejstříky psané německým pravopisem mají V i pod W (Vávra = Wawra, Otava = Wotawa), Č pod C, Cz
+      nebo Tsch, Š a Ž pod Sch, I/J/Y spolu. Ženy hledej i pod rodným příjmením. `indexy.py hledej` na zmapované jiné tvary
+      upozorní; přepiš je, když hlavní písmeno nic nedá. **Rejstřík řazený podle křestních jmen** (u starých knih bývá)
+      po písmenech příjmení nejde: řekni to uživateli a navrhni celý rejstřík nebo průchod knihou.
+   `indexy.py hledej` u svazku s mapou řekne, která písmena jsou přepsaná; „nenalezeno“ platí **jen pro přepsané písmeno**,
+   u nepřepsaného ukáže, na kterých snímcích ho najdeš. I přepsaný rejstřík je jen pomůcka (rejstříky bývají neúplné a chybují).
 2. **Celou knihu projdi rychlým průchodem jen tam, kam se čeká návrat:** narození (datum, ves, čp., dítě, otec, matka s rodným
    příjmením, příjmení kmotrů), sňatky (ženich, nevěsta, jejich otcové, odkud), úmrtí (jméno, věk, čp., u dětí otec).
    Jednorázovou knihu neindexuj. Kurent před ~1830 indexuje pomocník na Opusu (zadání jako u čtení kurentu v `SKILL.md`).
 **Pravidla:** řádky zapisuj dávkou přes `indexy.py pridej <klíč> <soubor.json>` (JSON pole z `pracovni/`), vybledlé nebo
 jistotu piš slovy (`vysoká`, `střední`, `nízká`; nejisté kusy textu s `[?]`) a ke každému řádku model a datum do `cetl` (`--cetl claude-opus-5-5/high`). Než hledáš v knize, zeptej se indexu: `indexy.py hledej <příjmení> [--ves V]`; výstup říká,
 co index pokrývá (snímky, roky), takže „nenalezeno“ platí jen pro to. **Zásah z indexu není `doc`:** otevři snímek, přečti zápis
-ze zvětšení (`overit.py`) a ulož ho šesti kroky. Index patří ke svazku (klíč ze `svazky.json`), ne do složky knihy v `pracovni/`
+ze zvětšení (`overit.py`) a ulož ho šesti kroky. Index patří ke svazku (klíč ze `svazky.json`), ne do složky knihy v `knihy/`
 (ta je v `.gitignore` a nástroj `zarad.py` ji přejmenovává); do `obsah.md` knihy dej jen řádek s odkazem na index.
 Sloupce jsou stejné jako v komunitním indexu matrik (`sdileni.py`, `precteno.tsv`) a navíc `strana` a `kniha` pro rejstříky; náš index je tvůj vlastní, na web nejde a ven jde jen přes `prispevek.py` po tvém souhlasu (`sdileni.md`).
+
+### Kde rejstřík hledat
+Rejstřík bývá jinde, než čekáš. Než začneš listovat knihou, projdi v tomto pořadí:
+1. **Samostatný svazek rejstříku** – v seznamu svazků fary (ARON, eBadatelna, Porta fontium) hledej „Index“, „Rejstřík“,
+   „Register“; velké fary mají rejstřík přes desítky let nebo staletí (souhrnný index N/O/Z, rejstřík oddaných přes 300 let).
+2. **Na konci, pak na začátku knihy** – prohlédni posledních a prvních pár snímků; u knih po vsích bývá rejstřík i
+   **na konci každého oddílu vsi** nebo ručně psaný rejstřík po obcích.
+3. **Roční rejstříky** – za každým ročníkem (častěji u měst): písmeno je pak roztroušené po celé knize, mapuj ho po ročnících
+   (`mapa` zapíše jen jeden rozsah na písmeno, zbytek dej do deníku a celé písmeno označ za přepsané, až projdeš všechny ročníky).
+4. **Popis svazku** (eBadatelna „Obecný popis“, MZA „Části matriky“) rejstřík často uvádí i se snímky.
+Kde rejstřík je (nebo že není), zapiš do deníku a do `obsah.md` knihy, ať se nehledá znovu. Rejstřík v jiném svazku má index
+pod klíčem toho svazku; sloupec `kniha` říká, kam odkazuje.
 
 **Rejstřík přepisují pomocníci – zadání a kontrola (zkušenost z jednoho projektu: kurent 1784–1834, rejstřík zemřelých 1834–1894):**
 - **Cena, řekni ji uživateli před kolem, a odhadni ji podle řádků, ne podle snímků.** Cena roste s počtem řádků na snímku: řídký rejstřík zemřelých stál asi 0,9 % pětihodinového okna na snímek dvoustrany (Sonnet/medium), hustý tabulkový rejstřík narozených (75–110 řádků na dvoustranu) asi 2,6 %, tedy třikrát víc. Na Opusu/high stál snímek asi 1,25 % u zemřelých a 1,6 % u narozených téhož rejstříku (33 snímků a 1729 řádků zemřelých ≈ 41 % okna); Opus/medium četl husté narozené za asi 1,2 % se srovnatelnou kvalitou, effort medium proto stačí. Postup: **na vzorovém snímku spočítej řádky a cenu škáluj podle nich**, neznámý oddíl pouštěj menší dávkou (odhad podle ceny zemřelých přestřelil u narozených práh 88 % okna až na 95 %). Čísla jsou z jediného projektu (plán Team), ber je jako řád, ne slib.
 - **Hlídej oba limity a cenu si zkalibruj.** Vedle pětihodinového okna běží týdenní limit: snímek řídkého rejstříku stál asi 0,17 bodu týdne (1 bod týdne ≈ 5,5 bodu okna). Ukazatel týdne má celá procenta, takže cena jedné dávky je nejistá o ±1 bod: první dávku pusť malou (2–3 snímky), z ní spočítej cenu, a u práce „do N % týdne“ skonči s rezervou aspoň 1 bod.
-- **Levná orientace v knize před indexem:** pás prvního řádku každého snímku slepený pod sebe (`magick s<n>.jpg -crop <šířka>x200+0+<y> …` a `-append`, u každého pásu číslo snímku) ukáže začátky písmen a rozvrh oddílů za zlomek ceny čtení.
+  **Výchozí stropy, nedá-li uživatel jiné:** týdenní limit nepřekroč přes asi 98 %, v pětihodinovém okně neplánuj práci přes 90 %.
+  Stav limitů sám nevidíš (`/usage` ukazuje čísla uživateli): nemáš-li nástroj, který ho ukáže, zeptej se na obě procenta před
+  kolem a po první dávce. Nevejde-li se odhad dávky do zbytku pod stropem, dávku zmenši nebo skonči a řekni, co zbývá
+  (která písmena, které snímky) – v další session se navazuje podle `indexy.py stav`.
+- **Levná orientace v knize před indexem (kde začíná které písmeno, rozvrh oddílů):** pás prvního řádku každého snímku slepený pod sebe (`magick s<n>.jpg -crop <šířka>x200+0+<y> …` a `-append`, číslo snímku vypiš zvlášť) v jednom projektu stačil, v jiném nešel přečíst (pruhy horních řádků na 1100 px), stejně jako montáž zmenšených dvoustran (700 px na snímek). Písmeno oddílu z nich nezjistíš. Spolehlivě funguje náhled jednoho snímku na ~1000 px, po 3–4 snímcích pod sebou, nebo pomocník, který ze zvětšení přečte první a poslední jméno každé strany.
 - **Nepravidelný rejstřík (volné seznamy s vpisky, víc sloupců na stránce) nejdřív pilotem.** Rejstřík oddaných 1820–1847 psaný kurentem přečetli tři pomocníci Opus/medium na 9 snímcích se 76 % řádků s nízkou jistotou (příjmení nevěst a vsi v genitivu „z Win…“ jako `[?]`). Index byl i tak vodítkem (našel známý sňatek), ale „nenalezeno“ v něm neplatí. Než pustíš celou knihu, přečti 1–3 snímky a podle podílu nízké jistoty rozhodni: pokračovat, nebo nejdřív novější čitelnější kniha.
 - **Model podle doby.** Rejstřík po ~1846 čte Sonnet jako Opus (porovnáno na 44 řádcích). U kurentu kolem 1800 dává Sonnet většině příjmení `[?]` a hledané příjmení přečetl chybně (Nowosad → „Nováček“): rejstřík před ~1830 čte Opus a **hledaná příjmení rodu po importu ověř ze zvětšení**, i když je pomocník nepřečetl s `[?]`.
+- **Otec, nebo matka podle genitivu.** Sonnet u rejstříku narozených přečetl „dcera Matěje“ jako „matka: Marie“ (1 z ~40 řádků vzorku): mužské jméno v genitivu se plete se ženským. Do zadání napiš: „otce a matku rozlišuj podle tvaru jména v genitivu (Matěje = otec Matěj, Marye = matka Marie)“.
 - **Pole v zadání předepiš.** U rejstříku je `typ` vždy `I` (ne „O“ podle oddílu, to patří do značky knihy), `datum` jen `RRRR`, `RRRR-MM` nebo `RRRR-MM-DD` a nejistota roku do `ostatni` a `jistota` (ne „1832[?]“), rok ročníku nikdy do `kniha`. `indexy.py pridej` jiný tvar data a `kniha` ve tvaru samotného roku odmítne, ale pomocník tím ztratí kolo.
 - **Značka knihy v jednotném tvaru.** Sloupec „littera matricae“ (značka knihy u řádků po ~1820) patří vždy do `kniha`, ve tvaru `Z lit. L.P` (typ knihy, `lit.`, značka); ne „Lit. P“ ani „Z L–P“ a ne do `ostatni`. Zadání pomocníkovi tvar předepiš, tři pomocníci ho jinak zapsali třemi způsoby. Značky knih bývají různé (rozsah let, písmeno, číslo svazku): pro jednu knihu drž jediný zápis, co v rejstříku stojí, opiš doslova a nic nedomýšlej. Značka nese písmeno oddílu i u rejstříku oddaných („O Tom. I“), jinak se splete se značkou zemřelých. Sloupec „Litt. matricae vet. | nova“ má dvě písmena: opiš obě doslova a čtení „J = I“ z kurentu nepřenášej na druhé písmeno, kde J a F/H rozlišují různé knihy; sjednocuje se až při importu. `indexy.py pridej` po zápisu vypíše všechny různé značky v souboru – jsou-li dvě totéž psané jinak, sjednoť je (viz `indexy.py --help`).
 - **List a ves neseď podle pořadí.** Čísla listů v rejstřících bývají o půl řádku posunutá a rejstřík se sloupci Místo–Jméno–List (bez dat) má sloupce posunuté vůči řádkům. Do zadání napiš výslovně: ves a list **nepřiřazuj podle obvyklých listů vsi ani podle pořadí**; nesedí-li pár jednoznačně, napiš `[?]` a `jistota` nízká.
@@ -235,7 +267,7 @@ Sloupce jsou stejné jako v komunitním indexu matrik (`sdileni.py`, `precteno.t
   „no matches found“; `echo ====` je chyba (`=` na začátku slova). Složitější smyčky pouštěj přes `bash -c '…'`.
 - ImageMagick: seznam souborů předávej jako jednotlivé argumenty, ne jednou proměnnou s mezerami.
   `-annotate` potřebuje písmo: `-font /System/Library/Fonts/Supplemental/Arial.ttf` (bez něj spadne na „unable to read
-  font“; totéž `montage` s popisky) – pořadí výřezů raději vypiš zvlášť.
+  font“; totéž `montage -label`, s týmž `-font` projde – ověřeno ImageMagick 7.1.2) – pořadí výřezů raději vypiš zvlášť.
 - Ověření čtení: `python3 -I tools/overit.py <snímek> x0,y0,x1,y1 pracovni/over [v]` (zlomky 0–1, ne pixely) – zápis rozdělený na dvě poloviny
   zmenšené na 1900 px (dvoustrana je jinak nečitelná).
 - Výřez pro web (`vyrez.py`) dělej jen na **čtený zápis** (případně s hlavičkou sloupců), ne na celou dvoustranu –

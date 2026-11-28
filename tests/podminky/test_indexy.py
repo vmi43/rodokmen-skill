@@ -45,7 +45,9 @@ class Indexy(unittest.TestCase):
         rc, out = self.spust("indexy.py", "hledej", "HORA")   # bez ohledu na velikost
         self.assertIn("shod 2", out); self.assertIn("→ Z 1836–1882", out); self.assertIn("vodítko, ne doklad", out)
         rc, out = self.spust("indexy.py", "hledej", "Hora", "--typ", "Z")
-        self.assertIn("Celkem 1 shod", out)
+        self.assertIn("Celkem 1 shod", out); self.assertIn("vyřadil 1 shod v rejstříku", out)   # řádek I nezmizí potichu
+        rc, out = self.spust("indexy.py", "hledej", "Hora", "--typ", "I")
+        self.assertIn("Celkem 1 shod", out); self.assertNotIn("vyřadil", out)
         rc, out = self.spust("indexy.py", "hledej", "josef")   # i ve vazbách
         self.assertIn("zemřelý: Jan Hora", out)
         rc, out = self.spust("indexy.py", "hledej", "Novák")
@@ -122,6 +124,43 @@ class Indexy(unittest.TestCase):
         self.zapis("data/web.json", json.dumps({"nastroje_historie": ["chybi.py"]}))   # výjimka uživatele
         rc, out = self.spust("kontrola.py")
         self.assertNotIn("chybi.py", out)
+
+    def test_rejstrik_po_pismenech(self):
+        # rejstřík: N na snímku 3, S a W na snímku 4; přepsané je jen N
+        rc, out = self.spust("indexy.py", "prepsano", "abc12345", "N")
+        self.assertNotEqual(rc, 0); self.assertIn("Nejdřív zmapuj", out)   # bez mapy nejde
+        rc, out = self.spust("indexy.py", "mapa", "abc12345", "N=3", "S=4-4", "W=4", "X=9")
+        self.assertNotEqual(rc, 0); self.assertIn("za koncem svazku", out)   # nic se nezapíše
+        self.assertFalse(os.path.exists(os.path.join(self.d, "data", "indexy", "abc12345.pismena.json")))
+        rc, out = self.spust("indexy.py", "mapa", "abc12345", "N=3", "S=4-4", "W=4")
+        self.assertEqual(rc, 0, out); self.assertIn("zmapováno 3", out)
+        rc, out = self.spust("indexy.py", "hledej", "Svoboda")   # jen mapa, žádný řádek: i tak varuje
+        self.assertIn("písmeno S (Svoboda) není přepsané (S na snímcích 4-4)", out)
+        rc, out = self.spust("indexy.py", "prepsano", "abc12345", "N")
+        self.assertEqual(rc, 0, out); self.assertIn("nemá index žádný řádek rejstříku", out)   # řádky N chybí
+        self.zapis("pracovni/n.json", json.dumps([{"typ": "I", "snimek": 3, "kniha": "N 1800–1850", "osoby": "Novák Jan", "jistota": "vysoká"}]))
+        self.spust("indexy.py", "pridej", "abc12345", "pracovni/n.json")
+        rc, out = self.spust("indexy.py", "prepsano", "abc12345", "N")
+        self.assertEqual(rc, 0, out); self.assertNotIn("nemá index", out)
+        rc, out = self.spust("indexy.py", "hledej", "Nosek")   # přepsané písmeno: bez varování
+        self.assertIn("Celkem 0 shod", out); self.assertIn("přepsaná N", out); self.assertNotIn("POZOR", out)
+        rc, out = self.spust("indexy.py", "hledej", "Svoboda")
+        self.assertIn("POZOR: písmeno S", out); self.assertIn("neshoda tady nic neznamená", out)
+        rc, out = self.spust("indexy.py", "hledej", "Vávra")   # V nezmapované, W ano
+        self.assertIn("písmeno V (Vávra) není přepsané (kde je, zatím není zmapováno)", out)
+        self.assertIn("zkus i jiný tvar (Vávra): W na snímcích 4-4", out)
+        rc, out = self.spust("indexy.py", "mapa", "abc12345", "N=3-4")   # změna snímků ruší přepsání
+        self.assertIn("už nepočítám za přepsané", out)
+        rc, out = self.spust("indexy.py", "stav")
+        self.assertIn("přepsaná žádná", out)
+        rc, out = self.spust("indexy.py", "prepsano", "abc12345", "vse", "3-4")
+        rc, out = self.spust("indexy.py", "hledej", "Svoboda")
+        self.assertIn("přepsaný celý", out); self.assertNotIn("POZOR", out)
+        rc, out = self.spust("kontrola.py")
+        self.assertNotIn("pismena.json", out, out)
+        self.zapis("data/indexy/abc12345.pismena.json", '{"N": {"snimky": "tri"}}')
+        rc, out = self.spust("kontrola.py")
+        self.assertEqual(rc, 1); self.assertIn("abc12345.pismena.json: není ve tvaru", out)
 
     def test_web_index_nebere(self):
         zdroj = open(os.path.join(SKILL, "tools", "export_web.py"), encoding="utf-8").read()

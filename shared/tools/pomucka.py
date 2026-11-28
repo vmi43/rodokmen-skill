@@ -11,6 +11,8 @@ Použití (z kořene projektu):
   pomucka.py hledej <obec> [N|O|Z] [rok] [--vse] [--json soubor]
       najde knihy: obec se hledá v názvu fary a v „matričních místech“ (bez ohledu na diakritiku a velikost písmen);
       N = narození, O = oddaní, Z = zemřelí; rok = kniha, která ho pokrývá; --vse = i knihy bez odkazu (jen badatelna)
+      výsledky jsou seskupené podle místa a okresu s farou; odpovídá-li jméno víc místům (stejnojmenné obce
+      v různých farnostech), vypíše to nahoře – vyber skupinu podle okresu a fary, ne první řádek
 Odkaz `aron` je adresa svazku v ARON (apu_id je poslední část; pak `aron_img.py <apu_id> info`), `zip` všechny snímky.
 
 Instalace závislostí: macOS `brew install qpdf poppler`, Windows `winget install qpdf.qpdf` a poppler (pdftotext).
@@ -206,6 +208,37 @@ def hledej(knihy, obec, typ=None, rok=None, vse=False):
     return nalezy
 
 
+def mista(misto):
+    """„Babice (Hradec Králové, Česko); Malé Babice (Babice, Hradec Králové, Česko : nižší …)“ → [(jméno, nadřazená obec, okres)]."""
+    out = []
+    for m in re.finditer(r"([^;()]+?)\s*\(([^()]*)\)", misto):
+        cast = [c.strip() for c in m.group(2).split(":")[0].split(",") if c.strip() and c.strip() != "Česko"]
+        out.append((m.group(1).strip(), cast[0] if len(cast) > 1 else "", cast[-1] if cast else ""))
+    return out
+
+
+def skupiny(nalezy, obec):
+    """Knihy seskupené podle místa, kterému hledané jméno odpovídá: [(popis místa, fary, knihy)].
+    Přesná shoda jména jde před částečnou („Babice“ před „Malé Babice“); kniha nalezená jen podle fary má skupinu fary."""
+    o = bez_diakritiky(obec)
+    sk = {}
+    for r in nalezy:
+        kandidati = [(m, n, ok) for m, n, ok in mista(r["misto"]) if re.search(r"\b" + re.escape(o), bez_diakritiky(m))]
+        presne = [k for k in kandidati if bez_diakritiky(k[0]) == o]
+        if presne or kandidati:
+            m, n, ok = (presne or kandidati)[0]
+            klic = (0 if presne else 1, m, n, ok)
+        else:
+            klic = (2, r["cesta"][-1] if r["cesta"] else "?", "", "")
+        sk.setdefault(klic, []).append(r)
+    out = []
+    for (_, m, n, ok), knihy in sorted(sk.items(), key=lambda x: x[0][0]):
+        popis = m + (f", obec {n}" if n else "") + (f", okres {ok}" if ok else ", podle názvu fary")
+        fary = list(dict.fromkeys(r["cesta"][-1] for r in knihy if r["cesta"]))
+        out.append((popis, fary, knihy))
+    return out
+
+
 def cmd_hledej(args):
     soubor = VYSTUP
     if "--json" in args:
@@ -228,10 +261,17 @@ def cmd_hledej(args):
     with open(soubor, encoding="utf-8") as f:
         knihy = json.load(f)
     nalezy = hledej(knihy, a[0], typ, rok, "--vse" in args)
-    for r in nalezy:
-        print(f"[{r['por']}] {' / '.join(r['cesta'][1:])} | {r['popis'][:110]} | {r['datace']} | "
-              f"sign. {r.get('sign', '?')} | {r.get('fol', '?')} fol.")
-        print("    " + (r.get("zip") or "BEZ ODKAZU (jen badatelna)") + ("\n    " + r["aron"] if "aron" in r else ""))
+    sk = skupiny(nalezy, a[0])
+    if len(sk) > 1:
+        print(f"POZOR: „{a[0]}“ odpovídá {len(sk)} různým místům. Vyber podle okresu a fary:")
+        for popis, fary, kn in sk:
+            print(f"  - {popis} – fara {', '.join(fary)} (knih: {len(kn)})")
+    for popis, fary, kn in sk:
+        print(f"\n=== {popis} – fara {', '.join(fary)} ===")
+        for r in kn:
+            print(f"[{r['por']}] {' / '.join(r['cesta'][1:])} | {r['popis'][:110]} | {r['datace']} | "
+                  f"sign. {r.get('sign', '?')} | {r.get('fol', '?')} fol.")
+            print("    " + (r.get("zip") or "BEZ ODKAZU (jen badatelna)") + ("\n    " + r["aron"] if "aron" in r else ""))
     print(f"{len(nalezy)} knih.", file=sys.stderr)
 
 

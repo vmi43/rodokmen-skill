@@ -394,7 +394,7 @@ Zkouška 0.9.5 na uživatelově projektu a vydání (PR #10, tag a vydání `v0.
 
 ## Poznámky z uživatelova projektu 2026-11-24 až 11-27: cena a kvalita indexu (2026-11-27)
 
-Větev `claude/nove-podnety-zlepseni-bba235`, bez změny verze (CHANGELOG, sekce „Nevydáno“). Pořadí rozhodl uživatel: nejdřív drobnosti k indexu, potom zvlášť složka `knihy/` (viz `todo.md`).
+Větev `claude/nove-podnety-zlepseni-bba235`, vydáno v 0.9.7 (do té doby CHANGELOG, sekce „Nevydáno“). Pořadí rozhodl uživatel: nejdřív drobnosti k indexu, potom zvlášť složka `knihy/` (viz `todo.md`).
 
 - **`indexy.py pridej` kontroluje tvar `datum` a odmítne `kniha` ve tvaru samotného roku** („1832“, „1832[?]“). Pomocníci psali „1832[?]“ do `datum` a rok ročníku do `kniha` (78 řádků); uživatel to obcházel slučovacím skriptem. Tím se mění rozhodnutí z 0.9.6 jen částečně: **tvar značky knihy se dál nekontroluje**, odmítá se jen značka, která je zjevně rok. **Zavržené:** pevný vzor značky (důvod z 0.9.6 trvá); u `typ` kontrola „I místo O“ v kódu není, protože oddaní (`O`) jsou platný typ – drží to zadání pomocníka.
 - **Cena indexu podle řádků na snímek, ne podle snímků**, a kalibrace první malou dávkou s hlídáním týdenního limitu. Čísla (0,9 / 1,06 / 1,2 / 1,6 / 2,6 % okna na snímek, 0,17 bodu týdne) jsou z jednoho projektu a plánu Team; v návodu jako řád.
@@ -407,3 +407,41 @@ Větev `claude/nove-podnety-zlepseni-bba235`, bez změny verze (CHANGELOG, sekce
 - **0.9.6 se vydala na GitHubu dodatečně** (tag `v0.9.6` na merge `3ce0841` PR #14, 2026-11-27): PR byl přimergovaný 24. 11., ale kroky 8–10 z `docs/vydani.md` se neudělaly. Text vydání je sekce 0.9.6 z CHANGELOGu beze změny.
 - **Bump Astra na 7.4.13 (`5887f2a`) vznikl na větvi `chore/release-0.9.6` až po mergi a do `main` nedošel;** do 0.9.7 se přebral cherry-pickem. Ověřeno: `novy_projekt.py --ukazka`, `npm install`, `npm run data`, `npm run build` rc=0 s Astro 7.4.13.
 - **0.9.7 je oprava (zvedá se `Z`):** bezpečnostní bump šablony, kontrola `datum`/`kniha` v `indexy.py pridej` a návody k indexu. Složka `knihy/` se odkládá do další verze (migrace desítek GB, vlastní kolo; viz `todo.md`).
+- **Vydáno 2026-11-27:** PR #15 přimergovaný (`285c888`), tag a vydání `v0.9.7` na tomto commitu. Hlavní checkout stáhl uživatel (`git pull`, `shared/VERZE` 0.9.7) a pustil `/reload-plugins` (plugin „re-read from its folder“). `~/.claude/plugins/installed_plugins.json` ale dál uvádí 0.9.6 – kontrola z `vydani.md` (*Ověření*) tím neprošla; viz `todo.md`.
+- **Úklid větví 2026-11-27:** smazáno 17 sloučených lokálních větví (`git branch -d`) a 6 na `origin`; zbyl jen `main`. Položka úklidu v `todo.md` tím odpadla.
+
+## Celé knihy do složky `knihy/`
+
+**Rozhodnuto 2026-11-28** (body návrhu z `poznamky_pro_skill.md` uživatelova projektu, 2026-11-27, prošel uživatel jeden po druhém). Problém: v `pracovni/` je 35 GB, 116 celých knih (`*_manual`) smíchaných s výstupy pomocníků, výřezy a 629 volnými soubory; úklid `pracovni/` hrozí smazáním knihy, kterou je pak nutné stahovat znovu.
+
+- **Umístění: `knihy/` v kořeni projektu, mimo git** (šablona `.gitignore`; existujícímu projektu ji doplní aktualizace, jinak by se knihy dostaly do gitu); názvy složek beze změny. Úprava `.claude/settings.json` z původního návrhu není potřeba: sandbox povoluje zápis do celé složky projektu a šablona žádné povolené zápisy pro `pracovni/` nemá (ověřeno 2026-11-28). **Zavržené:** `pracovni/knihy/` (úklid celé `pracovni/` by knihy smazal dál, problém by se vyřešil jen napůl); jedna sdílená složka mimo projekt (cesta mimo projekt do sandboxu a do konfigurace, kvůli úspoře místa jen u více projektů).
+- **`zarad.py` hledá nezařazené složky v `knihy/` i v `pracovni/` a zařazenou knihu přesune do `knihy/`.** Návod nově říká stahovat ručně rovnou do `knihy/`; starý zvyk (`pracovni/`) dál funguje. **Zavržené:** jen `knihy/` (složku staženou postaru by nástroj neviděl).
+- **Strojové stahování se nemění:** `aron_img.py rozsah` dál ukládá do `pracovni/aron_<apu>/`, mezipaměti `pracovni/.cache_*` zůstávají. Do `knihy/` se dostane jen to, co zařadí `zarad.py`. Rozhodl uživatel proti doporučení (výchozí `knihy/` by chránilo i stažené úseky, ale plnilo `knihy/` i krátkými úseky). Ostatní stahovací nástroje do složky knihy neukládají (ověřeno grepem 2026-11-28: `portafontium.py` a popisy svazků ARON jdou do mezipaměti).
+- **Migrace automaticky při aktualizaci projektu (`novy_projekt.py`):** složky `pracovni/*_manual/` se přejmenují do `knihy/` (`os.rename`, nic se nekopíruje ani nemaže), nástroj vypíše přesunuté a místa v `data/` se starou cestou; jejich přepsání Claude nabídne, sám je nepřepisuje. Druhé spuštění nic nedělá; `pom_*`, `.cache_*`, volné soubory a složka, jejíž jméno už v `knihy/` existuje, zůstanou. **Zavržené:** jen vypsat příkazy `mv` (116 příkazů ručně); bez migrace (staré knihy by zůstaly ohrožené).
+- **`kontrola.py` hlásí upozornění, ne chybu:** kniha `*_manual` ještě v `pracovni/` a svazek s `upload: manual` bez složky v `knihy/`. Snímky mohou být smazané vědomě (jdou stáhnout znovu), to není chyba dat. **Zavržené:** chyba (smazaná kniha by blokovala sestavení webu).
+- **Vstupní JSONy pro `zapis.py` do `pracovni/_vstupy/`; `zapis.py` vstup z této složky po úspěšném zápisu smaže** (jinde nic nemaže, při chybě vstup nechá). Obsah je v `data/` a v gitu. **Zavržené:** mazání ručně po dávce; ponechat jak je (volné soubory dál přibývají).
+- **Provedeno 2026-11-28** na větvi `feat/knihy-slozka` (CHANGELOG „Nevydáno“). Migrace přeskočí přesun, když `.gitignore` chybí nebo je odkaz; přesouvá jen skutečné složky `*_manual` (ne odkazy ani soubory). Testy: `test_aktualizace.py` případ 23, `test_zarad.py` (zařazení z obou míst), `tests/kontrola/test_knihy.py`, `test_zapis.py` (mazání jen v `_vstupy/`, při chybě vstup zůstane).
+
+## Drobnosti z poznámek uživatele: stejnojmenné obce, `--typ` a řádky `I`, sousední snímky (2026-11-28)
+
+- **`pomucka.py hledej` seskupí výsledky podle místa.** Problém: `hledej "<obec>"` vypsal v pořadí pomůcky nejdřív stejnojmennou obec z cizí farnosti a hledaná byla níž pod svou farou. Okres se bere z „matričního místa“ (`Obec (Okres, Česko)`, u části obce `Část (Obec, Okres, Česko : …)`); skupina = místo + nadřazená obec + okres, v záhlaví fary. Přesná shoda jména jde před částečnou („Lhota“ před „Horní Lhota“), kniha nalezená jen podle názvu fary má skupinu fary. Je-li skupin víc, výpis to řekne nahoře. **Zavržené:** jen přidat okres na řádek knihy (pořadí by dál vedlo k první, cizí knize); ptát se na okres argumentem (uživatel ho často nezná, výpis ho ukáže).
+- **`indexy.py hledej --typ N|O|Z` řekne, kolik řádků rejstříku vyřadil**, místo aby je jen popsala nápověda: rejstřík zemřelých má typ `I`, takže `--typ Z` ho potichu skryl a „nenalezeno“ klamalo. Filtr se nemění (`--typ Z` dál znamená zápisy z knihy).
+- **„Zkus i sousední snímky“ dopsáno do `matriky.md`** (krok 3 hledání), i když se opírá o jediný případ (strana 4 → snímek 7, odhad 6; viz „Index knihy: první zkouška…“): rada je levná a neškodí.
+
+## Poznámky uživatele: eBadatelna, mapa rejstříku, genitiv (2026-11-28)
+
+- **eBadatelna, „Register type“:** zapsáno do `portaly.md` podle jednoho případu (Žleby 16–19, SOA Praha); pravidlo „rozhoduje obecný popis“ je levné a chybu nezpůsobí. Litera ↔ „Original name“ dtto.
+- **Mapa rejstříku:** starší rada v `matriky.md` (pás prvního řádku ukáže začátky písmen) se s novou zkušeností rozchází; ponechány obě zkušenosti v jedné odrážce a doplněno, co fungovalo spolehlivě, místo mazání staré rady.
+- **`montage -label` bez písma:** poznámka uživatele ho doporučovala jako náhradu za `-annotate`, zkouška na ImageMagick 7.1.2 (macOS) ukázala, že bez `-font` padá stejně („unable to read font“, rc=1) a s `-font …/Arial.ttf` projde (rc=0). Návod proto dál chce `-font`; doporučení z poznámky nepřevzato.
+- **Genitiv otec/matka:** do zadání pomocníků (jeden chybný řádek ze ~40 u Sonnetu).
+
+## Rejstřík po písmenech podle potřeby, hlídání limitů (2026-11-28)
+
+**Zadání uživatele:** před hledáním v knize nejdřív najít rejstřík (samostatný svazek nebo přímo v knize) a přepsat z něj jen písmeno hledaného příjmení (Novák → N, Svoboda až později → S). Šetří to cenu, nechává možnost přepsat rejstřík celý později a index slouží dalším hledáním, i když je to dál jen pomůcka. Hlídat pětihodinové okno i týdenní limit.
+
+- **Nahrazuje pravidlo „rejstřík přepiš celý hned při prvním otevření“** (`matriky.md`, *Index knihy*). Celý rejstřík jen na přání uživatele (`prepsano <klíč> vse <od>-<do>`).
+- **Evidence písmen v nástroji, ne jen pravidlem v textu** (rozhodl uživatel podle doporučení): `data/indexy/<klíč>.pismena.json`, příkazy `indexy.py mapa` a `prepsano`. Důvod: `hledej` dřív odvozoval pokrytí jen ze snímků a let, takže po přepsání N by „Svoboda nenalezen“ vypadalo průkazně. Nově u nepřepsaného písmene napíše „neshoda nic neznamená“ a kde písmeno je. **Zavržené:** zápis přepsaných písmen do deníku a `obsah.md` (nástroj by dál ukazoval zavádějící pokrytí). Svazek bez `.pismena.json` (starší index, rychlý průchod knihou) se chová jako dřív.
+- **`prepsano` vyžaduje mapu písmene** (nejdřív zjistit, kde písmeno je) a upozorní na snímky písmene bez řádku `I`; nezastaví, protože prázdný snímek může být skutečně prázdný. Změna snímků písmene v `mapa` přepsání zruší.
+- **Jiné tvary počátečního písmene** (V/W, Č/C/Cz/Tsch, Š/Ž/Sch, I/J/Y …) `hledej` jen připomene, jsou-li zmapované; výčet je vodítko, ne úplný.
+- **Známé omezení:** `mapa` drží jeden rozsah snímků na písmeno. Roční rejstříky (písmeno roztroušené po knize) se řeší deníkem a označením písmene až po projití všech ročníků. Víc rozsahů na písmeno, až to bude potřeba.
+- **Limity:** výchozí stropy týden do ~98 %, pětihodinové okno neplánovat přes ~90 %, nedá-li uživatel jiné (stropy uživatel používá ve svém projektu). Claude stav limitů nevidí (`/usage` ukazuje čísla uživateli), proto se ptá před kolem a po první dávce, nemá-li nástroj. **Zavržené:** pevný strop na kolo bez ptaní (neví, kolik už je vyčerpáno).

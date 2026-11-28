@@ -140,6 +140,31 @@ def chybejici_nastroje():
     return nalezy
 
 
+KNIHY = "knihy"   # celé knihy; stejný název drží zarad.py a novy_projekt.py
+
+
+def kontrola_knih(svazky):
+    """Upozornění: kniha *_manual ještě v pracovni/, svazek `upload: manual` bez složky v knihy/."""
+    def manual(kde):
+        d = os.path.join(ROOT, kde)
+        return sorted(n for n in os.listdir(d) if n.endswith("_manual") and os.path.isdir(os.path.join(d, n))) \
+            if os.path.isdir(d) else []
+    v_knihach, v_pracovni = manual(KNIHY), manual("pracovni")
+
+    def ma_slozku(k, jmena):   # ARON: klíč = 8 znaků apu, složka aron_<apu8>_…
+        return any(n.startswith(k + "_") or n.startswith(f"aron_{k}_") for n in jmena)
+    out = []
+    if v_pracovni:
+        out.append(f"{len(v_pracovni)} knih je ještě v pracovni/ (např. {', '.join(v_pracovni[:3])}) – patří do {KNIHY}/; "
+                   "přesune je aktualizace projektu (novy_projekt.py), novou knihu zarad.py")
+    bez = sorted(k for k, v in svazky.items() if isinstance(v, dict) and v.get("upload") == "manual"
+                 and not ma_slozku(k, v_knihach) and not ma_slozku(k, v_pracovni))
+    if bez:
+        out.append(f"{len(bez)} svazků s upload: manual nemá složku v {KNIHY}/ ({', '.join(bez[:5])}{' …' if len(bez) > 5 else ''}) "
+                   "– snímky smazané (jdou stáhnout znovu), nebo kniha leží jinde?")
+    return out
+
+
 def main():
     err, warn = [], []
     ns = {}
@@ -179,6 +204,19 @@ def main():
                 err.append(f"index data/indexy/{ik}.tsv, řádek {i}: typ N/O/Z/I, číselný snímek, osoby a jistota (vysoká/střední/nízká) jsou povinné")
             elif mx and int(r[0]) > int(mx):
                 warn.append(f"index data/indexy/{ik}.tsv, řádek {i}: snímek {r[0]} je za koncem svazku ({mx})")
+    # evidence písmen rejstříku (data/indexy/<klíč>.pismena.json, indexy.py mapa/prepsano)
+    for cesta in sorted(glob.glob(os.path.join(DATA, "indexy", "*.pismena.json"))):
+        ik = os.path.basename(cesta)[:-len(".pismena.json")]
+        if ik not in svazky:
+            err.append(f"index data/indexy/{ik}.pismena.json: klíč '{ik}' není v data/svazky.json")
+        try:
+            p = json.load(open(cesta, encoding="utf-8"))
+            if not isinstance(p, dict) or not all(isinstance(v, dict) and re.fullmatch(r"\d+-\d+", str(v.get("snimky", ""))) for v in p.values()):
+                raise ValueError
+        except ValueError:
+            err.append(f"index data/indexy/{ik}.pismena.json: není ve tvaru {{písmeno: {{snimky: od-do}}}} (zapisuj přes tools/indexy.py mapa)")
+    # celé knihy patří do knihy/ (mimo git, úklid pracovni/ se jí nedotkne); jen upozornění – snímky jdou stáhnout znovu
+    warn += kontrola_knih(svazky)
 
     cited_domy = set()
     if domy:
