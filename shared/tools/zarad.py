@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""Zařazení ručně stažených knih (složka s `obsah.txt` v pracovni/) do projektu – bez sítě, nic nestahuje.
+"""Zařazení ručně stažených knih (složka s `obsah.txt` v knihy/ nebo pracovni/) do projektu – bez sítě, nic nestahuje.
 
 Použití (z kořene projektu):
-  zarad.py [pracovni/<složka> …]                 náhled: co by se udělalo a co nesedí (nic nemění)
-  zarad.py [pracovni/<složka> …] --proved        provede: přejmenuje složku a snímky, napíše obsah.md, zapíše svazky.json
+  zarad.py [knihy/<složka> …]                    náhled: co by se udělalo a co nesedí (nic nemění)
+  zarad.py [knihy/<složka> …] --proved           provede: přesune a přejmenuje složku a snímky, napíše obsah.md, zapíše svazky.json
   zarad.py … --ignoruj-pocet                     zařadí i složku, kde se počet snímků liší od údaje v obsah.txt
-Bez složek vezme všechny složky v pracovni/ s obsah.txt, které ještě nejsou zařazené (nekončí na `_manual`).
+Bez složek vezme všechny složky v knihy/ a pracovni/ s obsah.txt, které ještě nejsou zařazené (nekončí na `_manual`).
 
 Co udělá (postup v reference/portaly.md, „Ručně stažené knihy“):
   - klíč svazku z odkazu v obsah.txt: eBadatelna `ebad_<matrikaId>`, archiválie `ebad_a_<id>` (je-li ve svazky.json už
     `archivalie_<id>`, zůstane tak), ARON prvních 8 znaků apu (složka `aron_<apu8>_…`);
-  - složka → `pracovni/<klíč>_<název>_manual/`, snímky → `s<n>.jpg` podle pořadí (čísla z názvů souborů jen třídí);
+  - složka → `knihy/<klíč>_<název>_manual/` (i ze staré cesty pracovni/; knihy/ je mimo git a úklid pracovni/ se jí
+    nedotkne), snímky → `s<n>.jpg` podle pořadí (čísla z názvů souborů jen třídí);
   - `obsah.md` (koncept z obsah.txt; doplň, co kniha obsahuje), záznam ve svazky.json s `"upload": "manual"` (přes zapis.py);
   - hlásí rozpory: počet snímků × údaj v obsah.txt, název × záznam ve svazky.json, jiný klíč v názvu složky;
   - vypíše strojové kopie téhož svazku (nemaže je; je-li kopie jen snímky a `stahovani.log` a počty sedí, vypíše hotový
@@ -26,6 +27,7 @@ for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PRAC = os.path.join(ROOT, "pracovni")
+KNIHY = os.path.join(ROOT, "knihy")   # celé knihy; stejný název drží novy_projekt.py (migrace) a kontrola.py
 SCANS = re.compile(r"(?im)^(?:number of scans|scans|počet snímků|snímky)[ \t]*[:\n][ \t]*(\d+)")
 OBRAZEK = re.compile(r"\.jpe?g$", re.I)
 
@@ -102,7 +104,7 @@ def plan(slozka, svazky):
         url = stary["url"]
     # ARON: svazky.json mívá název bez obce („Sbírka matrik …, sign.: 148“), obsah.txt „Lhota 148“ – složku pojmenuj z obsah.txt
     jmeno_svazku = (prvni if portal == "ARON" and prvni else (stary.get("svazek") or prvni)).split(",")[0]
-    p["slozka_nova"] = os.path.join(PRAC, f"{predpona}_{slug(jmeno_svazku)}_manual")
+    p["slozka_nova"] = os.path.join(KNIHY, f"{predpona}_{slug(jmeno_svazku)}_manual")
     obr, upoz = obrazky(slozka)
     p["obrazky"] = obr
     if upoz:
@@ -226,6 +228,7 @@ def proved(p):
         os.rename(os.path.join(p["zdroj"], f), os.path.join(p["zdroj"], f"__{n}.tmp"))
     for n in range(1, len(p["obrazky"]) + 1):
         os.rename(os.path.join(p["zdroj"], f"__{n}.tmp"), os.path.join(p["zdroj"], f"s{n}.jpg"))
+    os.makedirs(KNIHY, exist_ok=True)
     os.rename(p["zdroj"], z)
     md = os.path.join(z, "obsah.md")
     if not os.path.exists(md):
@@ -261,7 +264,8 @@ def main():
         sys.exit(f"{ROOT} není složka projektu (chybí data/STAV.md). Spusť projektovou kopii z kořene projektu.")
     svp = os.path.join(ROOT, "data", "svazky.json")
     svazky = json.load(open(svp, encoding="utf-8")) if os.path.exists(svp) else {}
-    slozky = [os.path.abspath(a) for a in arg] or [d.rstrip("/\\") for d in sorted(glob.glob(os.path.join(PRAC, "*/")))
+    slozky = [os.path.abspath(a) for a in arg] or [d.rstrip("/\\") for kde in (KNIHY, PRAC)
+                                                    for d in sorted(glob.glob(os.path.join(kde, "*/")))
                                                     if os.path.exists(os.path.join(d, "obsah.txt"))
                                                     and not d.rstrip("/\\").endswith("_manual")]
     if not slozky:

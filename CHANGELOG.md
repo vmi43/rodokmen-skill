@@ -6,6 +6,14 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## Nevydáno
+
+**Novinky**
+- Celé ručně stažené knihy mají vlastní složku `knihy/` v kořeni projektu (mimo git), oddělenou od pracovních souborů v `pracovni/`; úklid `pracovni/` se jich nedotkne. `zarad.py` hledá nezařazené knihy v `knihy/` i postaru v `pracovni/` a zařazenou knihu přesune do `knihy/`.
+- Aktualizace projektu doplní `knihy/` do `.gitignore` a přesune tam dosavadní složky `pracovni/*_manual/` (jen přejmenování, nic nekopíruje ani nemaže). Vypíše přesunuté knihy a místa v textech projektu se starou cestou; ta Claude nabídne přepsat. Pomůcky, mezipaměti a volné soubory v `pracovni/` zůstanou.
+- `kontrola.py` upozorní na knihu, která je ještě v `pracovni/`, a na svazek stažený ručně, který v `knihy/` nemá složku.
+- Vstupy pro `zapis.py` se píší do `pracovni/_vstupy/` a nástroj je odtud po úspěšném zápisu smaže; v `pracovni/` tak nepřibývají volné soubory.
+
 ## 0.9.7 – 27. 11. 2026
 
 **Opravy**

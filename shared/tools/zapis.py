@@ -7,7 +7,8 @@ Použití (z kořene projektu):
     soubor     zaznamy | svazky | prepisy | zvyrazneni | mista | dokumenty | mapy | web   (= data/<soubor>.json)
     klíč       zaznamy: „klic“ zápisu; dokumenty, mapy: „img“; web: pole nastavení (uvod, pribeh, prihlaseni,
                zajimavosti_na_uvodu, nazev…); ostatní: klíč ve slovníku (id svazku, klíč zápisu, obec)
-    vstup.json soubor s jedním objektem JSON (napiš ho nástrojem Write do pracovni/), „-“ = ze vstupu
+    vstup.json soubor s jedním objektem JSON (napiš ho nástrojem Write do pracovni/_vstupy/; odtud ho zapis.py po
+               úspěšném zápisu smaže, jinde nic nemaže), „-“ = ze vstupu
     --sloucit  jen změní / doplní uvedená pole, ostatní pole položky nechá
 Položka se stejným klíčem se nahradí, jinak se přidá na konec. Python skripty ani `sed -i` na data nepoužívej.
   zapis.py denik "<zdroj>" "<rozsah>" "<hledáno>" "<výsledek>" "<citace>" [--datum "10. 11. 2026"]
@@ -18,7 +19,7 @@ Položka se stejným klíčem se nahradí, jinak se přidá na konec. Python skr
     (SIDE, musí sedět na jediného). Zbytek souboru zůstane doslova, klíč musí být v zaznamy.json.
 Souběžní pomocníci se střídají přes zámek (pracovni/.zamky/), žádný zápis se neztratí. Ostatní nástroje u nás zapisují do data/ po svém (ne přes zapis()).
 
-Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/tools/zapis.py), commit 32bef07; úprava: věta o ostatních nástrojích.
+Původ: převzato z vzoha/dejiny-domu-skill (skills/dejiny-domu/tools/zapis.py), commit 32bef07; úpravy: věta o ostatních nástrojích, mazání vstupu z pracovni/_vstupy/.
 Podpříkaz `odkaz` (a čtení vstupu v UTF-8): převzato z sarsonj/rodokmen-skill (skills/rodokmen/tools/zapis.py), commit 0fb0c03.
 """
 import ast, contextlib, json, os, re, sys, tempfile, time
@@ -36,6 +37,7 @@ SEZNAMY = {"zaznamy": "klic", "dokumenty": "img", "mapy": "img"}   # soubory se 
 SLOVNIKY = {"svazky", "prepisy", "zvyrazneni", "mista", "web"}
 LIBOVOLNE = {"web"}   # hodnota nemusí být objekt (web.json: „nazev“ je text, „zajimavosti_na_uvodu“ seznam)
 WS = re.compile(r"\s*")
+VSTUPY = os.path.join(ROOT, "pracovni", "_vstupy")   # vstupy odsud zapis.py po úspěšném zápisu smaže
 CEKANI_NA_ZAMEK = 60   # s; zámek drží jen pár milisekund, déle = zaseknutý proces
 
 
@@ -330,13 +332,19 @@ def main():
         sys.exit(__doc__)
     nazev, klic, vstup = args
     try:
-        obj = json.load(sys.stdin if vstup == "-" else open(vstup, encoding="utf-8-sig"))
+        if vstup == "-":
+            obj = json.load(sys.stdin)
+        else:
+            with open(vstup, encoding="utf-8-sig") as f:   # zavřít před smazáním (Windows otevřený soubor nesmaže)
+                obj = json.load(f)
     except (OSError, ValueError) as e:
         sys.exit(f"Vstup {vstup} není platný JSON: {e}")
     if nazev == "prepisy" and (not isinstance(obj, dict) or set(obj) - {"orig", "cs"}):
         sys.exit("prepisy: povolené klíče jsou jen 'orig' (přepis) a 'cs' (překlad), viz reference/data.md")
     pridano = zapis(nazev, klic, obj, sloucit="--sloucit" in sys.argv)
     print(f"data/{nazev}.json: {'přidáno' if pridano else 'změněno'} „{klic}“")
+    if vstup != "-" and os.path.dirname(os.path.realpath(vstup)) == os.path.realpath(VSTUPY):
+        os.remove(vstup)   # obsah je v data/ (a v gitu); vstupy jinde nemažeme
 
 
 if __name__ == "__main__":

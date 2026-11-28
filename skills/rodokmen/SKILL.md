@@ -140,8 +140,8 @@ Základní smyčka pro každou osobu:
 Pravidla, která chrání kvalitu (naučená na skutečném projektu):
 - **Než něco ohlásíš jako nové, prohledej** `data/osoby.py`, `data/zaznamy.json` a `data/research_log.md`
   (jméno, místo, rok). Snadno „objevíš“ něco, co už v datech je.
-- **Zápis do dat:** `zaznamy`, `svazky`, `prepisy`, `dokumenty` přes `python3 -I tools/zapis.py <soubor> <klíč> pracovni/x.json`
-  (objekt napiš do `pracovni/x.json`, nástroj změní jen tu položku; `--sloucit` změní jen uvedená pole); odkaz na zápis u osoby v `osoby.py` přes
+- **Zápis do dat:** `zaznamy`, `svazky`, `prepisy`, `dokumenty` přes `python3 -I tools/zapis.py <soubor> <klíč> pracovni/_vstupy/x.json`
+  (objekt napiš do `pracovni/_vstupy/x.json`, nástroj změní jen tu položku a vstup odtud po zápisu smaže; `--sloucit` změní jen uvedená pole); odkaz na zápis u osoby v `osoby.py` přes
   `tools/zapis.py odkaz` (ohlídá uvozovky a čárky), ostatní úpravy `osoby.py` a markdown nástrojem pro úpravu souborů.
   Nikdy `sed -i` ani skript, který soubor přepíše celý – rozbije formát a v historii je pak změněný celý soubor.
 - **`doc` jen to, co jsi četl přímo na snímku.** Shoda jména a doby bez přímého dokladu = `prob` + poznámka proč.
@@ -313,6 +313,7 @@ Nedělej to pořád. Postup:
 | `data/zajimavosti.md`, `data/pribeh.md`, `data/web.json`, `data/dokumenty.json`, `data/mista.json` | texty a nastavení webu, rodinné fotky, místa na mapě |
 | `vyrezy/`, `zdroje/` | výřezy zápisů a dokumentů (web / plné rozlišení), název = klíč + `.jpg` |
 | `dokumenty/`, `pracovni/` | originály od rodiny; pracovní soubory (nejdou na web) |
+| `knihy/` | celé ručně stažené knihy `<klíč>_<název>_manual/` (mimo git, nemazat při úklidu `pracovni/`; zařazuje `zarad.py`) |
 | `poznamky_pro_skill.md` | poznámky pro správce skillu (chyby, nové archivy, nápady) – posílá je uživatel ručně |
 | `tools/` | nástroje (kopie ze skillu; aktualizace celého projektu: znovu spustit `novy_projekt.py` na stejnou složku, viz `reference/web.md`) |
 | `web/` | web (Astro); data do něj jdou jen přes `npm run data` |

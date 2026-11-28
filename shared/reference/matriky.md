@@ -167,7 +167,7 @@ pak vracíš pro další a další jméno a znovu čteš totéž. Proto dvě úr
 **Pravidla:** řádky zapisuj dávkou přes `indexy.py pridej <klíč> <soubor.json>` (JSON pole z `pracovni/`), vybledlé nebo
 jistotu piš slovy (`vysoká`, `střední`, `nízká`; nejisté kusy textu s `[?]`) a ke každému řádku model a datum do `cetl` (`--cetl claude-opus-5-5/high`). Než hledáš v knize, zeptej se indexu: `indexy.py hledej <příjmení> [--ves V]`; výstup říká,
 co index pokrývá (snímky, roky), takže „nenalezeno“ platí jen pro to. **Zásah z indexu není `doc`:** otevři snímek, přečti zápis
-ze zvětšení (`overit.py`) a ulož ho šesti kroky. Index patří ke svazku (klíč ze `svazky.json`), ne do složky knihy v `pracovni/`
+ze zvětšení (`overit.py`) a ulož ho šesti kroky. Index patří ke svazku (klíč ze `svazky.json`), ne do složky knihy v `knihy/`
 (ta je v `.gitignore` a nástroj `zarad.py` ji přejmenovává); do `obsah.md` knihy dej jen řádek s odkazem na index.
 Sloupce jsou stejné jako v komunitním indexu matrik (`sdileni.py`, `precteno.tsv`) a navíc `strana` a `kniha` pro rejstříky; náš index je tvůj vlastní, na web nejde a ven jde jen přes `prispevek.py` po tvém souhlasu (`sdileni.md`).
 

@@ -10,7 +10,7 @@ import glob, os, shutil, subprocess, sys, tempfile, time, traceback
 
 SKILL = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else "shared")
 RADKY = [f"radek {i}" for i in range(1, 21)]
-POCET = 22   # počet případů v pripady()
+POCET = 23   # počet případů v pripady()
 PRESKOCENO = "přeskočeno: "   # případ, který tu nejde vyzkoušet (počítá se zvlášť)
 
 
@@ -369,6 +369,42 @@ def pripady(koren):
     assert cti(os.path.join(p3, "tools", "podminky.json")) == '{"portaly": {}}\n', "podminky.json se nezkopíroval"
     assert os.path.isfile(os.path.join(p3, ".skill_sablona", "tools", "podminky.json")), "chybí v .skill_sablona"
     yield "tools/podminky.json se kopíruje do projektu (i do .skill_sablona)"
+
+    # 23. celé knihy: .gitignore dostane knihy/, pracovni/*_manual/ se přejmenuje do knihy/ (obsah beze změny),
+    #     pomůcky, mezipaměti, volné soubory a odkazy zůstanou; stejnojmenná složka v knihy/ se nepřepíše; druhý běh nic
+    p4 = os.path.join(koren, "projekt_knihy")
+    spust(s, p4)
+    prac = os.path.join(p4, "pracovni")
+    zapis(os.path.join(prac, "ebad_1_loucen_manual", "s1.jpg"), "snimek\n")
+    zapis(os.path.join(prac, "aron_1a2b3c4d_lhota_manual", "obsah.md"), "# Lhota\n")
+    zapis(os.path.join(prac, "ebad_2_dvoji_manual", "s1.jpg"), "stara\n")
+    zapis(os.path.join(p4, "knihy", "ebad_2_dvoji_manual", "s1.jpg"), "nova\n")
+    zapis(os.path.join(prac, "pom_index", "vystup.tsv"), "x\n")
+    zapis(os.path.join(prac, ".cache_aron", "a.json"), "{}\n")
+    zapis(os.path.join(prac, "volny_manual"), "soubor, ne složka\n")
+    zapis(os.path.join(p4, "data", "STAV.md"), "# Stav\nkniha v pracovni/ebad_1_loucen_manual/s1.jpg\n")
+    zapis(os.path.join(p4, ".gitignore"), "pracovni/")   # bez konce řádku
+    if hasattr(os, "symlink"):
+        os.symlink(os.path.join(koren, "jinde"), os.path.join(prac, "odkaz_manual"))
+    out = spust(s, p4)
+    knihy = os.path.join(p4, "knihy")
+    assert cti(os.path.join(p4, ".gitignore")).splitlines()[:1] == ["pracovni/"] and "knihy/" in cti(os.path.join(p4, ".gitignore")).splitlines(), \
+        cti(os.path.join(p4, ".gitignore"))
+    assert cti(os.path.join(knihy, "ebad_1_loucen_manual", "s1.jpg")) == "snimek\n", out
+    assert os.path.isfile(os.path.join(knihy, "aron_1a2b3c4d_lhota_manual", "obsah.md")), out
+    assert not os.path.exists(os.path.join(prac, "ebad_1_loucen_manual")), out
+    assert cti(os.path.join(prac, "ebad_2_dvoji_manual", "s1.jpg")) == "stara\n", "stejnojmennou složku přesunul"
+    assert cti(os.path.join(knihy, "ebad_2_dvoji_manual", "s1.jpg")) == "nova\n", "přepsal složku v knihy/"
+    for n in ("pom_index", ".cache_aron", "volny_manual"):
+        assert os.path.lexists(os.path.join(prac, n)), f"sáhl na {n}"
+    if hasattr(os, "symlink"):
+        assert os.path.islink(os.path.join(prac, "odkaz_manual")), "přesunul odkaz"
+    assert "data/STAV.md:2" in out and "ebad_2_dvoji_manual" in sekce(out, "Ponecháno v pracovni/"), out
+    assert "Knihy přesunuté z pracovni/ do knihy/, 2:" in out, out
+    gi = cti(os.path.join(p4, ".gitignore"))
+    out2 = spust(s, p4)
+    assert "Knihy přesunuté" not in out2 and ".gitignore: doplněno" not in out2 and cti(os.path.join(p4, ".gitignore")) == gi, out2
+    yield "celé knihy: knihy/ v .gitignore, pracovni/*_manual/ přesunuté, ostatní ponecháno, druhý běh nic"
 
 
 def main():

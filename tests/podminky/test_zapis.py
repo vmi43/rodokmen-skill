@@ -82,6 +82,24 @@ class Projekt(unittest.TestCase):
 
 class TestZapis(Projekt):
 
+    def test_vstup_z_vstupy_se_po_zapisu_smaze(self):
+        os.makedirs(self.path("pracovni", "_vstupy"))
+        vstup, jinde = self.path("pracovni", "_vstupy", "a.json"), self.path("pracovni", "vstup.json")
+        for f in (vstup, jinde):
+            with open(f, "w", encoding="utf-8") as g:
+                json.dump({"nazev": "Křest"}, g, ensure_ascii=False)
+        p = self.nastroj("zapis.py", "zaznamy", "a_1", vstup)
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        self.assertFalse(os.path.exists(vstup))
+        p = self.nastroj("zapis.py", "zaznamy", "a_2", jinde)   # jinde nic nemaže
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        self.assertTrue(os.path.exists(jinde))
+        with open(vstup, "w", encoding="utf-8") as g:   # chybný zápis (klíč nesedí): vstup zůstane k opravě
+            json.dump({"klic": "jiny", "nazev": "x"}, g)
+        p = self.nastroj("zapis.py", "zaznamy", "a_3", vstup)
+        self.assertNotEqual(p.returncode, 0)
+        self.assertTrue(os.path.exists(vstup))
+
     def test_pridani_do_prazdneho_seznamu(self):
         p = self.zapis("zaznamy", "a_1", {"druh": "N", "nazev": "Křest Jana Nováka"})
         self.assertEqual(p.returncode, 0, p.stderr)

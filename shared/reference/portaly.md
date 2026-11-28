@@ -447,9 +447,10 @@ ve kterých knihách hledat, a chce mít svazky u sebe. **Má-li už rodokmen a 
 lepší cílené dotazy (obec, kniha, roky, snímek) a stahuj jen to nutné, ne celé knihy; dál platí brzda a omezení
 strojového přístupu. Na začátku se proto zeptej, v jaké situaci je (začínám × ověřuji hotový rodokmen).
 
-Uživatel knihu stáhne hromadně sám (tlačítko „stáhnout“ na portálu) a dá ji do `pracovni/<původní název>/` spolu se
+Uživatel knihu stáhne hromadně sám (tlačítko „stáhnout“ na portálu) a dá ji do `knihy/<původní název>/` spolu se
 souborem **`obsah.txt`** (popis knihy; na konci odkaz s číslem knihy). Na stránku svazku v archivu **nechoď** – vše
-potřebné je v `obsah.txt`.
+potřebné je v `obsah.txt`. Celé knihy patří do `knihy/` v kořeni projektu (mimo git; úklid `pracovni/` se jich nedotkne);
+složku položenou postaru do `pracovni/` `zarad.py` najde také a přesune ji.
 - **eBadatelna:** ke stažení snímků musí mít uživatel **založený účet** (přihlášení); bez něj portál celé svazky nevydá.
   Řekni mu to hned na začátku, ať nehledá, proč tlačítko nefunguje.
 - **ARON:** účet není potřeba. Na stránce svazku je tlačítko **„Stáhnout všechny snímky“**. Složka se jmenuje
@@ -474,7 +475,8 @@ jinak se seznam rozběhne na tři místa a nedá se z něj poznat, co už je sta
 `archivalieId` nebo `apu`) je v řádku povinný, podle něj se řádek odškrtá. Starší projekt soubor nemá: zkopíruj ho ze
 skillu (`shared/template/data/ke_stazeni.md`) do `data/`.
 
-Zařazení dělá **`python3 -I tools/zarad.py [pracovni/<složka> …]`** (bez sítě, bez složek vezme všechny s `obsah.txt`): nejdřív
+Zařazení dělá **`python3 -I tools/zarad.py [knihy/<složka> …]`** (bez sítě, bez složek vezme všechny s `obsah.txt` v `knihy/`
+i v `pracovni/`): nejdřív
 náhled s klíčem, novým názvem a rozpory (počet snímků × `obsah.txt`, název × `svazky.json`, jiný klíč ve jménu složky);
 ukaž ho uživateli, po potvrzení pusť znovu s `--proved`.
 U ARON svazku, který už je ve `svazky.json` (název typu „Sbírka matrik Východočeského kraje, sign.: 148 …“, bez obce), nástroj
@@ -486,7 +488,7 @@ v textech (kroky 6 a 7 děláš ty, nic nemaže), odškrtne řádek knihy v `dat
 `archivalie_<id>`, je-li už ve `svazky.json`, jinak `ebad_a_<id>`. Postup, který nástroj dělá:
 1. Přečti `obsah.txt`. Klíč svazku je číslo z odkazu: eBadatelna `ebad_<matrikaId>`, ARON `aron_<apu8>` (prvních 8 znaků
    apu; ve `svazky.json` je klíč bez předpony, jak ho zapisuje `aron_img.py … svazek`), Porta fontium `pf_<kniha>`.
-2. Složku přejmenuj na `pracovni/<klíč>_<název>_manual/`. Název = část názvu svazku před první čárkou (u svazku, který už
+2. Složku přesuň a přejmenuj na `knihy/<klíč>_<název>_manual/`. Název = část názvu svazku před první čárkou (u svazku, který už
    je v `svazky.json`, pole `svazek`; u nového první řádek `obsah.txt`), bez diacritiky, malými písmeny, mezery a `-`
    jako `_` (např. `ebad_15849_hruby_jesenik_26_manual`). Klíč ve `svazky.json` zůstává bez přípony. Název z `obsah.txt`
    porovnej s `matrikaId`: jednou měl `obsah.txt` chybný název („Zleby-27“), přitom id sedělo.
@@ -637,8 +639,8 @@ Nástroje pro ně hotové nejsou. Postupuj takto a výsledek zapiš do `STAV.md`
    jen snímky, které čteš, a jen když to archiv nezakazuje (`<portál>/robots.txt`, podmínky užití). Krajní možnost: požádej uživatele, ať snímek uloží a dá do `pracovni/`.
 3. **Trvalý odkaz** na snímek (tlačítko „trvalý odkaz“/permalink, jinak URL svazku + číslo snímku) dej do `odkaz` v zápisu.
 4. Svazek zapiš přes nástroj: objekt `{"archiv": "SOA Třeboň", "portal": "digi.ceskearchivy.cz",
-   "svazek": "N Volary 1784–1820, sign. …", "popis": "obce…", "url": "<odkaz na svazek>"}` napiš do `pracovni/svazek.json`
-   a spusť `python3 -I tools/zapis.py svazky <klíč> pracovni/svazek.json` (ručně ani skriptem `svazky.json` neupravuj).
+   "svazek": "N Volary 1784–1820, sign. …", "popis": "obce…", "url": "<odkaz na svazek>"}` napiš do `pracovni/_vstupy/svazek.json`
+   a spusť `python3 -I tools/zapis.py svazky <klíč> pracovni/_vstupy/svazek.json` (ručně ani skriptem `svazky.json` neupravuj).
 5. Dál stejně jako u ARON: `vyrez.py`, `ramecek.py`, přepis, osoby, deník.
 6. Když se postup osvědčí, napiš pro portál vlastní malý nástroj podle `portafontium.py` (bez prohlížeče, jen když to archiv nezakazuje)
    a postup zapiš do `STAV.md`. Poznatek zapiš i do `poznamky_pro_skill.md` (pro správce skillu).
