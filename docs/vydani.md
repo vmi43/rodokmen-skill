@@ -7,7 +7,7 @@ Repozitář vydání je `vmi43/rodokmen-skill` (fork); upstream `sarsonj/rodokme
 
 - Práce je hotová a slučuje se do `main` přes PR. Na `main` se nepracuje přímo.
 - Číslo verze: opravy `Z`, nové funkce `Y`. Tag s číslem, které už upstream vydal, nezakládej
-  (upstream má `v0.9.2` a `v0.10.0`).
+  (upstream má `v0.9.2` a řadu od `v0.10.0`, k 28. 11. 2026 až `v0.11.1`; ověř `git ls-remote --tags upstream`).
 
 ## Postup
 

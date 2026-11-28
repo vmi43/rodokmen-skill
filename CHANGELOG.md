@@ -6,7 +6,7 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
-## Nevydáno
+## 0.9.9 – 28. 11. 2026
 
 **Novinky**
 - Celé ručně stažené knihy mají vlastní složku `knihy/` v kořeni projektu (mimo git), oddělenou od pracovních souborů v `pracovni/`; úklid `pracovni/` se jich nedotkne. `zarad.py` hledá nezařazené knihy v `knihy/` i postaru v `pracovni/` a zařazenou knihu přesune do `knihy/`.
@@ -14,12 +14,14 @@ Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to 
 - `kontrola.py` upozorní na knihu, která je ještě v `pracovni/`, a na svazek stažený ručně, který v `knihy/` nemá složku.
 - `pomucka.py hledej` seskupí knihy podle místa s okresem a farou a u stejnojmenných obcí z různých farností to řekne hned nahoře; hledaná obec se tak neschová pod cizí obcí stejného jména.
 - `indexy.py hledej --typ N|O|Z` řekne, kolik shod v rejstříku (řádky typu `I`) tím vyřadil; nápověda to vysvětluje.
+- Rejstřík se přepisuje po písmenech, jen podle potřeby: hledáš Nováka, přepíše se písmeno N, Svobodu až později. Nové `indexy.py mapa` (kde je které písmeno) a `indexy.py prepsano`; `hledej` u nepřepsaného písmene řekne, že neshoda nic neznamená a kde písmeno najdeš, a připomene jiné tvary (Vávra = Wawra). `kontrola.py` hlídá tvar evidence písmen.
+- Vstupy pro `zapis.py` se píší do `pracovni/_vstupy/` a nástroj je odtud po úspěšném zápisu smaže; v `pracovni/` tak nepřibývají volné soubory.
+
+**Návody**
 - eBadatelna: druh knihy poznáš z obecného popisu (roky po stránkách, paginace), ne z „Register type“; litera z rejstříku odpovídá poli „Original name“.
 - Návod k rejstříkům: mapa rejstříku ze zmenšených náhledů a pruhů nestačí (co funguje místo ní); do zadání pomocníků rozlišení otce a matky podle genitivu.
 - Návod k matrikám: když zápis na snímku spočítaném ze strany rejstříku není, otevřít i sousední snímky.
-- Rejstřík se přepisuje po písmenech, jen podle potřeby: hledáš Nováka, přepíše se písmeno N, Svobodu až později. Nové `indexy.py mapa` (kde je které písmeno) a `indexy.py prepsano`; `hledej` u nepřepsaného písmene řekne, že neshoda nic neznamená a kde písmeno najdeš, a připomene jiné tvary (Vávra = Wawra). `kontrola.py` hlídá tvar evidence písmen.
 - Návod: před knihou nejdřív najít rejstřík (samostatný svazek, konec či začátek knihy, oddíly vsí, roční rejstříky); výchozí stropy limitů při indexaci (týden ~98 %, pětihodinové okno ~90 %) a dotaz na jejich stav před kolem.
-- Vstupy pro `zapis.py` se píší do `pracovni/_vstupy/` a nástroj je odtud po úspěšném zápisu smaže; v `pracovni/` tak nepřibývají volné soubory.
 
 ## 0.9.7 – 27. 11. 2026
 
