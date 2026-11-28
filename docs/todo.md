@@ -102,7 +102,8 @@ použije před hledáním jména. Při příští „domácí“ knize to zkus a
 ## Celé knihy do složky `knihy/`: vydat a ověřit na živém projektu (provedeno 2026-11-28, větev `feat/knihy-slozka`)
 
 Kód, testy a návody jsou hotové (rozhodnutí i provedení v `decisions.md`, „Celé knihy do složky `knihy/`“; CHANGELOG „Nevydáno“). Zbývá:
-- vydání (`docs/vydani.md`); nová funkce → zvedá se `Y` (0.10.0), pozor na střet čísla s upstreamovou 0.10.0 (viz výš);
+- vydání (`docs/vydani.md`); uživatel 2026-11-28 vydání odložil („zatím nevydávat“). Číslo verze nerozhodnuto: nová funkce by zvedla `Y` na 0.10.0, ale tag `v0.10.0` už je v lokálním repozitáři z upstreamu (`sarsonj`), takže Claude doporučil **0.11.0** (bez střetu tagu, semver přeskočení dovoluje). Větev (nepushnutá) nese i `3fbdc66` (`pomucka.py` stejnojmenné obce, `indexy.py --typ` a řádky `I`) a `547984e` (poznámky uživatele: eBadatelna, mapa rejstříku, genitiv); vše v CHANGELOG „Nevydáno“;
+- **neověřeno na živé pomůcce NAD 190:** seskupení `pomucka.py hledej` podle místa, okresu a fary (jen testy); vyzkoušet na obci, u které se dřív vypsala cizí stejnojmenná obec první;
 - **neověřeno na živém projektu:** aktualizace uživatelova projektu (116 knih, 35 GB) – po ní zkontrolovat výpis přesunutých knih, `git status` (knihy nesmí být v gitu), upozornění `kontrola.py` a nabídnout přepsání starých cest v `data/`;
 - při příštím zápisu ověřit, že Claude podle `SKILL.md` píše vstupy do `pracovni/_vstupy/`.
 
